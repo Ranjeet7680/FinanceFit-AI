@@ -1538,6 +1538,37 @@
                                         <button class="w-full py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold rounded-lg transition-all" onclick="resetTier()">Reset Account Tier (Demo Test)</button>
                                     </div>
                                 </div>
+
+                                <!-- TalkBack Accessibility System -->
+                                <div class="glass p-lg rounded-2xl border border-white/5 space-y-md flex flex-col justify-between">
+                                    <div class="space-y-sm">
+                                        <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                                            <h4 class="font-semibold text-sm text-on-surface">TalkBack System</h4>
+                                            <!-- iOS Toggle Switch -->
+                                            <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" id="talkback-toggle" class="sr-only peer" onchange="toggleTalkBackState()">
+                                                <div class="w-9 h-5 bg-white/15 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-outline after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-secondary peer-checked:after:bg-on-secondary"></div>
+                                            </label>
+                                        </div>
+                                        <p class="text-[11px] text-outline leading-relaxed">Enable system text-to-speech audio feedback. Interactive elements, notifications, and navigation tabs will be read out loud.</p>
+                                    </div>
+                                    <div class="flex items-center gap-1 text-[10px] text-secondary font-mono mt-3 border-t border-white/5 pt-3">
+                                        <span class="material-symbols-outlined text-[14px]">volume_up</span>
+                                        <span id="talkback-status-lbl">Voice assistance is inactive</span>
+                                    </div>
+                                </div>
+
+                                <!-- Logout Session Control -->
+                                <div class="glass p-lg rounded-2xl border border-white/5 space-y-md flex flex-col justify-between">
+                                    <div class="space-y-sm">
+                                        <h4 class="font-semibold text-sm border-b border-white/5 pb-2 text-on-surface">Session Control</h4>
+                                        <p class="text-[11px] text-outline leading-relaxed">Securely terminate your active session on this device. Your cached tokens will be cleared.</p>
+                                    </div>
+                                    <button class="w-full py-2.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1 mt-4" onclick="document.getElementById('logout-btn').click()">
+                                        <span class="material-symbols-outlined text-sm">logout</span>
+                                        Logout of Current Session
+                                    </button>
+                                </div>
                             </div>
                         </div>
 

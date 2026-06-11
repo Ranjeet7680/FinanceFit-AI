@@ -57,6 +57,7 @@ window.addEventListener('DOMContentLoaded', () => {
     loadDashboardKPIs();
     loadDatabasePage(1);
     loadNotifications();
+    loadTalkBackState();
     
     // Setup global company search
     document.getElementById('global-search-input').addEventListener('keypress', (e) => {
@@ -126,6 +127,8 @@ function switchTab(tabKey) {
         'forecast': { btn: 'nav-forecast', view: 'view-forecast', title: 'Future Forecast (Digital Twin)' },
         'settings': { btn: 'nav-settings', view: 'view-settings', title: 'App Settings' }
     };
+    const tabTitle = tabs[tabKey]?.title || tabKey;
+    speak(tabTitle + " view selected");
     
     Object.keys(tabs).forEach(k => {
         const t = tabs[k];
@@ -2422,3 +2425,81 @@ function purgeAccountData() {
         window.location.href = '/login';
     }
 }
+
+// ----------------------------------------------------
+// TalkBack Accessibility Screen Reader System
+// ----------------------------------------------------
+let talkbackEnabled = false;
+
+function toggleTalkBackState() {
+    const toggle = document.getElementById('talkback-toggle');
+    const label = document.getElementById('talkback-status-lbl');
+    if (!toggle) return;
+    
+    talkbackEnabled = toggle.checked;
+    localStorage.setItem('financefit_talkback', talkbackEnabled ? 'true' : 'false');
+    
+    if (talkbackEnabled) {
+        label.textContent = "Voice assistance is active";
+        label.parentElement.className = "flex items-center gap-1 text-[10px] text-secondary font-bold font-mono mt-3 border-t border-white/5 pt-3";
+        speak("Talkback screen reader feedback system enabled.");
+    } else {
+        label.textContent = "Voice assistance is inactive";
+        label.parentElement.className = "flex items-center gap-1 text-[10px] text-secondary font-mono mt-3 border-t border-white/5 pt-3";
+        speak("Talkback screen reader feedback system disabled.");
+    }
+}
+
+function loadTalkBackState() {
+    const toggle = document.getElementById('talkback-toggle');
+    const label = document.getElementById('talkback-status-lbl');
+    if (!toggle) return;
+    
+    talkbackEnabled = localStorage.getItem('financefit_talkback') === 'true';
+    toggle.checked = talkbackEnabled;
+    
+    if (talkbackEnabled) {
+        label.textContent = "Voice assistance is active";
+        label.parentElement.className = "flex items-center gap-1 text-[10px] text-secondary font-bold font-mono mt-3 border-t border-white/5 pt-3";
+    } else {
+        label.textContent = "Voice assistance is inactive";
+        label.parentElement.className = "flex items-center gap-1 text-[10px] text-secondary font-mono mt-3 border-t border-white/5 pt-3";
+    }
+}
+
+function speak(text) {
+    if (!talkbackEnabled) return;
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1.05;
+        utterance.pitch = 1.0;
+        window.speechSynthesis.speak(utterance);
+    }
+}
+
+// Global click event listener for Speech Synthesis feedback
+document.addEventListener('click', (e) => {
+    if (!talkbackEnabled) return;
+    
+    // Find closest interactive element
+    const element = e.target.closest('button, input, select, textarea, [onclick]');
+    if (element) {
+        let text = "";
+        if (element.tagName === 'BUTTON') {
+            text = element.innerText.trim() || element.getAttribute('title') || element.getAttribute('aria-label') || "button";
+        } else if (element.tagName === 'INPUT') {
+            text = "input field " + (element.getAttribute('placeholder') || element.id || "");
+        } else if (element.tagName === 'SELECT') {
+            text = "dropdown selection " + (element.options[element.selectedIndex]?.text || "");
+        } else {
+            text = element.innerText.trim() || "clickable item";
+        }
+        
+        // Clean out icons characters from speech
+        text = text.replace(/[^\x20-\x7E]+/g, '').trim(); // Remove non-ASCII characters
+        if (text) {
+            speak("Activated: " + text);
+        }
+    }
+});
