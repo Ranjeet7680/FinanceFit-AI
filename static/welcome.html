@@ -140,8 +140,8 @@
     </div>
 
     <!-- Navigation -->
-    <nav class="flex justify-between items-center px-margin-desktop py-md w-full sticky top-0 z-50 bg-surface-container/15 backdrop-blur-xl border-b border-white/10 shadow-sm">
-        <div class="font-display-lg text-display-lg font-bold text-primary tracking-tight cursor-pointer" onclick="window.location.href='/'">FinanceFit AI</div>
+    <nav class="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-md w-full sticky top-0 z-50 bg-surface-container/15 backdrop-blur-xl border-b border-white/10 shadow-sm">
+        <div class="font-bold text-primary tracking-tight cursor-pointer text-xl md:text-2xl" onclick="window.location.href='/'">FinanceFit AI</div>
         <div class="hidden md:flex gap-xl items-center">
             <a class="nav-auth-link font-title-md text-title-md text-on-surface-variant hover:text-primary transition-colors px-sm py-xs rounded" href="#">Dashboard</a>
             <a class="nav-auth-link font-title-md text-title-md text-on-surface-variant hover:text-primary transition-colors px-sm py-xs rounded" href="#">Portfolio</a>
@@ -150,11 +150,25 @@
         </div>
         <div class="flex gap-md items-center">
             <!-- Show login/profile button dynamically -->
-            <button id="auth-status-btn" class="font-title-md text-title-md text-on-primary bg-primary hover:bg-primary/90 px-md py-1.5 rounded-full transition-all">
+            <button id="auth-status-btn" class="font-title-md text-title-md text-on-primary bg-primary hover:bg-primary/90 px-md py-1.5 rounded-full transition-all text-xs md:text-sm">
                 Sign In
+            </button>
+            <button id="mobile-landing-toggle-btn" class="md:hidden p-2 hover:bg-white/10 rounded-xl transition-colors text-outline" title="Open Menu">
+                <span class="material-symbols-outlined">menu</span>
             </button>
         </div>
     </nav>
+
+    <!-- Mobile Navigation Drawer for Landing Page -->
+    <div id="mobile-landing-menu" class="fixed inset-0 z-40 bg-[#0b1326]/95 backdrop-blur-xl flex flex-col justify-center items-center gap-xl transition-transform duration-300 transform -translate-y-full md:hidden">
+        <button id="mobile-landing-close-btn" class="absolute top-6 right-6 p-2 hover:bg-white/10 rounded-full transition-colors text-outline" title="Close Menu">
+            <span class="material-symbols-outlined text-2xl">close</span>
+        </button>
+        <a class="nav-auth-link text-xl text-on-surface hover:text-primary transition-colors" href="#">Dashboard</a>
+        <a class="nav-auth-link text-xl text-on-surface hover:text-primary transition-colors" href="#">Portfolio</a>
+        <a class="nav-auth-link text-xl text-on-surface hover:text-primary transition-colors" href="#">AI Insights</a>
+        <a class="nav-auth-link text-xl text-on-surface hover:text-primary transition-colors" href="#">Markets</a>
+    </div>
 
     <main class="relative min-h-screen">
         <!-- Shader Background -->
@@ -673,6 +687,31 @@
             requestAnimationFrame(animate);
         }
         animate();
+
+        // Mobile menu drawer toggle logic
+        const landingToggle = document.getElementById('mobile-landing-toggle-btn');
+        const landingClose = document.getElementById('mobile-landing-close-btn');
+        const landingMenu = document.getElementById('mobile-landing-menu');
+        
+        if (landingToggle && landingMenu) {
+            landingToggle.addEventListener('click', () => {
+                landingMenu.classList.remove('-translate-y-full');
+                landingMenu.classList.add('translate-y-0');
+            });
+            if (landingClose) {
+                landingClose.addEventListener('click', () => {
+                    landingMenu.classList.remove('translate-y-0');
+                    landingMenu.classList.add('-translate-y-full');
+                });
+            }
+            // Close landing menu when auth link triggers redirect
+            landingMenu.querySelectorAll('.nav-auth-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    landingMenu.classList.remove('translate-y-0');
+                    landingMenu.classList.add('-translate-y-full');
+                });
+            });
+        }
     </script>
 </body>
 </html>

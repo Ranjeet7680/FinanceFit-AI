@@ -20,3 +20,5 @@ ml_models.pkl
 # IDEs
 .vscode/
 .idea/
+
+.vercel

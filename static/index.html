@@ -206,11 +206,19 @@
         <div class="aurora-blob aurora-2"></div>
     </div>
 
+    <!-- Mobile Sidebar Overlay -->
+    <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden md:hidden transition-opacity duration-300 opacity-0 pointer-events-none"></div>
+
     <!-- SideNavBar -->
-    <aside class="fixed left-0 top-0 flex flex-col h-full py-xl px-md z-40 bg-surface-container-low/30 backdrop-blur-2xl border-r border-white/5 h-screen w-64 hidden md:flex">
-        <div class="mb-xl px-sm">
-            <h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">FinanceFit AI</h1>
-            <p id="user-tier-label" class="font-label-sm text-label-sm text-outline opacity-70">Elite Tier</p>
+    <aside id="sidebar-menu" class="fixed left-0 top-0 flex flex-col h-full py-xl px-md z-50 bg-surface-container-low/95 md:bg-surface-container-low/30 backdrop-blur-2xl border-r border-white/5 h-screen w-64 transition-transform duration-300 transform -translate-x-full md:translate-x-0 md:flex">
+        <div class="mb-xl px-sm flex items-center justify-between">
+            <div>
+                <h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">FinanceFit AI</h1>
+                <p id="user-tier-label" class="font-label-sm text-label-sm text-outline opacity-70">Elite Tier</p>
+            </div>
+            <button id="mobile-menu-close-btn" class="md:hidden p-2 hover:bg-white/10 rounded-full transition-colors text-outline" title="Close Menu">
+                <span class="material-symbols-outlined text-lg">close</span>
+            </button>
         </div>
         <nav class="flex-1 space-y-4 custom-scrollbar overflow-y-auto pr-1">
             <div>
@@ -234,6 +242,10 @@
                     <button id="nav-investments" class="w-full flex items-center gap-3 px-sm py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-xl transition-all duration-200 text-left">
                         <span class="material-symbols-outlined text-[18px]" data-icon="trending_up">trending_up</span>
                         <span class="font-label-sm text-label-sm">Investments</span>
+                    </button>
+                    <button id="nav-database" class="w-full flex items-center gap-3 px-sm py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-xl transition-all duration-200 text-left">
+                        <span class="material-symbols-outlined text-[18px]" data-icon="database">database</span>
+                        <span class="font-label-sm text-label-sm">Corporate Explorer</span>
                     </button>
                     <button id="nav-portfolio" class="w-full flex items-center gap-3 px-sm py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-xl transition-all duration-200 text-left">
                         <span class="material-symbols-outlined text-[18px]" data-icon="account_balance_wallet">account_balance_wallet</span>
@@ -310,7 +322,11 @@
     <main class="flex-1 flex flex-col relative md:ml-64 overflow-hidden h-screen">
         <!-- TopAppBar -->
         <header class="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-md w-full sticky top-0 z-50 bg-surface-container/15 backdrop-blur-xl border-b border-white/10 shadow-sm">
-            <div class="flex items-center gap-xl">
+            <div class="flex items-center gap-md md:gap-xl">
+                <!-- Hamburger menu button for mobile -->
+                <button id="mobile-menu-toggle-btn" class="md:hidden p-2 hover:bg-white/10 rounded-xl transition-colors text-on-surface-variant flex items-center justify-center" title="Open Menu">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
                 <h2 id="view-title" class="font-title-md text-title-md text-primary">AI Financial Coach</h2>
                 <div class="hidden lg:flex items-center gap-gutter">
                     <span class="font-label-sm text-label-sm text-outline flex items-center gap-1">
@@ -435,8 +451,12 @@
             
             <!-- SECTION 2: General Dashboard Analytics -->
             <div id="view-dashboard" class="hidden space-y-lg max-w-7xl mx-auto">
+                <div class="mb-md">
+                    <h3 id="welcome-message" class="font-headline-lg text-headline-lg text-on-surface">Good morning, Alex</h3>
+                    <p class="text-xs text-outline">Here is your executive financial twin summary for today.</p>
+                </div>
                 <!-- Top Row: Core Financial KPIs -->
-                <div class="grid grid-cols-1 sm:grid-cols-5 gap-md">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-md">
                     <!-- Net Worth Card -->
                     <div class="glass p-md rounded-2xl tilt-card border border-white/5 flex flex-col justify-between">
                         <div>
@@ -662,7 +682,7 @@
                 <p class="text-on-surface-variant -mt-4 text-sm">Query over 288,000 corporate financial reporting rows containing credit status and default probabilities.</p>
                 
                 <!-- Filter Grid -->
-                <div class="glass p-lg rounded-xl grid grid-cols-1 sm:grid-cols-5 gap-md items-end">
+                <div class="glass p-lg rounded-xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-md items-end">
                     <div>
                         <label class="block text-xs font-semibold text-outline mb-2 uppercase" for="db-search">Search ID</label>
                         <input id="db-search" class="w-full bg-white/5 border border-white/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary/50 text-on-surface" placeholder="e.g. CORP-000001" type="text"/>
@@ -1419,16 +1439,44 @@
             <div id="view-settings" class="hidden space-y-lg max-w-5xl mx-auto">
                 <div class="mb-md">
                     <h3 class="font-headline-lg text-headline-lg text-on-surface">App Settings</h3>
-                    <p class="text-xs text-outline">Configure account parameters and test billing tiers.</p>
+                    <p class="text-xs text-outline">Configure account parameters, user profile, and test billing tiers.</p>
                 </div>
                 
-                <div class="glass p-lg rounded-2xl border border-white/5 max-w-md space-y-md">
-                    <h4 class="font-semibold text-sm border-b border-white/5 pb-2">Tier Management</h4>
-                    <div class="flex justify-between items-center text-xs">
-                        <span>Current Active Account Class:</span>
-                        <span id="settings-tier-lbl" class="font-bold text-secondary">Elite Tier</span>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+                    <!-- Profile Management -->
+                    <div class="glass p-lg rounded-2xl border border-white/5 space-y-md">
+                        <h4 class="font-semibold text-sm border-b border-white/5 pb-2">User Profile</h4>
+                        <div class="space-y-sm text-xs">
+                            <div class="space-y-xs">
+                                <label class="text-[10px] uppercase font-bold text-outline">Full Name</label>
+                                <input type="text" id="settings-username" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-on-surface focus:outline-none focus:border-primary" placeholder="Alex Sterling"/>
+                            </div>
+                            <div class="space-y-xs">
+                                <label class="text-[10px] uppercase font-bold text-outline">Email Address</label>
+                                <input type="email" id="settings-email" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-on-surface focus:outline-none focus:border-primary" placeholder="alex@sterling.com"/>
+                            </div>
+                            <button class="w-full py-2.5 bg-primary text-on-primary font-bold text-xs rounded-lg hover:shadow-[0_0_15px_rgba(183,196,255,0.3)] transition-all" onclick="saveProfileSettings()">Save Profile Settings</button>
+                        </div>
                     </div>
-                    <button class="w-full py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold rounded" onclick="resetTier()">Reset Account Tier (Demo Test)</button>
+
+                    <!-- Tier & App Preferences -->
+                    <div class="glass p-lg rounded-2xl border border-white/5 space-y-md">
+                        <h4 class="font-semibold text-sm border-b border-white/5 pb-2">Account & Preferences</h4>
+                        <div class="space-y-md text-xs">
+                            <div class="flex justify-between items-center">
+                                <span class="text-outline">Active Account Class:</span>
+                                <span id="settings-tier-lbl" class="font-bold text-secondary">Elite Tier</span>
+                            </div>
+                            <div class="space-y-xs">
+                                <label class="text-[10px] uppercase font-bold text-outline">AI Coach Model Engine</label>
+                                <select id="settings-ai-model" class="w-full bg-surface border border-white/10 rounded-lg px-3 py-2 text-on-surface focus:outline-none focus:border-primary">
+                                    <option value="gemini-3.5-flash">Gemini 3.5 Flash (Default)</option>
+                                    <option value="gemini-3.5-pro">Gemini 3.5 Pro (Deep Coach)</option>
+                                </select>
+                            </div>
+                            <button class="w-full py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold rounded-lg transition-all" onclick="resetTier()">Reset Account Tier (Demo Test)</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 

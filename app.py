@@ -12,9 +12,14 @@ import numpy as np
 
 import db
 
-# Initialize database on startup just in case
-db.init_db()
-model_data = db.train_models()
+# Initialize database on startup just in case (skip on Vercel)
+if not os.environ.get("VERCEL"):
+    db.init_db()
+    model_data = db.train_models()
+else:
+    # Load pre-trained models on Vercel since database and model are already generated
+    with open(db.MODEL_PATH, "rb") as f:
+        model_data = pickle.load(f)
 
 app = FastAPI(
     title="FinanceFit AI API",
@@ -413,9 +418,10 @@ def chat_with_coach(req: ChatRequest):
 
 # Setup static folders
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
-os.makedirs(STATIC_DIR, exist_ok=True)
-os.makedirs(os.path.join(STATIC_DIR, "js"), exist_ok=True)
-os.makedirs(os.path.join(STATIC_DIR, "css"), exist_ok=True)
+if not os.environ.get("VERCEL"):
+    os.makedirs(STATIC_DIR, exist_ok=True)
+    os.makedirs(os.path.join(STATIC_DIR, "js"), exist_ok=True)
+    os.makedirs(os.path.join(STATIC_DIR, "css"), exist_ok=True)
 
 # Mount files
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")

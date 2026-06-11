@@ -48,6 +48,7 @@ window.addEventListener('DOMContentLoaded', () => {
     setupUpgrade();
     setupVoiceCopilot();
     setupDropzone();
+    setupMobileMenu();
     
     // Load initial data for Dashboard and Database
     loadFilters();
@@ -82,6 +83,7 @@ function setupNavigation() {
         'health': { btn: 'nav-health', view: 'view-health', title: 'Financial Health Status' },
         'budget': { btn: 'nav-budget', view: 'view-budget', title: 'Budget Allocation Planner' },
         'investments': { btn: 'nav-investments', view: 'view-investments', title: 'Active Portfolio & Alerts' },
+        'database': { btn: 'nav-database', view: 'view-database', title: 'Corporate Explorer' },
         'portfolio': { btn: 'nav-portfolio', view: 'view-portfolio', title: 'Portfolio Optimizer 2.0' },
         'simulator': { btn: 'nav-simulator', view: 'view-simulator', title: 'AI Risk Simulator & Heatmap' },
         'goals': { btn: 'nav-goals', view: 'view-goals', title: 'Smart Goal Tracker' },
@@ -111,6 +113,7 @@ function switchTab(tabKey) {
         'health': { btn: 'nav-health', view: 'view-health', title: 'Financial Health Status' },
         'budget': { btn: 'nav-budget', view: 'view-budget', title: 'Budget Allocation Planner' },
         'investments': { btn: 'nav-investments', view: 'view-investments', title: 'Active Portfolio & Alerts' },
+        'database': { btn: 'nav-database', view: 'view-database', title: 'Corporate Explorer' },
         'portfolio': { btn: 'nav-portfolio', view: 'view-portfolio', title: 'Portfolio Optimizer 2.0' },
         'simulator': { btn: 'nav-simulator', view: 'view-simulator', title: 'AI Risk Simulator & Heatmap' },
         'goals': { btn: 'nav-goals', view: 'view-goals', title: 'Smart Goal Tracker' },
@@ -153,6 +156,14 @@ function switchTab(tabKey) {
         adjustBudget();
     } else if (tabKey === 'tax') {
         calculateTax();
+    } else if (tabKey === 'settings') {
+        const userJson = localStorage.getItem('financefit_user');
+        if (userJson) {
+            const user = JSON.parse(userJson);
+            document.getElementById('settings-tier-lbl').textContent = user.tier;
+            document.getElementById('settings-username').value = user.name || '';
+            document.getElementById('settings-email').value = user.email || '';
+        }
     }
     
     // Scroll view to top
@@ -1680,4 +1691,75 @@ function resetTier() {
         
         alert("Tier reset to Standard. You can now re-test the Pro upgrade flow.");
     }
+}
+
+function saveProfileSettings() {
+    const nameInput = document.getElementById('settings-username').value.trim();
+    const emailInput = document.getElementById('settings-email').value.trim();
+    
+    if (!nameInput || !emailInput) {
+        alert("Please fill in all profile fields.");
+        return;
+    }
+    
+    const userJson = localStorage.getItem('financefit_user');
+    if (userJson) {
+        const user = JSON.parse(userJson);
+        user.name = nameInput;
+        user.email = emailInput;
+        localStorage.setItem('financefit_user', JSON.stringify(user));
+        
+        // Update user presentation layers dynamically
+        document.getElementById('user-name-label').textContent = user.name;
+        
+        const welcomeEl = document.getElementById('welcome-message');
+        if (welcomeEl) {
+            welcomeEl.textContent = `Good morning, ${user.name.split(' ')[0]}.`;
+        }
+        
+        alert("Profile settings saved successfully!");
+    }
+}
+
+// Responsive Mobile Navigation Sidebar
+function setupMobileMenu() {
+    const sidebar = document.getElementById('sidebar-menu');
+    const overlay = document.getElementById('mobile-sidebar-overlay');
+    const toggleBtn = document.getElementById('mobile-menu-toggle-btn');
+    const closeBtn = document.getElementById('mobile-menu-close-btn');
+    
+    if (!sidebar || !overlay || !toggleBtn) return;
+    
+    function openMenu() {
+        sidebar.classList.remove('-translate-x-full');
+        sidebar.classList.add('translate-x-0');
+        overlay.classList.remove('hidden', 'pointer-events-none', 'opacity-0');
+        overlay.classList.add('opacity-100');
+    }
+    
+    function closeMenu() {
+        sidebar.classList.remove('translate-x-0');
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.remove('opacity-100');
+        overlay.classList.add('opacity-0', 'pointer-events-none');
+        setTimeout(() => {
+            if (sidebar.classList.contains('-translate-x-full')) {
+                overlay.classList.add('hidden');
+            }
+        }, 300);
+    }
+    
+    toggleBtn.addEventListener('click', openMenu);
+    if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+    overlay.addEventListener('click', closeMenu);
+    
+    // Auto-close sidebar on mobile menu selection
+    const navButtons = sidebar.querySelectorAll('nav button, nav a');
+    navButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (window.innerWidth < 768) {
+                closeMenu();
+            }
+        });
+    });
 }
