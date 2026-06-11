@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>FinanceFit AI | AI Financial Coach</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Geist:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                      "inverse-primary": "#004ced",
+                      "error-container": "#93000a",
+                      "surface-tint": "#b7c4ff",
+                      "outline-variant": "#434656",
+                      "inverse-on-surface": "#283044",
+                      "secondary-container": "#00d294",
+                      "tertiary": "#c0c1ff",
+                      "surface-bright": "#31394d",
+                      "on-primary-container": "#dfe3ff",
+                      "secondary": "#43efae",
+                      "on-tertiary": "#1000a9",
+                      "surface-container-low": "#131b2e",
+                      "outline": "#8d90a2",
+                      "on-error-container": "#ffdad6",
+                      "tertiary-fixed-dim": "#c0c1ff",
+                      "on-tertiary-fixed-variant": "#2f2ebe",
+                      "on-error": "#690005",
+                      "tertiary-container": "#5153de",
+                      "surface-container": "#171f33",
+                      "on-primary-fixed": "#001452",
+                      "surface-container-lowest": "#060e20",
+                      "primary": "#b7c4ff",
+                      "primary-container": "#0052ff",
+                      "on-primary-fixed-variant": "#0038b6",
+                      "on-secondary-container": "#005439",
+                      "surface": "#0b1326",
+                      "on-surface-variant": "#c3c5d9",
+                      "error": "#ffb4ab",
+                      "surface-container-highest": "#2d3449",
+                      "on-secondary-fixed": "#002114",
+                      "primary-fixed-dim": "#b7c4ff",
+                      "on-tertiary-fixed": "#07006c",
+                      "on-primary": "#002682",
+                      "on-background": "#dae2fd",
+                      "tertiary-fixed": "#e1e0ff",
+                      "surface-container-high": "#222a3d",
+                      "on-secondary-fixed-variant": "#005137",
+                      "on-secondary": "#003825",
+                      "surface-dim": "#0b1326",
+                      "secondary-fixed": "#56febc",
+                      "inverse-surface": "#dae2fd",
+                      "surface-variant": "#2d3449",
+                      "background": "#0b1326",
+                      "on-surface": "#dae2fd",
+                      "primary-fixed": "#dde1ff",
+                      "secondary-fixed-dim": "#2be1a1",
+                      "on-tertiary-container": "#e3e2ff"
+              },
+              borderRadius: {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              spacing: {
+                      "md": "16px",
+                      "margin-desktop": "48px",
+                      "sm": "8px",
+                      "lg": "24px",
+                      "xs": "4px",
+                      "xl": "32px",
+                      "base": "4px",
+                      "margin-mobile": "16px",
+                      "gutter": "24px"
+              },
+              fontFamily: {
+                      "title-md": ["Inter"],
+                      "label-sm": ["Geist"],
+                      "headline-lg-mobile": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "body-md": ["Inter"]
+              },
+              fontSize: {
+                      "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "500"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "display-lg": ["56px", {"lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+    <style>
+        .glass {
+            background: rgba(23, 31, 51, 0.2);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-darker {
+            background: rgba(11, 19, 38, 0.55);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .ai-gradient-border {
+            position: relative;
+            background: rgba(19, 27, 46, 0.85);
+            border-radius: 1rem;
+            z-index: 1;
+        }
+        .ai-gradient-border::before {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            border-radius: 1.1rem;
+            padding: 1px;
+            background: linear-gradient(to bottom right, #43efae, #0052ff);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+
+        /* Hackathon Premium Aurora and Tilt styles */
+        @keyframes aurora-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .aurora-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -30;
+            overflow: hidden;
+            background: #0b1326;
+        }
+        .aurora-blob {
+            position: absolute;
+            width: 80vw;
+            height: 80vw;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.12;
+            mix-blend-mode: screen;
+            animation: aurora-spin 20s linear infinite;
+        }
+        .aurora-1 {
+            background: #0052ff;
+            top: -20%;
+            left: -20%;
+        }
+        .aurora-2 {
+            background: #43efae;
+            bottom: -20%;
+            right: -20%;
+            animation-duration: 25s;
+            animation-direction: reverse;
+        }
+        .tilt-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            transform-style: preserve-3d;
+        }
+        .tilt-card:hover {
+            transform: perspective(1000px) translateY(-5px) rotateX(1.5deg) rotateY(1.5deg);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(67, 239, 174, 0.1);
+            border-color: rgba(255,255,255,0.15);
+        }
+        
+        /* Pulse wave animation for Voice Avatar */
+        @keyframes wave-bounce {
+            0%, 100% { height: 4px; }
+            50% { height: 28px; }
+        }
+        .avatar-wave-bar {
+            width: 3px;
+            background: #43efae;
+            border-radius: 3px;
+            animation: wave-bounce 1s ease-in-out infinite;
+        }
+        .avatar-wave-bar:nth-child(2) { animation-delay: 0.1s; }
+        .avatar-wave-bar:nth-child(3) { animation-delay: 0.25s; }
+        .avatar-wave-bar:nth-child(4) { animation-delay: 0.15s; }
+        .avatar-wave-bar:nth-child(5) { animation-delay: 0.3s; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary/30 min-h-screen flex overflow-hidden">
+    
+    <!-- WebGL Canvas Shader Background & Aurora Gradients -->
+    <div class="fixed inset-0 w-full h-full -z-20">
+        <canvas id="dashboard-shader-canvas" class="w-full h-full block"></canvas>
+    </div>
+    <div class="aurora-bg">
+        <div class="aurora-blob aurora-1"></div>
+        <div class="aurora-blob aurora-2"></div>
+    </div>
+
+    <!-- SideNavBar -->
+    <aside class="fixed left-0 top-0 flex flex-col h-full py-xl px-md z-40 bg-surface-container-low/30 backdrop-blur-2xl border-r border-white/5 h-screen w-64 hidden md:flex">
+        <div class="mb-xl px-sm">
+            <h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">FinanceFit AI</h1>
+            <p id="user-tier-label" class="font-label-sm text-label-sm text-outline opacity-70">Elite Tier</p>
+        </div>
+        <nav class="flex-1 space-y-4 custom-scrollbar overflow-y-auto pr-1">
+            <div>
+                <div class="mt-2 space-y-0.5">
+                    <button id="nav-dashboard" class="w-full flex items-center gap-3 px-sm py-2 text-secondary-fixed bg-secondary-container/20 rounded-xl transition-all duration-200 text-left">
+                        <span class="material-symbols-outlined text-[18px]" data-icon="dashboard">dashboard</span>
+                        <span class="font-label-sm text-label-sm">Dashboard</span>
+                    </button>
+                    <button id="nav-chat" class="w-full flex items-center gap-3 px-sm py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-xl transition-all duration-200 text-left">
+                        <span class="material-symbols-outlined text-[18px]" data-icon="auto_awesome">auto_awesome</span>
+                        <span class="font-label-sm text-label-sm">AI Coach</span>
+                    </button>
+                    <button id="nav-health" class="w-full flex items-center gap-3 px-sm py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-xl transition-all duration-200 text-left">
+                        <span class="material-symbols-outlined text-[18px]" data-icon="insights">insights</span>
+                        <span class="font-label-sm text-label-sm">Financial Health</span>
+                    </button>
+                    <button id="nav-budget" class="w-full flex items-center gap-3 px-sm py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-xl transition-all duration-200 text-left">
+                        <span class="material-symbols-outlined text-[18px]" data-icon="payments">payments</span>
+                        <span class="font-label-sm text-label-sm">Budget Planner</span>
+                    </button>
+                    <button id="nav-investments" class="w-full flex items-center gap-3 px-sm py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-xl transition-all duration-200 text-left">
+                        <span class="material-symbols-outlined text-[18px]" data-icon="trending_up">trending_up</span>
+                        <span class="font-label-sm text-label-sm">Investments</span>
+                    </button>
+                    <button id="nav-portfolio" class="w-full flex items-center gap-3 px-sm py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-xl transition-all duration-200 text-left">
+                        <span class="material-symbols-outlined text-[18px]" data-icon="account_balance_wallet">account_balance_wallet</span>
+                        <span class="font-label-sm text-label-sm">Portfolio Optimizer</span>
+                    </button>
+                    <button id="nav-simulator" class="w-full flex items-center gap-3 px-sm py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-xl transition-all duration-200 text-left">
+                        <span class="material-symbols-outlined text-[18px]" data-icon="query_stats">query_stats</span>
+                        <span class="font-label-sm text-label-sm">Risk Simulator</span>
+                    </button>
+                    <button id="nav-goals" class="w-full flex items-center gap-3 px-sm py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-xl transition-all duration-200 text-left">
+                        <span class="material-symbols-outlined text-[18px]" data-icon="track_changes">track_changes</span>
+                        <span class="font-label-sm text-label-sm">Goals</span>
+                    </button>
+                    <button id="nav-tax" class="w-full flex items-center gap-3 px-sm py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-xl transition-all duration-200 text-left">
+                        <span class="material-symbols-outlined text-[18px]" data-icon="receipt_long">receipt_long</span>
+                        <span class="font-label-sm text-label-sm">Tax Center</span>
+                    </button>
+                    <button id="nav-credit" class="w-full flex items-center gap-3 px-sm py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-xl transition-all duration-200 text-left">
+                        <span class="material-symbols-outlined text-[18px]" data-icon="credit_card">credit_card</span>
+                        <span class="font-label-sm text-label-sm">Credit Insights</span>
+                    </button>
+                    <button id="nav-insurance" class="w-full flex items-center gap-3 px-sm py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-xl transition-all duration-200 text-left">
+                        <span class="material-symbols-outlined text-[18px]" data-icon="shield">shield</span>
+                        <span class="font-label-sm text-label-sm">Insurance</span>
+                    </button>
+                    <button id="nav-forecast" class="w-full flex items-center gap-3 px-sm py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-xl transition-all duration-200 text-left">
+                        <span class="material-symbols-outlined text-[18px]" data-icon="online_prediction">online_prediction</span>
+                        <span class="font-label-sm text-label-sm">Future Forecast</span>
+                    </button>
+                    <button id="nav-settings" class="w-full flex items-center gap-3 px-sm py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-xl transition-all duration-200 text-left">
+                        <span class="material-symbols-outlined text-[18px]" data-icon="settings">settings</span>
+                        <span class="font-label-sm text-label-sm">Settings</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div>
+                <span class="px-sm text-[10px] uppercase tracking-widest text-outline font-bold">Recent Coaching</span>
+                <div class="mt-2 space-y-1">
+                    <button class="coaching-shortcut w-full text-left group flex items-center justify-between px-sm py-2 text-on-surface-variant hover:text-on-surface transition-colors rounded-lg text-xs" data-prompt="Analyze risk mitigation and savings options for retirement planning">
+                        <span class="truncate">Retirement Planning</span>
+                        <span class="material-symbols-outlined text-xs opacity-0 group-hover:opacity-100">more_horiz</span>
+                    </button>
+                    <button class="coaching-shortcut w-full text-left group flex items-center justify-between px-sm py-2 text-on-surface-variant hover:text-on-surface transition-colors rounded-lg text-xs" data-prompt="Analyze tax optimization harvesting strategies for standard corp portfolios">
+                        <span class="truncate">Tax Optimization</span>
+                        <span class="material-symbols-outlined text-xs opacity-0 group-hover:opacity-100">more_horiz</span>
+                    </button>
+                    <button class="coaching-shortcut w-full text-left group flex items-center justify-between px-sm py-2 text-on-surface-variant hover:text-on-surface transition-colors rounded-lg text-xs" data-prompt="Analyze default probability and crypto risk factors in tech sector">
+                        <span class="truncate">Crypto Risk Analysis</span>
+                        <span class="material-symbols-outlined text-xs opacity-0 group-hover:opacity-100">more_horiz</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="mt-auto pt-lg border-t border-white/5" id="upgrade-pro-container">
+            <button id="upgrade-pro-btn" class="w-full py-md px-lg bg-primary text-on-primary rounded-full font-title-md text-[14px] hover:shadow-[0_0_20px_rgba(183,196,255,0.4)] transition-all">
+                Upgrade to Pro
+            </button>
+            <div class="flex items-center gap-3 mt-xl px-sm">
+                <img alt="User Profile" class="w-8 h-8 rounded-full bg-surface-container-highest" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBq9SmkzfNsyxewpJLGWx32_BD4n-fVyAsRNOniAh4cTZY9Kt9Nzo59WF7-HRHutlvSP1J-t4DaUjJR-ZjaX9f1H0n0t3u2QePVBU6YIY5qWJg2l0HxyFVDNH_XivH2D9uwBeh4L2s2T6QWroev2zffwhvobRpFV360c5oaDlLUR1qd5QoGIJnPx4Lex1uL2Zz_WiExDBpIAAtIxD92eLC551FcffQFog6VHSJfzrvL1VWpgZKbz0jm4wMGoLMsjjvFgRSsySekDAY"/>
+                <div class="flex flex-col">
+                    <span id="user-name-label" class="text-xs font-bold text-on-surface">Alex Sterling</span>
+                    <span class="text-[10px] text-outline">Institutional Access</span>
+                </div>
+                <button id="logout-btn" class="ml-auto text-outline hover:text-red-400" title="Logout">
+                    <span class="material-symbols-outlined text-sm">logout</span>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col relative md:ml-64 overflow-hidden h-screen">
+        <!-- TopAppBar -->
+        <header class="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-md w-full sticky top-0 z-50 bg-surface-container/15 backdrop-blur-xl border-b border-white/10 shadow-sm">
+            <div class="flex items-center gap-xl">
+                <h2 id="view-title" class="font-title-md text-title-md text-primary">AI Financial Coach</h2>
+                <div class="hidden lg:flex items-center gap-gutter">
+                    <span class="font-label-sm text-label-sm text-outline flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+                        Institutional Grade Intelligence
+                    </span>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-md">
+                <!-- Search bar for companies (shortcut to database explorer) -->
+                <div class="relative hidden sm:block">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline text-lg">search</span>
+                    <input id="global-search-input" class="bg-white/5 border border-white/10 rounded-full py-1.5 pl-10 pr-4 text-sm focus:outline-none focus:border-primary/50 transition-all w-48 lg:w-64 text-on-surface" placeholder="Search companies..." type="text"/>
+                </div>
+                
+                <button class="p-2 hover:bg-white/10 rounded-full transition-colors text-on-surface-variant relative">
+                    <span class="material-symbols-outlined">notifications</span>
+                    <span class="absolute top-1 right-1 w-2 h-2 bg-secondary rounded-full"></span>
+                </button>
+                <button id="profile-btn" class="p-2 hover:bg-white/10 rounded-full transition-colors text-on-surface-variant">
+                    <span class="material-symbols-outlined">account_circle</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Dynamic Content Window Container -->
+        <div id="content-scroller" class="flex-1 overflow-y-auto p-margin-mobile md:p-margin-desktop custom-scrollbar pb-32">
+            
+            <!-- SECTION 1: AI Insights (Chat Window) -->
+            <div id="view-view-chat" class="space-y-md max-w-4xl mx-auto">
+                <!-- AI Coach Avatar and Interactive Status -->
+                <div class="flex items-center justify-between bg-white/5 border border-white/10 p-md rounded-2xl">
+                    <div class="flex items-center gap-md">
+                        <!-- Hologram Glowing Circle -->
+                        <div class="relative w-12 h-12 rounded-full bg-secondary-container/20 flex items-center justify-center border border-secondary/35 shadow-[0_0_15px_rgba(86,254,188,0.2)]">
+                            <span class="material-symbols-outlined text-secondary text-2xl" id="avatar-icon" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                            <!-- Animated Wave Bars inside avatar -->
+                            <div class="absolute inset-0 flex items-center justify-center gap-[2px] opacity-0 transition-opacity" id="avatar-waves">
+                                <div class="avatar-wave-bar"></div>
+                                <div class="avatar-wave-bar"></div>
+                                <div class="avatar-wave-bar"></div>
+                                <div class="avatar-wave-bar"></div>
+                                <div class="avatar-wave-bar"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-on-surface">Financial Twin Coach</h4>
+                            <span class="text-[10px] text-secondary font-mono flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 bg-secondary rounded-full animate-ping"></span>
+                                Standing By • Voice Mode Available
+                            </span>
+                        </div>
+                    </div>
+                    <!-- Audio Speak Response toggle -->
+                    <button id="toggle-voice-out-btn" class="p-2 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 text-outline hover:text-secondary flex items-center gap-sm transition-all text-xs" title="Toggle audio response speak out loud">
+                        <span class="material-symbols-outlined text-sm">volume_up</span>
+                        <span>TTS Active</span>
+                    </button>
+                </div>
+
+                <!-- Drag and Drop Statement Parser sandbox -->
+                <div id="statement-dropzone" class="border-2 border-dashed border-white/10 bg-white/5 rounded-2xl p-lg text-center cursor-pointer hover:border-secondary/30 hover:bg-secondary/5 transition-all duration-300">
+                    <input type="file" id="file-statement-input" class="hidden" accept=".pdf, .csv, .txt"/>
+                    <span class="material-symbols-outlined text-outline text-3xl mb-sm" id="dropzone-icon">upload_file</span>
+                    <h5 class="text-xs font-semibold text-on-surface" id="dropzone-title">Upload Statement or PDF Report</h5>
+                    <p class="text-[10px] text-outline mt-1 max-w-sm mx-auto" id="dropzone-desc">Drop your bank statement (SBI, HDFC) or portfolio reports here to run AI transaction audits.</p>
+                </div>
+
+                <!-- Chat Message Stream -->
+                <div id="chat-stream" class="space-y-lg min-h-[180px] mb-8 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
+                    <!-- Default Welcome Dialogue -->
+                    <div class="flex justify-start gap-md">
+                        <div class="w-10 h-10 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center border border-primary/30">
+                            <span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                        </div>
+                        <div class="flex flex-col items-start max-w-[80%] space-y-md">
+                            <div class="glass-darker px-lg py-md rounded-2xl rounded-tl-none text-on-surface leading-relaxed text-xs">
+                                Hello. I am your FinanceFit AI coach. I have indexed the entire dataset containing 288,131 financial records across 28,000 global entities. You can ask me to:
+                                <ul class="list-disc list-inside mt-2 space-y-1 text-[11px] text-outline">
+                                    <li>"Analyze risk exposure on my tech stocks"</li>
+                                    <li>"Predict my net worth in 2030"</li>
+                                    <li>"Show profile for CORP-000001"</li>
+                                    <li>"Suggest savings plan for ₹10,000"</li>
+                                </ul>
+                            </div>
+                            <span class="text-[10px] text-outline px-2">System Active</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input Fixed Container (Simulated floating) -->
+                <div class="fixed bottom-0 left-0 right-0 md:left-64 p-lg md:p-xl bg-gradient-to-t from-background via-background/95 to-transparent pointer-events-none z-30">
+                    <div class="max-w-4xl mx-auto pointer-events-auto">
+                        <!-- Suggested Prompts -->
+                        <div class="flex gap-sm mb-md overflow-x-auto custom-scrollbar pb-2 no-scrollbar">
+                            <button class="suggested-prompt whitespace-nowrap px-md py-2 glass-darker rounded-full text-xs hover:bg-white/10 border border-white/5 text-on-surface-variant transition-all">How can I save ₹10,000 this month?</button>
+                            <button class="suggested-prompt whitespace-nowrap px-md py-2 glass-darker rounded-full text-xs hover:bg-white/10 border border-white/5 text-on-surface-variant transition-all">Predict my net worth in 2030</button>
+                            <button class="suggested-prompt whitespace-nowrap px-md py-2 glass-darker rounded-full text-xs hover:bg-white/10 border border-white/5 text-on-surface-variant transition-all">Analyze tech sector risk exposure</button>
+                        </div>
+                        
+                        <!-- Input Box -->
+                        <div class="ai-gradient-border p-1">
+                            <div class="bg-surface-container-highest/60 backdrop-blur-xl rounded-[14px] flex items-center px-lg py-2 gap-md group">
+                                <button class="p-2 text-outline hover:text-primary transition-colors" onclick="document.getElementById('file-statement-input').click()">
+                                    <span class="material-symbols-outlined">attach_file</span>
+                                </button>
+                                <input id="chat-input" class="flex-1 bg-transparent border-none focus:ring-0 text-on-surface font-body-md placeholder:text-outline/50 py-3" placeholder="Ask your institutional coach anything..." type="text"/>
+                                <div class="flex items-center gap-2">
+                                    <button id="mic-chat-btn" class="w-10 h-10 flex items-center justify-center text-secondary hover:bg-secondary/10 rounded-full transition-colors relative" title="Simulate voice input">
+                                        <span class="material-symbols-outlined">mic</span>
+                                    </button>
+                                    <button id="send-chat-btn" class="w-10 h-10 flex items-center justify-center bg-primary text-on-primary rounded-xl hover:shadow-[0_0_15px_rgba(183,196,255,0.4)] transition-all">
+                                        <span class="material-symbols-outlined">send</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SECTION 2: General Dashboard Analytics -->
+            <div id="view-dashboard" class="hidden space-y-lg max-w-7xl mx-auto">
+                <!-- Top Row: Core Financial KPIs -->
+                <div class="grid grid-cols-1 sm:grid-cols-5 gap-md">
+                    <!-- Net Worth Card -->
+                    <div class="glass p-md rounded-2xl tilt-card border border-white/5 flex flex-col justify-between">
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-outline tracking-wider">Net Worth</span>
+                            <div class="text-xl font-extrabold text-on-surface mt-1 flex items-baseline">
+                                <span>₹</span><span class="count-up" id="kpi-net-worth">25,40,000</span>
+                            </div>
+                        </div>
+                        <span class="text-[10px] text-secondary font-semibold flex items-center mt-2">
+                            <span class="material-symbols-outlined text-[12px] mr-0.5">trending_up</span>+1.2% Today
+                        </span>
+                    </div>
+
+                    <!-- Cash Flow Card -->
+                    <div class="glass p-md rounded-2xl tilt-card border border-white/5 flex flex-col justify-between">
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-outline tracking-wider">Monthly Cash Flow</span>
+                            <div class="text-xl font-extrabold text-secondary mt-1">
+                                +₹<span class="count-up">1,45,000</span>
+                            </div>
+                        </div>
+                        <span class="text-[9px] text-outline mt-2 block">Income: ₹2.2L | Out: ₹75K</span>
+                    </div>
+
+                    <!-- Health Score KPI -->
+                    <div class="glass p-md rounded-2xl tilt-card border border-white/5 flex flex-col justify-between cursor-pointer" onclick="switchTab('health')">
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-outline tracking-wider">Financial Health Score</span>
+                            <div class="text-xl font-extrabold text-primary mt-1">
+                                <span class="count-up">842</span> <span class="text-[10px] font-normal text-outline">/1000</span>
+                            </div>
+                        </div>
+                        <span class="text-[9px] text-secondary font-bold uppercase tracking-widest mt-2 block">Grade: A+ (Excellent)</span>
+                    </div>
+
+                    <!-- Emergency Fund -->
+                    <div class="glass p-md rounded-2xl tilt-card border border-white/5 flex flex-col justify-between">
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-outline tracking-wider">Emergency Fund Status</span>
+                            <div class="text-xl font-extrabold text-on-surface mt-1">
+                                ₹<span class="count-up">6,00,000</span>
+                            </div>
+                        </div>
+                        <span class="text-[10px] text-secondary font-semibold flex items-center mt-2">
+                            <span class="material-symbols-outlined text-[12px] mr-0.5">verified</span>6 Months Covered
+                        </span>
+                    </div>
+
+                    <!-- Credit Utilization -->
+                    <div class="glass p-md rounded-2xl tilt-card border border-white/5 flex flex-col justify-between cursor-pointer" onclick="switchTab('credit')">
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-outline tracking-wider">Credit Utilization</span>
+                            <div class="text-xl font-extrabold text-yellow-400 mt-1">
+                                <span class="count-up">12.4</span>%
+                            </div>
+                        </div>
+                        <span class="text-[9px] text-outline mt-2 block">Healthy range (&lt; 30%)</span>
+                    </div>
+                </div>
+
+                <!-- Middle Row: Allocation, Wealth Projection, Expenses & Goals -->
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-md">
+                    <!-- Donut Allocation -->
+                    <div class="glass p-md rounded-2xl border border-white/5 flex flex-col justify-between h-72">
+                        <div>
+                            <h4 class="font-bold text-xs text-on-surface">Asset Allocation</h4>
+                            <span class="text-[10px] text-outline">Weight distribution by sector</span>
+                        </div>
+                        <div class="h-44 relative flex items-center justify-center">
+                            <canvas id="allocation-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Wealth Projection -->
+                    <div class="glass p-md rounded-2xl border border-white/5 flex flex-col justify-between lg:col-span-2 h-72" onclick="switchTab('forecast')" class="cursor-pointer">
+                        <div>
+                            <h4 class="font-bold text-xs text-on-surface">Wealth Projection (Digital Twin)</h4>
+                            <span class="text-[10px] text-outline">Simulated trajectory compound returns</span>
+                        </div>
+                        <div class="h-48">
+                            <canvas id="risk-trend-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Expense Breakdown and Goal Status -->
+                    <div class="glass p-md rounded-2xl border border-white/5 flex flex-col justify-between h-72">
+                        <div>
+                            <h4 class="font-bold text-xs text-on-surface">Goal Progress & Expenses</h4>
+                            <span class="text-[10px] text-outline">Active targets status</span>
+                        </div>
+                        <div class="space-y-3 mt-2">
+                            <!-- Goal 1 -->
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-[10px]">
+                                    <span class="font-semibold">🏠 House Fund</span>
+                                    <span class="text-outline">68% (₹34L / ₹50L)</span>
+                                </div>
+                                <div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                    <div class="h-full bg-secondary" style="width: 68%"></div>
+                                </div>
+                            </div>
+                            <!-- Goal 2 -->
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-[10px]">
+                                    <span class="font-semibold">🚗 Car Purchase</span>
+                                    <span class="text-outline">45% (₹6.7L / ₹15L)</span>
+                                </div>
+                                <div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                    <div class="h-full bg-primary" style="width: 45%"></div>
+                                </div>
+                            </div>
+                            <!-- Expense Splits -->
+                            <div class="pt-2 border-t border-white/5 grid grid-cols-2 gap-sm text-[10px]">
+                                <div>
+                                    <span class="text-outline block">Food & Utilities</span>
+                                    <span class="font-semibold text-on-surface">₹24,500 / mo</span>
+                                </div>
+                                <div>
+                                    <span class="text-outline block">Rent & Housing</span>
+                                    <span class="font-semibold text-on-surface">₹32,000 / mo</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Row: AI Actions, news, bills & investment alerts -->
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-md">
+                    <!-- AI Action Center -->
+                    <div class="glass p-md rounded-2xl border border-secondary/20 bg-secondary/5 flex flex-col justify-between h-64">
+                        <div>
+                            <div class="flex items-center gap-xs">
+                                <span class="material-symbols-outlined text-secondary text-sm" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                                <h4 class="font-bold text-xs text-on-surface">AI Action Center</h4>
+                            </div>
+                            <span class="text-[9px] text-outline block mt-0.5">One-click execution strategies</span>
+                            
+                            <div class="space-y-2 mt-3" id="ai-action-list">
+                                <div class="flex justify-between items-center p-1.5 bg-white/5 rounded border border-white/5 text-[10px]">
+                                    <span>Increase SIP by ₹2,000</span>
+                                    <button class="px-2 py-0.5 bg-secondary text-on-secondary rounded font-bold" onclick="executeAction('SIP_BOOST')">Run</button>
+                                </div>
+                                <div class="flex justify-between items-center p-1.5 bg-white/5 rounded border border-white/5 text-[10px]">
+                                    <span>Rebalance Tech Exposure</span>
+                                    <button class="px-2 py-0.5 bg-secondary text-on-secondary rounded font-bold" onclick="executeAction('REBALANCE')">Run</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-[9px] text-secondary font-mono leading-none flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 bg-secondary rounded-full animate-ping"></span>
+                            Actions optimize stress by 15%
+                        </div>
+                    </div>
+
+                    <!-- Financial News Feed -->
+                    <div class="glass p-md rounded-2xl border border-white/5 flex flex-col justify-between h-64">
+                        <div>
+                            <h4 class="font-bold text-xs text-on-surface">Financial News Alerts</h4>
+                            <span class="text-[10px] text-outline">Real-time macro trends</span>
+                        </div>
+                        <div class="space-y-2.5 mt-2 overflow-y-auto custom-scrollbar h-44 pr-1 text-[10px]">
+                            <div class="border-b border-white/5 pb-1">
+                                <span class="text-primary font-bold">RBI Policy Update:</span> Repo rate remains unchanged at 6.5%, market volatility expected to drop.
+                            </div>
+                            <div class="border-b border-white/5 pb-1">
+                                <span class="text-yellow-400 font-bold">Tech Re-evaluation:</span> High growth assets facing correction. Sector-specific exposure trim advised.
+                            </div>
+                            <div>
+                                <span class="text-secondary font-bold">Gold Prices Surge:</span> Gold rates rally 3% amid global inflation hedges.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Bills -->
+                    <div class="glass p-md rounded-2xl border border-white/5 flex flex-col justify-between h-64">
+                        <div>
+                            <h4 class="font-bold text-xs text-on-surface">Upcoming Ledger Bills</h4>
+                            <span class="text-[10px] text-outline">Auto-pay drafts calendar</span>
+                        </div>
+                        <div class="space-y-3 mt-2 text-[10px]">
+                            <div class="flex justify-between items-center bg-white/5 p-2 rounded">
+                                <div>
+                                    <span class="font-semibold block">Credit Card Payment</span>
+                                    <span class="text-outline text-[9px]">Due on June 18</span>
+                                </div>
+                                <span class="font-bold text-red-400">₹14,230</span>
+                            </div>
+                            <div class="flex justify-between items-center bg-white/5 p-2 rounded">
+                                <div>
+                                    <span class="font-semibold block">House Rent Draft</span>
+                                    <span class="text-outline text-[9px]">Due on July 01</span>
+                                </div>
+                                <span class="font-bold text-yellow-400">₹32,000</span>
+                            </div>
+                        </div>
+                        <div class="text-[8px] text-outline">Total commitments: ₹46,230</div>
+                    </div>
+
+                    <!-- Investment Alert signals -->
+                    <div class="glass p-md rounded-2xl border border-white/5 flex flex-col justify-between h-64 cursor-pointer" onclick="switchTab('portfolio')">
+                        <div>
+                            <h4 class="font-bold text-xs text-on-surface">Portfolio Risk Alerts</h4>
+                            <span class="text-[10px] text-outline">System warning logs</span>
+                        </div>
+                        <div class="space-y-3 mt-2 text-[10px]">
+                            <div class="flex items-center gap-2 text-red-400">
+                                <span class="material-symbols-outlined text-[16px]">warning</span>
+                                <span>High-risk Tech CORP-000001 (Risk score: 28.5) exceeds threshold limit!</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-yellow-400">
+                                <span class="material-symbols-outlined text-[16px]">info</span>
+                                <span>Utilities sector holds 22% weight. Healthy allocation buffer.</span>
+                            </div>
+                        </div>
+                        <span class="text-[9px] text-primary underline">Run portfolio optimizer now</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SECTION 3: Corporate Explorer (Database Viewer) -->
+            <div id="view-database" class="hidden space-y-xl max-w-6xl mx-auto">
+                <h3 class="font-headline-lg text-headline-lg mb-sm">Institutional Database Explorer</h3>
+                <p class="text-on-surface-variant -mt-4 text-sm">Query over 288,000 corporate financial reporting rows containing credit status and default probabilities.</p>
+                
+                <!-- Filter Grid -->
+                <div class="glass p-lg rounded-xl grid grid-cols-1 sm:grid-cols-5 gap-md items-end">
+                    <div>
+                        <label class="block text-xs font-semibold text-outline mb-2 uppercase" for="db-search">Search ID</label>
+                        <input id="db-search" class="w-full bg-white/5 border border-white/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary/50 text-on-surface" placeholder="e.g. CORP-000001" type="text"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-outline mb-2 uppercase" for="filter-country">Country</label>
+                        <select id="filter-country" class="w-full bg-surface border border-white/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary/50 text-on-surface">
+                            <option value="">All Countries</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-outline mb-2 uppercase" for="filter-industry">Industry</label>
+                        <select id="filter-industry" class="w-full bg-surface border border-white/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary/50 text-on-surface">
+                            <option value="">All Industries</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-outline mb-2 uppercase" for="filter-rating">Rating</label>
+                        <select id="filter-rating" class="w-full bg-surface border border-white/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary/50 text-on-surface">
+                            <option value="">All Ratings</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-sm">
+                        <button id="apply-filters-btn" class="flex-1 py-2 bg-primary text-on-primary font-bold text-xs rounded-lg hover:bg-primary/95 transition-all">Apply</button>
+                        <button id="reset-filters-btn" class="py-2 px-3 bg-white/5 border border-white/10 text-on-surface font-bold text-xs rounded-lg hover:bg-white/10 transition-all" title="Reset Filters">
+                            <span class="material-symbols-outlined text-sm align-middle">restart_alt</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Table Panel -->
+                <div class="glass rounded-xl overflow-hidden">
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left text-sm border-collapse">
+                            <thead>
+                                <tr class="border-b border-white/10 bg-white/5 text-outline text-xs">
+                                    <th class="py-3 px-4">Company ID</th>
+                                    <th class="py-3 px-4">Country</th>
+                                    <th class="py-3 px-4">Industry</th>
+                                    <th class="py-3 px-4">Year</th>
+                                    <th class="py-3 px-4">Revenue</th>
+                                    <th class="py-3 px-4">Credit Rating</th>
+                                    <th class="py-3 px-4">Risk Score</th>
+                                    <th class="py-3 px-4">Default Prob.</th>
+                                    <th class="py-3 px-4 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="db-companies-table">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination Bar -->
+                    <div class="flex justify-between items-center px-lg py-md border-t border-white/5 bg-white/5">
+                        <span id="db-pagination-summary" class="text-xs text-outline">Showing 1-20 of -- records</span>
+                        <div class="flex items-center gap-sm">
+                            <button id="db-prev-page" class="p-2 bg-white/5 border border-white/10 hover:bg-white/10 rounded-lg disabled:opacity-30 disabled:pointer-events-none" disabled>
+                                <span class="material-symbols-outlined text-sm">chevron_left</span>
+                            </button>
+                            <span id="db-current-page" class="text-xs font-semibold text-on-surface">Page 1</span>
+                            <button id="db-next-page" class="p-2 bg-white/5 border border-white/10 hover:bg-white/10 rounded-lg disabled:opacity-30 disabled:pointer-events-none">
+                                <span class="material-symbols-outlined text-sm">chevron_right</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SECTION 4: ML Bankruptcy Risk Simulator -->
+            <div id="view-simulator" class="hidden space-y-xl max-w-5xl mx-auto">
+                <h3 class="font-headline-lg text-headline-lg mb-sm">AI Bankruptcy Risk Simulator</h3>
+                <p class="text-on-surface-variant -mt-4 text-sm">Input raw accounting parameters to predict default values using the Scikit-learn trained predictive model.</p>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+                    <!-- Left: Sliders Form -->
+                    <div class="glass p-lg rounded-xl lg:col-span-2 space-y-lg">
+                        <h4 class="font-title-md text-title-md border-b border-white/5 pb-2">Financial Accounting Inputs</h4>
+                        
+                        <div class="space-y-sm">
+                            <div class="flex justify-between text-xs">
+                                <span class="font-semibold text-on-surface">Revenue ($ Millions)</span>
+                                <span id="val-revenue" class="text-primary font-bold">120.00</span>
+                            </div>
+                            <input id="slider-revenue" class="w-full accent-primary bg-white/10 h-1.5 rounded-lg appearance-none cursor-pointer" type="range" min="0.5" max="5000.0" step="5" value="120"/>
+                        </div>
+
+                        <div class="space-y-sm">
+                            <div class="flex justify-between text-xs">
+                                <span class="font-semibold text-on-surface">Profit Margin (%)</span>
+                                <span id="val-margin" class="text-primary font-bold">15.0%</span>
+                            </div>
+                            <input id="slider-margin" class="w-full accent-primary bg-white/10 h-1.5 rounded-lg appearance-none cursor-pointer" type="range" min="-0.8" max="0.8" step="0.01" value="0.15"/>
+                        </div>
+
+                        <div class="space-y-sm">
+                            <div class="flex justify-between text-xs">
+                                <span class="font-semibold text-on-surface">Debt Ratio (Total Debt / Assets)</span>
+                                <span id="val-debt" class="text-primary font-bold">0.45</span>
+                            </div>
+                            <input id="slider-debt" class="w-full accent-primary bg-white/10 h-1.5 rounded-lg appearance-none cursor-pointer" type="range" min="0.05" max="1.5" step="0.01" value="0.45"/>
+                        </div>
+
+                        <div class="space-y-sm">
+                            <div class="flex justify-between text-xs">
+                                <span class="font-semibold text-on-surface">Operating Cash Flow ($ Millions)</span>
+                                <span id="val-cash" class="text-primary font-bold">18.50</span>
+                            </div>
+                            <input id="slider-cash" class="w-full accent-primary bg-white/10 h-1.5 rounded-lg appearance-none cursor-pointer" type="range" min="-100.0" max="800.0" step="1" value="18.5"/>
+                        </div>
+
+                        <div class="space-y-sm">
+                            <div class="flex justify-between text-xs">
+                                <span class="font-semibold text-on-surface">Liquidity Ratio (Current Ratio)</span>
+                                <span id="val-liquidity" class="text-primary font-bold">1.80</span>
+                            </div>
+                            <input id="slider-liquidity" class="w-full accent-primary bg-white/10 h-1.5 rounded-lg appearance-none cursor-pointer" type="range" min="0.1" max="6.0" step="0.05" value="1.8"/>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-lg">
+                            <div class="space-y-sm">
+                                <div class="flex justify-between text-xs">
+                                    <span class="font-semibold text-on-surface">Market Volatility Index</span>
+                                    <span id="val-volatility" class="text-primary font-bold">18.20</span>
+                                </div>
+                                <input id="slider-volatility" class="w-full accent-primary bg-white/10 h-1.5 rounded-lg appearance-none cursor-pointer" type="range" min="5.0" max="80.0" step="0.5" value="18.2"/>
+                            </div>
+
+                            <div class="space-y-sm">
+                                <div class="flex justify-between text-xs">
+                                    <span class="font-semibold text-on-surface">Operational Cost Ratio</span>
+                                    <span id="val-costs" class="text-primary font-bold">0.72</span>
+                                </div>
+                                <input id="slider-costs" class="w-full accent-primary bg-white/10 h-1.5 rounded-lg appearance-none cursor-pointer" type="range" min="0.1" max="1.5" step="0.01" value="0.72"/>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right: Gauges Output -->
+                    <div class="space-y-lg lg:col-span-1">
+                        <!-- Score Display -->
+                        <div class="ai-gradient-border p-lg shadow-xl text-center space-y-md">
+                            <h4 class="font-title-md text-title-md text-on-surface">Predicted Bankruptcy Risk</h4>
+                            
+                            <!-- Gauge Visualizer -->
+                            <div class="relative w-40 h-40 mx-auto flex items-center justify-center">
+                                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                    <circle class="text-white/10" stroke-width="8" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50"/>
+                                    <circle id="gauge-circle" class="text-secondary transition-all duration-300" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50"/>
+                                </svg>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                    <span id="gauge-score" class="text-4xl font-extrabold text-on-surface">0.0</span>
+                                    <span id="gauge-level" class="text-xs uppercase tracking-widest text-secondary font-bold mt-1">LOW</span>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-sm pt-md border-t border-white/5">
+                                <div>
+                                    <span class="text-[10px] text-outline uppercase block">Default Probability</span>
+                                    <span id="gauge-prob" class="text-lg font-bold text-on-surface">0.00%</span>
+                                </div>
+                                <div>
+                                    <span class="text-[10px] text-outline uppercase block">Model Confidence</span>
+                                    <span class="text-lg font-bold text-primary">94.8%</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Driver analysis -->
+                        <div class="glass p-lg rounded-xl">
+                            <h4 class="font-title-md text-title-md mb-4">Risk Contribution Drivers</h4>
+                            <div id="driver-bars-container" class="space-y-sm">
+                                <!-- JS Dynamic contribution bars -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 5: Portfolio Optimizer -->
+            <div id="view-portfolio" class="hidden space-y-xl max-w-5xl mx-auto">
+                <h3 class="font-headline-lg text-headline-lg mb-sm">Portfolio Optimizer</h3>
+                <p class="text-on-surface-variant -mt-4 text-sm">Select institutional stocks to monitor your combined exposure, and evaluate automated risk rebalancing.</p>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+                    <!-- Left: Current Allocation List -->
+                    <div class="glass p-lg rounded-xl lg:col-span-1 space-y-lg flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-title-md text-title-md mb-2">Build Virtual Portfolio</h4>
+                            <span class="text-xs text-outline mb-4 block">Select ticker codes and investment amounts</span>
+                            
+                            <div class="space-y-sm pr-1 max-h-[250px] overflow-y-auto custom-scrollbar">
+                                <div class="flex items-center gap-sm bg-white/5 p-2 rounded-lg">
+                                    <div class="flex-1 font-semibold text-xs text-on-surface">CORP-000001 (Tech)</div>
+                                    <input type="number" class="w-24 bg-surface border border-white/10 rounded px-2 py-1 text-xs text-on-surface text-right portfolio-val" data-id="CORP-000001" value="500000"/>
+                                </div>
+                                <div class="flex items-center gap-sm bg-white/5 p-2 rounded-lg">
+                                    <div class="flex-1 font-semibold text-xs text-on-surface">CORP-000002 (Tech)</div>
+                                    <input type="number" class="w-24 bg-surface border border-white/10 rounded px-2 py-1 text-xs text-on-surface text-right portfolio-val" data-id="CORP-000002" value="450000"/>
+                                </div>
+                                <div class="flex items-center gap-sm bg-white/5 p-2 rounded-lg">
+                                    <div class="flex-1 font-semibold text-xs text-on-surface">CORP-000003 (Tech)</div>
+                                    <input type="number" class="w-24 bg-surface border border-white/10 rounded px-2 py-1 text-xs text-on-surface text-right portfolio-val" data-id="CORP-000003" value="120000"/>
+                                </div>
+                                <div class="flex items-center gap-sm bg-white/5 p-2 rounded-lg">
+                                    <div class="flex-1 font-semibold text-xs text-on-surface">CORP-000101 (Utilities)</div>
+                                    <input type="number" class="w-24 bg-surface border border-white/10 rounded px-2 py-1 text-xs text-on-surface text-right portfolio-val" data-id="CORP-000101" value="280000"/>
+                                </div>
+                                <div class="flex items-center gap-sm bg-white/5 p-2 rounded-lg">
+                                    <div class="flex-1 font-semibold text-xs text-on-surface">CORP-000201 (Education)</div>
+                                    <input type="number" class="w-24 bg-surface border border-white/10 rounded px-2 py-1 text-xs text-on-surface text-right portfolio-val" data-id="CORP-000201" value="150000"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-lg border-t border-white/5 space-y-md">
+                            <div class="flex justify-between items-center font-bold text-sm">
+                                <span>Total Value</span>
+                                <span id="portfolio-total-label">₹15,00,000</span>
+                            </div>
+                            <button id="optimize-portfolio-btn" class="w-full py-3 bg-secondary text-on-secondary font-bold text-xs rounded-lg hover:shadow-[0_0_15px_rgba(67,239,174,0.3)] transition-all">Optimize Asset Allocation</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Right: Optimization Analysis & Projections -->
+                    <div id="portfolio-analysis-container" class="lg:col-span-2 space-y-lg opacity-40 pointer-events-none transition-opacity duration-300">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-lg">
+                            <!-- Warnings / Suggestions -->
+                            <div class="ai-gradient-border p-lg flex flex-col justify-between">
+                                <div>
+                                    <h4 class="font-title-md text-title-md mb-2 text-on-surface">Rebalance Advisory</h4>
+                                    <p id="rebalance-reason" class="text-xs text-outline leading-relaxed mt-2">No optimization simulated. Click the optimize button to run.</p>
+                                </div>
+                                <div class="mt-lg pt-sm border-t border-white/5 flex gap-md">
+                                    <button id="execute-rebalance-btn" class="flex-1 py-2 bg-secondary text-on-secondary rounded-lg font-bold text-xs hover:scale-[1.02] transition-transform">Execute Rebalance</button>
+                                </div>
+                            </div>
+
+                            <!-- Volatility & risk stats -->
+                            <div class="glass p-lg rounded-xl space-y-md">
+                                <h4 class="font-title-md text-title-md text-on-surface">Portfolio Risk Analysis</h4>
+                                <div class="space-y-sm">
+                                    <div class="flex justify-between text-xs border-b border-white/5 pb-1">
+                                        <span class="text-outline">Current Exposure Risk</span>
+                                        <span id="rebal-avg-risk" class="text-on-surface font-bold">--</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs border-b border-white/5 pb-1">
+                                        <span class="text-outline">Compound Default Risk</span>
+                                        <span id="rebal-avg-default" class="text-on-surface font-bold">--</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs pb-1">
+                                        <span class="text-outline">Projected Growth Shift</span>
+                                        <span class="text-secondary font-bold">+2.5% Annual</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Net worth chart comparison -->
+                        <div class="glass p-lg rounded-xl h-80 flex flex-col justify-between">
+                            <div>
+                                <h4 class="font-title-md text-title-md mb-2">Net Worth 2030 Growth Simulation</h4>
+                                <span class="text-xs text-outline">Rebalance Today (8% rate) vs Wait/Default Drag (5.5% rate)</span>
+                            </div>
+                            <div class="h-56">
+                                <canvas id="rebalance-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 6: Financial Health -->
+            <div id="view-health" class="hidden space-y-lg max-w-5xl mx-auto">
+                <div class="mb-md">
+                    <h3 class="font-headline-lg text-headline-lg text-on-surface">AI Financial Health Score</h3>
+                    <p class="text-xs text-outline">Comprehensive evaluation of cash flows, balances, and credit stability.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+                    <!-- Score Circle -->
+                    <div class="glass p-lg rounded-2xl border border-white/5 flex flex-col items-center justify-center text-center h-80">
+                        <h4 class="font-semibold text-sm mb-4 text-on-surface">Overall Score</h4>
+                        <div class="relative w-44 h-44 flex items-center justify-center">
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                <circle class="text-white/5" stroke-width="6" stroke="currentColor" fill="transparent" r="42" cx="50" cy="50"/>
+                                <circle class="text-secondary" stroke-width="6" stroke-dasharray="263.8" stroke-dashoffset="41.7" stroke-linecap="round" stroke="currentColor" fill="transparent" r="42" cx="50" cy="50"/>
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <span class="text-5xl font-black text-on-surface">842</span>
+                                <span class="text-xs uppercase tracking-widest text-secondary font-bold mt-1">Grade: A+</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Component Breakdown Grid -->
+                    <div class="glass p-lg rounded-2xl border border-white/5 md:col-span-2 h-80 flex flex-col justify-between">
+                        <h4 class="font-semibold text-sm text-on-surface mb-2">Score Components Breakdown</h4>
+                        <div class="grid grid-cols-2 gap-md text-xs">
+                            <div class="space-y-1">
+                                <div class="flex justify-between">
+                                    <span class="text-outline">Savings Score</span>
+                                    <span class="font-bold text-secondary">92 / 100</span>
+                                </div>
+                                <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-secondary w-[92%]"></div></div>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="flex justify-between">
+                                    <span class="text-outline">Debt Score</span>
+                                    <span class="font-bold text-secondary">85 / 100</span>
+                                </div>
+                                <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-secondary w-[85%]"></div></div>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="flex justify-between">
+                                    <span class="text-outline">Investment Ratio</span>
+                                    <span class="font-bold text-secondary">78 / 100</span>
+                                </div>
+                                <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-secondary w-[78%]"></div></div>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="flex justify-between">
+                                    <span class="text-outline">Emergency Fund</span>
+                                    <span class="font-bold text-secondary">100 / 100</span>
+                                </div>
+                                <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-secondary w-[100%]"></div></div>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="flex justify-between">
+                                    <span class="text-outline">Spending Discipline</span>
+                                    <span class="font-bold text-yellow-400">65 / 100</span>
+                                </div>
+                                <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-yellow-400 w-[65%]"></div></div>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="flex justify-between">
+                                    <span class="text-outline">Creditworthiness</span>
+                                    <span class="font-bold text-secondary">90 / 100</span>
+                                </div>
+                                <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-secondary w-[90%]"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+                    <!-- Stress Meter -->
+                    <div class="glass p-lg rounded-2xl border border-white/5 flex flex-col justify-between h-56">
+                        <div>
+                            <h4 class="font-semibold text-sm text-on-surface">Financial Stress Meter</h4>
+                            <span class="text-[10px] text-outline">Quantified burden indicators</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-xl my-2">
+                            <div class="flex-1 space-y-2">
+                                <div class="flex justify-between text-xs font-semibold">
+                                    <span>Stress Level</span>
+                                    <span class="text-secondary">28% (Low Stress)</span>
+                                </div>
+                                <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-secondary to-yellow-400" style="width: 28%"></div>
+                                </div>
+                            </div>
+                            <div class="text-center bg-secondary/10 border border-secondary/20 p-md rounded-xl">
+                                <span class="text-3xl font-black text-secondary">Low</span>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-outline">Stress optimized by high emergency cover and balanced credit utilization ratios.</p>
+                    </div>
+
+                    <!-- Peer Leaderboard & Badges -->
+                    <div class="glass p-lg rounded-2xl border border-white/5 flex flex-col justify-between h-56">
+                        <div>
+                            <h4 class="font-semibold text-sm text-on-surface">Leaderboard & Gamification</h4>
+                            <span class="text-[10px] text-outline">Anonymous peer scoring comparison</span>
+                        </div>
+                        <div class="flex items-center justify-between mt-2 gap-md">
+                            <!-- Badges -->
+                            <div class="text-center space-y-1 bg-gradient-to-br from-yellow-400 to-amber-600 px-lg py-md rounded-xl shadow-lg border border-yellow-400/20 text-background">
+                                <span class="material-symbols-outlined text-4xl block">stars</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wider block">Gold Badge</span>
+                            </div>
+                            <!-- Standings -->
+                            <div class="flex-1 space-y-1 text-xs">
+                                <div class="flex justify-between text-outline"><span>1. Anonymous User</span><span>942 pts</span></div>
+                                <div class="flex justify-between font-bold text-secondary"><span>2. You (Gold)</span><span>842 pts</span></div>
+                                <div class="flex justify-between text-outline"><span>3. Anonymous User</span><span>810 pts</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 7: Budget Planner -->
+            <div id="view-budget" class="hidden space-y-lg max-w-5xl mx-auto">
+                <div class="mb-md">
+                    <h3 class="font-headline-lg text-headline-lg text-on-surface">AI Budget Planner</h3>
+                    <p class="text-xs text-outline">50/30/20 budget framework guidelines recommendations.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+                    <!-- Allocation Calculator sliders -->
+                    <div class="glass p-lg rounded-2xl border border-white/5 md:col-span-2 space-y-md">
+                        <h4 class="font-semibold text-sm border-b border-white/5 pb-2">Modify Target Allocations</h4>
+                        
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span>Essential Needs (Rent, Food, Bills)</span>
+                                <span id="budget-val-needs" class="font-bold text-primary">50% (₹1,10,000)</span>
+                            </div>
+                            <input type="range" id="slider-budget-needs" class="w-full accent-primary h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" min="20" max="70" step="5" value="50" oninput="adjustBudget()"/>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span>Wants (Dining out, Travel, Entertainment)</span>
+                                <span id="budget-val-wants" class="font-bold text-primary">30% (₹66,000)</span>
+                            </div>
+                            <input type="range" id="slider-budget-wants" class="w-full accent-primary h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" min="10" max="50" step="5" value="30" oninput="adjustBudget()"/>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span>Savings & Investments</span>
+                                <span id="budget-val-savings" class="font-bold text-primary">20% (₹44,000)</span>
+                            </div>
+                            <input type="range" id="slider-budget-savings" class="w-full accent-primary h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" min="10" max="50" step="5" value="20" oninput="adjustBudget()"/>
+                        </div>
+                    </div>
+
+                    <!-- Budget Analysis Gauge -->
+                    <div class="glass p-lg rounded-2xl border border-white/5 flex flex-col justify-between items-center text-center h-64">
+                        <div>
+                            <h4 class="font-semibold text-sm text-on-surface">Budget Health</h4>
+                            <span class="text-[9px] text-outline">Compliance with savings goals</span>
+                        </div>
+                        <div class="relative w-28 h-28 flex items-center justify-center my-2">
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                <circle class="text-white/5" stroke-width="8" stroke="currentColor" fill="transparent" r="38" cx="50" cy="50"/>
+                                <circle id="budget-health-circle" class="text-secondary" stroke-width="8" stroke-dasharray="238.7" stroke-dashoffset="0" stroke-linecap="round" stroke="currentColor" fill="transparent" r="38" cx="50" cy="50"/>
+                            </svg>
+                            <span id="budget-health-lbl" class="absolute text-xl font-bold">Excellent</span>
+                        </div>
+                        <span class="text-[10px] text-secondary font-semibold">Ready to save ₹44,000 this month!</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 8: Investments -->
+            <div id="view-investments" class="hidden space-y-lg max-w-5xl mx-auto">
+                <div class="mb-md">
+                    <h3 class="font-headline-lg text-headline-lg text-on-surface">Investments Analyzer</h3>
+                    <p class="text-xs text-outline">Real-time asset allocations, alerts, and credit risk monitoring.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+                    <!-- Current Portfolio Holdings -->
+                    <div class="glass p-lg rounded-2xl border border-white/5 md:col-span-2 space-y-md">
+                        <div class="flex justify-between items-center">
+                            <h4 class="font-semibold text-sm">Holdings Ledger</h4>
+                            <button class="py-1 px-3 bg-secondary text-on-secondary rounded text-xs font-bold" onclick="switchTab('portfolio')">Optimize 2.0</button>
+                        </div>
+                        
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="border-b border-white/10 text-outline text-[10px] uppercase">
+                                        <th class="py-2">Asset Code</th>
+                                        <th class="py-2 text-right">Holding Value</th>
+                                        <th class="py-2 text-right">Risk Score</th>
+                                        <th class="py-2 text-right">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-white/5">
+                                        <td class="py-2 font-bold text-primary">CORP-000001 (Tech)</td>
+                                        <td class="py-2 text-right">₹5,00,000</td>
+                                        <td class="py-2 text-right text-red-400 font-bold">28.5</td>
+                                        <td class="py-2 text-right"><span class="px-1.5 py-0.5 rounded bg-red-400/10 text-red-400 text-[9px]">Trim Suggestion</span></td>
+                                    </tr>
+                                    <tr class="border-b border-white/5">
+                                        <td class="py-2 font-bold text-primary">CORP-000101 (Utilities)</td>
+                                        <td class="py-2 text-right">₹2,80,000</td>
+                                        <td class="py-2 text-right text-secondary">9.2</td>
+                                        <td class="py-2 text-right"><span class="px-1.5 py-0.5 rounded bg-secondary/10 text-secondary text-[9px]">Stable Holding</span></td>
+                                    </tr>
+                                    <tr class="border-b border-white/5">
+                                        <td class="py-2 font-bold text-primary">CORP-000201 (Education)</td>
+                                        <td class="py-2 text-right">₹1,50,000</td>
+                                        <td class="py-2 text-right text-yellow-400">14.1</td>
+                                        <td class="py-2 text-right"><span class="px-1.5 py-0.5 rounded bg-yellow-400/10 text-yellow-400 text-[9px]">Moderate</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- ESG Score Widget -->
+                    <div class="glass p-lg rounded-2xl border border-white/5 flex flex-col justify-between text-center h-64">
+                        <div>
+                            <h4 class="font-semibold text-sm text-on-surface">Portfolio ESG Rating</h4>
+                            <span class="text-[9px] text-outline">Environmental & governance impact</span>
+                        </div>
+                        <div class="py-md">
+                            <div class="text-5xl font-black text-secondary">82<span class="text-xs font-normal text-outline">/100</span></div>
+                            <span class="text-xs text-secondary font-bold uppercase tracking-widest mt-1 block">Grade: A- (High ESG Compliance)</span>
+                        </div>
+                        <p class="text-[10px] text-outline">Zero exposure to fossil assets. Investments align with green-energy initiatives.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 9: Goals -->
+            <div id="view-goals" class="hidden space-y-lg max-w-5xl mx-auto">
+                <div class="mb-md">
+                    <h3 class="font-headline-lg text-headline-lg text-on-surface">Smart Goal Tracker</h3>
+                    <p class="text-xs text-outline">Monitor progress on personal goals with AI-driven ETAs.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+                    <!-- Goal Cards -->
+                    <div class="glass p-lg rounded-2xl border border-white/5 space-y-md md:col-span-2">
+                        <h4 class="font-semibold text-sm border-b border-white/5 pb-2">Active Targets</h4>
+                        
+                        <div class="space-y-4">
+                            <!-- House Goal -->
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-xs">
+                                    <span class="font-bold">🏠 House Downpayment</span>
+                                    <span class="text-outline">68% (₹34L / ₹50L) • ETA: 4.2 Years</span>
+                                </div>
+                                <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                                    <div class="h-full bg-secondary" style="width: 68%"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Car Goal -->
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-xs">
+                                    <span class="font-bold">🚗 Car Purchase</span>
+                                    <span class="text-outline">45% (₹6.7L / ₹15L) • ETA: 1.8 Years</span>
+                                </div>
+                                <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                                    <div class="h-full bg-primary" style="width: 45%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Trip Goal -->
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-xs">
+                                    <span class="font-bold">✈️ Europe Trip</span>
+                                    <span class="text-outline">80% (₹3.2L / ₹4L) • ETA: 0.8 Years</span>
+                                </div>
+                                <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                                    <div class="h-full bg-secondary" style="width: 80%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 10: Tax Center -->
+            <div id="view-tax" class="hidden space-y-lg max-w-5xl mx-auto">
+                <div class="mb-md">
+                    <h3 class="font-headline-lg text-headline-lg text-on-surface">Tax Optimization Center</h3>
+                    <p class="text-xs text-outline">Compare old vs new tax regimes and calculate potential tax savings.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+                    <!-- Inputs -->
+                    <div class="glass p-lg rounded-2xl border border-white/5 md:col-span-2 space-y-md">
+                        <h4 class="font-semibold text-sm border-b border-white/5 pb-2">Regime Calculator</h4>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-md text-xs">
+                            <div class="space-y-xs">
+                                <label class="text-[10px] uppercase font-bold text-outline">Annual Gross Salary</label>
+                                <input type="number" id="tax-gross" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-on-surface" value="1500000" oninput="calculateTax()"/>
+                            </div>
+                            <div class="space-y-xs">
+                                <label class="text-[10px] uppercase font-bold text-outline">Sec 80C Deductions (PPF, ELSS)</label>
+                                <input type="number" id="tax-80c" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-on-surface" value="150000" oninput="calculateTax()"/>
+                            </div>
+                        </div>
+                        
+                        <div class="pt-sm flex justify-between text-xs font-bold border-t border-white/5">
+                            <span>Estimated Old Regime Tax: <span class="text-red-400 font-extrabold" id="tax-old-lbl">₹1,95,000</span></span>
+                            <span>Estimated New Regime Tax: <span class="text-secondary font-extrabold" id="tax-new-lbl">₹1,50,000</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Tax Suggestion Alert -->
+                    <div class="glass p-lg rounded-2xl border border-secondary/20 bg-secondary/5 flex flex-col justify-between h-56 text-left">
+                        <div>
+                            <div class="flex items-center gap-xs text-secondary mb-1">
+                                <span class="material-symbols-outlined text-sm">auto_awesome</span>
+                                <h4 class="font-semibold text-xs uppercase tracking-wider">AI Tax Optimization</h4>
+                            </div>
+                            <p class="text-[10px] text-on-surface leading-normal mt-2">
+                                Moving to the **New Tax Regime** will save you **₹45,000** this year based on your salary. 
+                                We suggest utilizing the remaining ₹50,000 limit in NPS under Sec 80CCD(1B) to save more.
+                            </p>
+                        </div>
+                        <span class="text-[8px] font-mono text-outline">Calculation fits FY 2026-27 rules.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 11: Credit Insights -->
+            <div id="view-credit" class="hidden space-y-lg max-w-5xl mx-auto">
+                <div class="mb-md">
+                    <h3 class="font-headline-lg text-headline-lg text-on-surface">Credit Insights & Eligibility</h3>
+                    <p class="text-xs text-outline">Check loan eligibility limits and predict future credit standings.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+                    <!-- Credit Score Predictor -->
+                    <div class="glass p-lg rounded-2xl border border-white/5 flex flex-col items-center justify-center text-center h-64">
+                        <h4 class="font-semibold text-xs text-outline uppercase tracking-wider mb-2">Predicted Credit Score</h4>
+                        <div class="text-6xl font-black text-secondary">812</div>
+                        <span class="text-xs text-secondary font-bold uppercase tracking-widest mt-1">Excellent Standing</span>
+                        <p class="text-[9px] text-outline mt-4 leading-normal">On track to hit 825 by December 2026 if timely credit card payment is kept.</p>
+                    </div>
+
+                    <!-- Loan Eligibility -->
+                    <div class="glass p-lg rounded-2xl border border-white/5 md:col-span-2 flex flex-col justify-between h-64">
+                        <div>
+                            <h4 class="font-semibold text-sm text-on-surface">Loan Eligibility Limits</h4>
+                            <span class="text-[10px] text-outline">Calculated under current debt-to-income bounds</span>
+                        </div>
+                        <div class="space-y-3 mt-2 text-xs">
+                            <div class="flex justify-between items-center bg-white/5 p-2 rounded">
+                                <span>🏠 Home Loan Eligible Cap</span>
+                                <span class="font-bold text-secondary">₹75,00,000</span>
+                            </div>
+                            <div class="flex justify-between items-center bg-white/5 p-2 rounded">
+                                <span>🚗 Car Loan Eligible Cap</span>
+                                <span class="font-bold text-secondary">₹12,00,000</span>
+                            </div>
+                            <div class="flex justify-between items-center bg-white/5 p-2 rounded">
+                                <span>💳 Personal Credit Limit</span>
+                                <span class="font-bold text-secondary">₹5,00,000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 12: Insurance -->
+            <div id="view-insurance" class="hidden space-y-lg max-w-5xl mx-auto">
+                <div class="mb-md">
+                    <h3 class="font-headline-lg text-headline-lg text-on-surface">Insurance Coverage Analyzer</h3>
+                    <p class="text-xs text-outline">Assess cover adequacy and detect coverage gaps in active policies.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+                    <!-- Gaps Table -->
+                    <div class="glass p-lg rounded-2xl border border-white/5 space-y-md">
+                        <h4 class="font-semibold text-sm border-b border-white/5 pb-2">Active Policies Analysis</h4>
+                        
+                        <div class="space-y-3 text-xs">
+                            <div class="flex justify-between items-center p-2 bg-white/5 rounded border border-red-500/10">
+                                <div>
+                                    <span class="font-bold block">Life Insurance (Term)</span>
+                                    <span class="text-red-400 text-[10px]">Gap detected: ₹1.0 Crore</span>
+                                </div>
+                                <span class="text-red-400 font-bold font-mono">₹50L / ₹1.5Cr</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center p-2 bg-white/5 rounded border border-yellow-500/10">
+                                <div>
+                                    <span class="font-bold block">Health Insurance</span>
+                                    <span class="text-yellow-400 text-[10px]">Gap detected: ₹5 Lakhs</span>
+                                </div>
+                                <span class="text-yellow-400 font-bold font-mono">₹10L / ₹15L</span>
+                            </div>
+
+                            <div class="flex justify-between items-center p-2 bg-white/5 rounded border border-secondary/15">
+                                <div>
+                                    <span class="font-bold block">Vehicle Insurance</span>
+                                    <span class="text-secondary text-[10px]">Adequately Covered</span>
+                                </div>
+                                <span class="text-secondary font-bold font-mono">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 13: Future Forecast & Digital Twin -->
+            <div id="view-forecast" class="hidden space-y-lg max-w-5xl mx-auto">
+                <div class="mb-md">
+                    <h3 class="font-headline-lg text-headline-lg text-on-surface">Financial Digital Twin</h3>
+                    <p class="text-xs text-outline">Interactive future forecast projection simulations.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+                    <!-- Timeline Slider & Stats -->
+                    <div class="glass p-lg rounded-2xl border border-white/5 md:col-span-2 space-y-md">
+                        <h4 class="font-semibold text-sm border-b border-white/5 pb-2">Simulation Timeline Slider</h4>
+                        
+                        <!-- Timeline Control -->
+                        <div class="space-y-4 pt-md">
+                            <input type="range" id="slider-digital-twin" class="w-full accent-secondary h-2 bg-white/10 rounded-lg appearance-none cursor-pointer" min="2026" max="2046" step="5" value="2026" oninput="adjustTwin()"/>
+                            <div class="flex justify-between text-xs text-outline px-1">
+                                <span>2026 (Now)</span>
+                                <span>2031</span>
+                                <span>2036</span>
+                                <span>2041</span>
+                                <span>2046 (Retire)</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Outputs -->
+                        <div class="grid grid-cols-3 gap-md pt-lg border-t border-white/5 text-center text-xs">
+                            <div>
+                                <span class="text-outline block uppercase text-[10px]">Net Worth</span>
+                                <span class="text-base font-extrabold text-secondary mt-1 block" id="twin-net-worth">₹25.4 Lakhs</span>
+                            </div>
+                            <div>
+                                <span class="text-outline block uppercase text-[10px]">Assets</span>
+                                <span class="text-base font-extrabold text-on-surface mt-1 block" id="twin-assets">₹30.0 Lakhs</span>
+                            </div>
+                            <div>
+                                <span class="text-outline block uppercase text-[10px]">Outstanding Debt</span>
+                                <span class="text-base font-extrabold text-red-400 mt-1 block" id="twin-debts">₹4.6 Lakhs</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- What-If Parameters Form -->
+                    <div class="glass p-lg rounded-2xl border border-white/5 space-y-md h-[380px] overflow-y-auto custom-scrollbar">
+                        <h4 class="font-semibold text-xs text-outline uppercase tracking-wider">What-If Scenarios</h4>
+                        
+                        <div class="space-y-2 text-xs">
+                            <div>
+                                <label class="text-[9px] uppercase text-outline">Salary (₹ / month)</label>
+                                <input type="number" id="whatif-salary" class="w-full bg-white/5 border border-white/10 rounded px-2 py-1" value="150000" oninput="runWhatIf()"/>
+                            </div>
+                            <div>
+                                <label class="text-[9px] uppercase text-outline">SIP Investment (₹ / month)</label>
+                                <input type="number" id="whatif-sip" class="w-full bg-white/5 border border-white/10 rounded px-2 py-1" value="20000" oninput="runWhatIf()"/>
+                            </div>
+                            <div>
+                                <label class="text-[9px] uppercase text-outline">Expected Inflation (%)</label>
+                                <input type="number" id="whatif-inflation" class="w-full bg-white/5 border border-white/10 rounded px-2 py-1" value="6" oninput="runWhatIf()"/>
+                            </div>
+                        </div>
+                        <div class="pt-sm border-t border-white/5 text-[10px] text-secondary font-mono" id="whatif-result">
+                            Estimated Retirement Corpus: ₹2.1 Crores
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 14: Settings -->
+            <div id="view-settings" class="hidden space-y-lg max-w-5xl mx-auto">
+                <div class="mb-md">
+                    <h3 class="font-headline-lg text-headline-lg text-on-surface">App Settings</h3>
+                    <p class="text-xs text-outline">Configure account parameters and test billing tiers.</p>
+                </div>
+                
+                <div class="glass p-lg rounded-2xl border border-white/5 max-w-md space-y-md">
+                    <h4 class="font-semibold text-sm border-b border-white/5 pb-2">Tier Management</h4>
+                    <div class="flex justify-between items-center text-xs">
+                        <span>Current Active Account Class:</span>
+                        <span id="settings-tier-lbl" class="font-bold text-secondary">Elite Tier</span>
+                    </div>
+                    <button class="w-full py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold rounded" onclick="resetTier()">Reset Account Tier (Demo Test)</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Float FAB for chat (Contextual Mobile UI) -->
+        <button id="float-fab" class="fixed bottom-margin-desktop right-margin-desktop w-14 h-14 bg-secondary rounded-full flex items-center justify-center text-on-secondary shadow-2xl hover:scale-110 transition-transform z-50 group md:hidden">
+            <span class="material-symbols-outlined">insights</span>
+        </button>
+    </main>
+
+    <!-- Company Detail Profile Modal -->
+    <div id="company-detail-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-md bg-black/70 backdrop-blur-md hidden">
+        <div class="glass-darker w-full max-w-4xl rounded-2xl border border-white/10 p-lg md:p-xl space-y-lg shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-start">
+                <div>
+                    <span id="modal-industry-tag" class="px-2 py-0.5 bg-secondary/10 text-secondary border border-secondary/20 rounded-full text-[10px] font-bold uppercase tracking-wider">Technology</span>
+                    <h3 id="modal-company-title" class="font-headline-lg text-headline-lg mt-2 text-on-surface">CORP-000001</h3>
+                    <p id="modal-company-subtitle" class="text-xs text-outline">Japan | Credit Rating: BBB</p>
+                </div>
+                <button id="close-modal-btn" class="p-2 hover:bg-white/10 rounded-full transition-colors text-outline hover:text-on-surface">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-6 gap-md" id="modal-stats-grid">
+                <!-- JS dynamic cards -->
+            </div>
+            
+            <!-- Chart Container -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-lg items-center">
+                <div class="md:col-span-2 h-72">
+                    <canvas id="modal-historical-chart"></canvas>
+                </div>
+                <!-- Risk meters -->
+                <div class="md:col-span-1 space-y-md bg-white/5 p-lg rounded-xl border border-white/10 text-center">
+                    <h4 class="font-semibold text-sm mb-2 text-on-surface">Evaluated Bankruptcy Status</h4>
+                    <div class="text-4xl font-extrabold text-secondary mb-1" id="modal-risk-score">18.4</div>
+                    <span class="text-xs uppercase font-bold tracking-widest text-outline">Bankruptcy Score</span>
+                    
+                    <div class="pt-md border-t border-white/5 text-xs text-outline">
+                        Default Probability: <span class="font-bold text-on-surface" id="modal-default-prob">0.0266</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upgrade to Pro Modal -->
+    <div id="upgrade-pro-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-md bg-black/70 backdrop-blur-md hidden">
+        <div class="glass-darker w-full max-w-md rounded-2xl border border-white/10 p-lg md:p-xl space-y-lg shadow-2xl relative text-center">
+            
+            <!-- Close button -->
+            <button id="close-upgrade-modal-btn" class="absolute top-4 right-4 p-2 hover:bg-white/10 rounded-full transition-colors text-outline hover:text-on-surface">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+
+            <!-- Premium Premium Premium badge -->
+            <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto border border-primary/20 animate-bounce">
+                <span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+            </div>
+
+            <!-- Headers -->
+            <div>
+                <h3 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Upgrade to Pro</h3>
+                <p class="text-xs text-outline mt-1 font-medium">Unlock Institutional Grade Intelligence & Coaching</p>
+            </div>
+
+            <!-- Features List -->
+            <div class="space-y-sm text-left bg-white/5 p-md rounded-xl border border-white/5">
+                <div class="flex items-start gap-sm text-xs text-on-surface">
+                    <span class="material-symbols-outlined text-secondary text-[16px] mt-0.5">check_circle</span>
+                    <span><strong>Unlimited ML Risk Simulations</strong>: Dynamic stress testing and stress curves.</span>
+                </div>
+                <div class="flex items-start gap-sm text-xs text-on-surface">
+                    <span class="material-symbols-outlined text-secondary text-[16px] mt-0.5">check_circle</span>
+                    <span><strong>Quantum Portfolio Rebalancing</strong>: Bypass limits and reallocate with a single click.</span>
+                </div>
+                <div class="flex items-start gap-sm text-xs text-on-surface">
+                    <span class="material-symbols-outlined text-secondary text-[16px] mt-0.5">check_circle</span>
+                    <span><strong>Deep AI Coach Reasoning</strong>: Context-aware active response templates.</span>
+                </div>
+                <div class="flex items-start gap-sm text-xs text-on-surface">
+                    <span class="material-symbols-outlined text-secondary text-[16px] mt-0.5">check_circle</span>
+                    <span><strong>Access 288k Corporate Entries</strong>: Complete dataset coverage with zero throttling.</span>
+                </div>
+            </div>
+
+            <!-- Price and Billing -->
+            <div class="py-xs">
+                <div class="text-2xl font-extrabold text-on-surface">₹8,999 <span class="text-xs font-normal text-outline">/ month</span></div>
+                <div class="text-[9px] text-secondary font-bold uppercase tracking-wider mt-0.5">Billed Annually (Save 20%)</div>
+            </div>
+
+            <!-- Simulated Credit Card Inputs -->
+            <div class="space-y-sm text-left bg-white/5 p-md rounded-xl border border-white/5 text-xs">
+                <div class="space-y-xs">
+                    <label class="text-[9px] uppercase font-bold text-outline">Card Number</label>
+                    <input type="text" class="w-full bg-white/5 border border-white/10 rounded px-2.5 py-1.5 text-on-surface focus:outline-none focus:border-secondary" placeholder="4242 •••• •••• 4242" value="4242 4242 4242 4242"/>
+                </div>
+                <div class="grid grid-cols-2 gap-sm">
+                    <div class="space-y-xs">
+                        <label class="text-[9px] uppercase font-bold text-outline">Expiry</label>
+                        <input type="text" class="w-full bg-white/5 border border-white/10 rounded px-2.5 py-1.5 text-on-surface focus:outline-none focus:border-secondary" placeholder="MM/YY" value="12/29"/>
+                    </div>
+                    <div class="space-y-xs">
+                        <label class="text-[9px] uppercase font-bold text-outline">CVC</label>
+                        <input type="text" class="w-full bg-white/5 border border-white/10 rounded px-2.5 py-1.5 text-on-surface focus:outline-none focus:border-secondary" placeholder="•••" value="123"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Console Log for Handshake Status -->
+            <div id="upgrade-status-box" class="hidden font-mono text-[10px] p-sm rounded bg-surface-container-high/80 border border-white/5 text-primary text-left flex items-start gap-sm animate-pulse mb-4">
+                <span class="material-symbols-outlined text-sm animate-spin mt-0.5">sync</span>
+                <span id="upgrade-status-text" class="flex-1 leading-normal">Initiating stripe handshake...</span>
+            </div>
+
+            <!-- Action button -->
+            <button id="confirm-upgrade-btn" class="w-full py-md bg-secondary text-on-secondary font-bold text-sm rounded-lg hover:shadow-[0_0_15px_rgba(67,239,174,0.3)] transition-all active:scale-[0.98]">
+                Upgrade Account Now
+            </button>
+        </div>
+    </div>
+
+    <!-- Interactive Layer for glass micro-interactions -->
+    <script src="/static/js/shader.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

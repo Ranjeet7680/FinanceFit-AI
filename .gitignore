@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+env/
+venv/
+ENV/
+
+# Databases
+financial_health.db
+financial_health.db-journal
+financial_health.db-shm
+financial_health.db-wal
+
+# Generated models
+ml_models.pkl
+
+# IDEs
+.vscode/
+.idea/

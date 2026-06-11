@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>FinanceFit AI | Master Your Financial Future</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Geist:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <style>
+        body { background-color: #0b1326; overflow-x: hidden; }
+        .glass-card {
+            background: rgba(23, 31, 51, 0.15);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .ai-chip {
+            background: linear-gradient(135deg, rgba(192, 193, 255, 0.1), rgba(81, 83, 222, 0.1));
+            border: 1px solid rgba(192, 193, 255, 0.3);
+        }
+        .particle-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-float-delayed { animation: float 6s ease-in-out infinite 3s; }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                      "surface-container-lowest": "#060e20",
+                      "tertiary": "#c0c1ff",
+                      "on-tertiary": "#1000a9",
+                      "on-tertiary-fixed-variant": "#2f2ebe",
+                      "on-background": "#dae2fd",
+                      "on-secondary": "#003825",
+                      "surface-container": "#171f33",
+                      "surface-container-low": "#131b2e",
+                      "surface-bright": "#31394d",
+                      "error-container": "#93000a",
+                      "outline": "#8d90a2",
+                      "inverse-on-surface": "#283044",
+                      "secondary-container": "#00d294",
+                      "tertiary-fixed": "#e1e0ff",
+                      "on-primary-container": "#dfe3ff",
+                      "secondary": "#43efae",
+                      "tertiary-container": "#5153de",
+                      "outline-variant": "#434656",
+                      "on-tertiary-container": "#e3e2ff",
+                      "tertiary-fixed-dim": "#c0c1ff",
+                      "secondary-fixed": "#56febc",
+                      "on-error-container": "#ffdad6",
+                      "error": "#ffb4ab",
+                      "surface-dim": "#0b1326",
+                      "surface-tint": "#b7c4ff",
+                      "on-primary": "#002682",
+                      "surface-variant": "#2d3449",
+                      "on-secondary-container": "#005439",
+                      "inverse-surface": "#dae2fd",
+                      "primary-container": "#0052ff",
+                      "surface-container-highest": "#2d3449",
+                      "on-error": "#690005",
+                      "primary-fixed": "#dde1ff",
+                      "background": "#0b1326",
+                      "primary-fixed-dim": "#b7c4ff",
+                      "on-primary-fixed-variant": "#0038b6",
+                      "surface-container-high": "#222a3d",
+                      "on-secondary-fixed-variant": "#005137",
+                      "on-primary-fixed": "#001452",
+                      "on-surface": "#dae2fd",
+                      "primary": "#b7c4ff",
+                      "on-surface-variant": "#c3c5d9",
+                      "surface": "#0b1326",
+                      "on-secondary-fixed": "#002114",
+                      "secondary-fixed-dim": "#2be1a1",
+                      "inverse-primary": "#004ced",
+                      "on-tertiary-fixed": "#07006c"
+              },
+              borderRadius: {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              spacing: {
+                      "xl": "32px",
+                      "lg": "24px",
+                      "margin-desktop": "48px",
+                      "base": "4px",
+                      "gutter": "24px",
+                      "md": "16px",
+                      "margin-mobile": "16px",
+                      "xs": "4px",
+                      "sm": "8px"
+              },
+              fontFamily: {
+                      "display-lg": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "title-md": ["Inter"],
+                      "label-sm": ["Geist"]
+              },
+              fontSize: {
+                      "display-lg": ["56px", {"lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                      "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "500"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="text-on-surface">
+
+    <!-- Introductory Splash Screen -->
+    <div id="splash-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0b1326] transition-all duration-1000 ease-out">
+        <div class="relative w-48 h-48 flex items-center justify-center">
+            <div class="absolute inset-0 border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin [animation-duration:1.5s]"></div>
+            <div class="absolute inset-2 border-4 border-t-transparent border-r-secondary border-b-transparent border-l-transparent rounded-full animate-spin [animation-duration:1s] [animation-direction:reverse]"></div>
+            <div class="absolute inset-4 border-2 border-t-tertiary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin [animation-duration:2s]"></div>
+            <span class="material-symbols-outlined text-primary text-5xl animate-pulse" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+        </div>
+        <h2 class="text-2xl font-bold mt-8 bg-gradient-to-r from-primary via-tertiary to-secondary bg-clip-text text-transparent tracking-widest uppercase">FinanceFit AI</h2>
+        <div class="mt-4 font-mono text-[10px] text-outline w-64 h-8 overflow-hidden text-center opacity-70" id="splash-logs">
+            Initializing secure layers...
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex justify-between items-center px-margin-desktop py-md w-full sticky top-0 z-50 bg-surface-container/15 backdrop-blur-xl border-b border-white/10 shadow-sm">
+        <div class="font-display-lg text-display-lg font-bold text-primary tracking-tight cursor-pointer" onclick="window.location.href='/'">FinanceFit AI</div>
+        <div class="hidden md:flex gap-xl items-center">
+            <a class="nav-auth-link font-title-md text-title-md text-on-surface-variant hover:text-primary transition-colors px-sm py-xs rounded" href="#">Dashboard</a>
+            <a class="nav-auth-link font-title-md text-title-md text-on-surface-variant hover:text-primary transition-colors px-sm py-xs rounded" href="#">Portfolio</a>
+            <a class="nav-auth-link font-title-md text-title-md text-on-surface-variant hover:text-primary transition-colors px-sm py-xs rounded" href="#">AI Insights</a>
+            <a class="nav-auth-link font-title-md text-title-md text-on-surface-variant hover:text-primary transition-colors px-sm py-xs rounded" href="#">Markets</a>
+        </div>
+        <div class="flex gap-md items-center">
+            <!-- Show login/profile button dynamically -->
+            <button id="auth-status-btn" class="font-title-md text-title-md text-on-primary bg-primary hover:bg-primary/90 px-md py-1.5 rounded-full transition-all">
+                Sign In
+            </button>
+        </div>
+    </nav>
+
+    <main class="relative min-h-screen">
+        <!-- Shader Background -->
+        <div class="absolute inset-0 z-0">
+            <canvas class="particle-bg" id="particles"></canvas>
+        </div>
+        
+        <!-- Hero Content -->
+        <section class="relative z-10 flex flex-col md:flex-row items-center justify-between min-h-[921px] px-margin-mobile md:px-margin-desktop py-xl">
+            <!-- Left Column: Text -->
+            <div class="w-full md:w-1/2 flex flex-col items-start gap-lg">
+                <div class="ai-chip px-md py-base rounded-full flex items-center gap-sm">
+                    <span class="material-symbols-outlined text-tertiary text-[18px]" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                    <span class="font-label-sm text-label-sm text-tertiary uppercase tracking-widest">Institutional AI Active</span>
+                </div>
+                <h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface leading-tight">
+                    Master Your Financial <br class="hidden md:block"/> Future with AI
+                </h1>
+                <p class="font-body-md text-body-md text-on-surface-variant max-w-lg">
+                    Track, analyze, predict and optimize your financial health in real-time with an intelligent partner designed for elite wealth management.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-md w-full sm:w-auto mt-md">
+                    <button id="get-started-btn" class="bg-primary-container text-on-primary-container px-xl py-md rounded-xl font-title-md text-title-md shadow-lg shadow-primary/20 hover:brightness-110 transition-all">
+                        Get Started
+                    </button>
+                    <button id="google-auth-btn" class="border border-outline text-on-surface px-xl py-md rounded-xl font-title-md text-title-md hover:bg-white/5 transition-all flex items-center justify-center gap-sm">
+                        <img alt="Google" class="w-5 h-5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCGNx5Yw2aYZ4LJhbPRQy9K7wpkEWNU2OHJ4WC2UkJgRXyoOoJN3jjSE1uvuNdkSb-7Q2-GdPCDJc4vDAmVMg7HHxr_kSY-RZGSlw7mYlftQlhjFZPqp9oUuxUoJKc-7RMj-BoTQro0gCyKfU7H0iFuDnxI8XMtLgyiPhD-YJqHj-4gDXlixt2ywDnlzrgsdHmcm3-Ezetzka4bbXwuhxuQ3WHWN7s2bIl5jVwVqtxPK-SHRYixYr0HBlKB86Q8Bwhf77j3Xyny8s"/>
+                        Continue with Google
+                    </button>
+                    <button id="explore-demo-btn" class="text-primary font-title-md text-title-md px-xl py-md hover:underline transition-all">
+                        Explore Demo
+                    </button>
+                </div>
+                
+                <!-- Status notification box -->
+                <div id="welcome-status-box" class="hidden py-2 px-4 rounded bg-secondary/10 border border-secondary/20 text-secondary text-xs font-semibold animate-pulse mt-4">
+                    Connecting to secure services...
+                </div>
+            </div>
+            
+            <!-- Right Column: Visuals & Floating Cards -->
+            <div class="w-full md:w-1/2 relative mt-xl md:mt-0 flex justify-center items-center">
+                <!-- Main Illustration -->
+                <div class="relative w-full aspect-square max-w-[500px]">
+                    <img class="w-full h-full object-contain rounded-3xl mix-blend-lighten opacity-80" data-alt="A futuristic 3D financial visualization showing glowing blue holographic charts, abstract crystalline shapes, and golden floating currency symbols against a deep midnight navy background. The lighting is dramatic and cinematic, highlighting the glassmorphic surfaces and high-tech aesthetic of the FinanceFit AI brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeo7fnUH86vmISJmVwUI2EOeeBmV5Vu9BfLzdV1w40xZpy2jVyI3WtEIbJRDBL-Jn9v6QuRohvgOA81R4TuQ2rDnMMN-Rivn0Mz5aOgtJp1cHWUYTUX1Iwq6cHjf2WY44dU30rSiH5_tMynhz6z_VGzrISuJwcH-EuQ_0mEtv4Q03KF--2_zxQNdsYv8pZ-GDV-4riw_pXWBY84yDCzPgpx8263Lk8ODwwFC_uELFPRkQpJf5PhgxP-L582GQXvnOIDjJ9E53H3BU"/>
+                    
+                    <!-- Floating Cards -->
+                    <!-- AI Coach -->
+                    <div class="glass-card absolute -top-8 -left-8 md:-left-16 p-md rounded-2xl animate-float w-56 flex flex-col gap-sm">
+                        <div class="flex items-center gap-md">
+                            <div class="w-10 h-10 bg-tertiary-container rounded-full flex items-center justify-center">
+                                <span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+                            </div>
+                            <div>
+                                <div class="font-label-sm text-label-sm text-on-surface-variant">AI Coach</div>
+                                <div class="font-title-md text-title-md text-on-surface">Insight Ready</div>
+                            </div>
+                        </div>
+                        <div class="h-1 bg-surface-variant rounded-full overflow-hidden">
+                            <div class="bg-secondary h-full w-[70%]"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Health Score -->
+                    <div class="glass-card absolute top-1/2 -right-4 md:-right-12 transform -translate-y-1/2 p-md rounded-2xl animate-float-delayed w-48 text-center flex flex-col gap-sm">
+                        <div class="font-label-sm text-label-sm text-on-surface-variant">Financial Health</div>
+                        <div class="text-[40px] font-bold text-secondary-fixed">85<span class="text-title-md font-normal text-outline">/100</span></div>
+                        <div class="text-label-sm text-secondary flex items-center justify-center gap-xs">
+                            <span class="material-symbols-outlined text-[14px]">trending_up</span>
+                            Strong Stability
+                        </div>
+                    </div>
+                    
+                    <!-- Wealth Prediction -->
+                    <div class="glass-card absolute -bottom-8 left-1/4 p-md rounded-2xl animate-float w-52 border-l-4 border-l-secondary-container">
+                        <div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-tighter">Wealth Prediction</div>
+                        <div class="flex items-end gap-sm">
+                            <div class="text-[32px] font-bold text-on-surface">+22%</div>
+                            <div class="text-label-sm text-on-secondary-container bg-secondary-container/30 px-sm py-[2px] rounded-full mb-base">Projected</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Stats Section (Bento Style) -->
+        <section class="relative z-10 px-margin-mobile md:px-margin-desktop py-xl grid grid-cols-1 md:grid-cols-12 gap-gutter max-w-7xl mx-auto">
+            <div class="md:col-span-4 glass-card p-xl rounded-3xl flex flex-col gap-md">
+                <span class="material-symbols-outlined text-secondary text-display-lg">account_balance_wallet</span>
+                <h3 class="font-headline-lg text-headline-lg">Real-time Aggregation</h3>
+                <p class="font-body-md text-on-surface-variant">Connect all your institutional accounts securely. Every transaction, asset, and liability in one glass-clear view.</p>
+            </div>
+            
+            <div class="md:col-span-8 glass-card p-xl rounded-3xl relative overflow-hidden group">
+                <div class="relative z-10 flex flex-col md:flex-row h-full gap-xl">
+                    <div class="flex-1 flex flex-col justify-center gap-md">
+                        <h3 class="font-headline-lg text-headline-lg">Predictive Wealth Engine</h3>
+                        <p class="font-body-md text-on-surface-variant">Our proprietary AI simulates thousands of market scenarios to forecast your portfolio's growth over 5, 10, and 20 years.</p>
+                        <a class="text-secondary font-title-md flex items-center gap-sm group-hover:translate-x-2 transition-transform" href="/dashboard">
+                            See how it works <span class="material-symbols-outlined">arrow_forward</span>
+                        </a>
+                    </div>
+                    <div class="flex-1 min-h-[200px] bg-surface-container-high rounded-2xl p-md border border-white/5">
+                        <!-- Mock Chart -->
+                        <div class="flex items-end justify-between h-full gap-xs pt-xl">
+                            <div class="bg-primary/20 w-full rounded-t-lg transition-all hover:bg-primary/40" style="height: 40%"></div>
+                            <div class="bg-primary/30 w-full rounded-t-lg transition-all hover:bg-primary/50" style="height: 60%"></div>
+                            <div class="bg-primary/40 w-full rounded-t-lg transition-all hover:bg-primary/60" style="height: 50%"></div>
+                            <div class="bg-primary/50 w-full rounded-t-lg transition-all hover:bg-primary/70" style="height: 80%"></div>
+                            <div class="bg-primary/60 w-full rounded-t-lg transition-all hover:bg-primary/80" style="height: 95%"></div>
+                            <div class="bg-secondary-fixed w-full rounded-t-lg shadow-glow" style="height: 100%; box-shadow: 0 0 20px rgba(86, 254, 188, 0.4)"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Pricing Plans Section -->
+        <section class="relative z-10 px-margin-mobile md:px-margin-desktop py-xl max-w-6xl mx-auto text-center">
+            <div class="mb-xl">
+                <span class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">Pricing Plans</span>
+                <h2 class="font-headline-lg text-headline-lg text-on-surface mt-sm">Choose Your Financial Tier</h2>
+                <p class="text-on-surface-variant text-sm mt-xs max-w-md mx-auto">Elevate your wealth management with institutional-grade risk models and active AI coaching.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter max-w-3xl mx-auto mt-lg">
+                <!-- Standard Tier -->
+                <div class="glass-card p-xl rounded-3xl flex flex-col justify-between items-center text-center relative border border-white/5 group hover:border-white/10 transition-all duration-300">
+                    <div class="w-full">
+                        <div class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Standard Access</div>
+                        <h3 class="text-2xl font-bold text-on-surface mt-sm">Free</h3>
+                        <p class="text-xs text-on-surface-variant mt-xs">Essential tracking and basic corporate queries.</p>
+                        <hr class="border-white/5 my-lg w-full"/>
+                        <ul class="space-y-sm text-left text-xs text-on-surface-variant mx-auto max-w-[220px]">
+                            <li class="flex items-center gap-sm"><span class="material-symbols-outlined text-[16px] text-outline">check_circle</span>Basic Corporate Search</li>
+                            <li class="flex items-center gap-sm"><span class="material-symbols-outlined text-[16px] text-outline">check_circle</span>Standard AI Insights</li>
+                            <li class="flex items-center gap-sm"><span class="material-symbols-outlined text-[16px] text-outline">check_circle</span>Single Portfolio Sandbox</li>
+                        </ul>
+                    </div>
+                    <button class="w-full mt-xl py-md bg-white/5 border border-white/10 text-on-surface font-semibold rounded-xl hover:bg-white/10 transition-all" onclick="window.location.href='/login'">Get Started</button>
+                </div>
+                
+                <!-- Pro/Elite Tier -->
+                <div class="relative rounded-3xl p-[1px] bg-gradient-to-br from-secondary via-primary to-tertiary shadow-xl hover:shadow-[0_0_30px_rgba(67,239,174,0.15)] transition-all duration-500 group">
+                    <div class="bg-[#11192e] rounded-[23px] p-xl flex flex-col justify-between items-center h-full">
+                        <div class="w-full">
+                            <span class="absolute -top-3 right-6 bg-secondary text-on-secondary font-label-sm text-[9px] uppercase px-3 py-1 rounded-full font-bold tracking-widest shadow-lg">Popular</span>
+                            <div class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Elite Access</div>
+                            <h3 class="text-2xl font-bold text-on-surface mt-sm">₹8,999<span class="text-xs font-normal text-outline"> / mo</span></h3>
+                            <p class="text-xs text-on-surface-variant mt-xs">Unlock all advanced simulators, budget planners, digital twin & rebalancing.</p>
+                            <hr class="border-white/5 my-lg w-full"/>
+                            <ul class="space-y-sm text-left text-xs text-on-surface mx-auto max-w-[220px]">
+                                <li class="flex items-center gap-sm"><span class="material-symbols-outlined text-[16px] text-secondary">check_circle</span>Unlimited Simulators</li>
+                                <li class="flex items-center gap-sm"><span class="material-symbols-outlined text-[16px] text-secondary">check_circle</span>Active Copilot & Voice</li>
+                                <li class="flex items-center gap-sm"><span class="material-symbols-outlined text-[16px] text-secondary">check_circle</span>Financial Digital Twin</li>
+                                <li class="flex items-center gap-sm"><span class="material-symbols-outlined text-[16px] text-secondary">check_circle</span>Confetti & Action items</li>
+                            </ul>
+                        </div>
+                        <button id="upgrade-tier-landing-btn" class="w-full mt-xl py-md bg-gradient-to-r from-secondary to-primary text-on-primary font-bold rounded-xl hover:brightness-110 shadow-lg shadow-secondary/20 transition-all">Upgrade to Pro</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Upgrade Checkout Modal -->
+    <div id="checkout-modal" class="fixed inset-0 z-[90] flex items-center justify-center p-md bg-black/70 backdrop-blur-md hidden">
+        <div class="glass-card w-full max-w-md rounded-2xl border border-white/10 p-lg md:p-xl space-y-lg shadow-2xl relative text-center bg-[#11192e]">
+            <button id="close-checkout-btn" class="absolute top-4 right-4 p-2 hover:bg-white/10 rounded-full transition-colors text-outline hover:text-on-surface">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <div class="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center mx-auto border border-secondary/20">
+                <span class="material-symbols-outlined text-secondary text-2xl" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-on-surface">Upgrade to Elite Access</h3>
+                <p class="text-xs text-outline mt-1">Simulated Stripe payment gateway</p>
+            </div>
+            <div class="space-y-md text-left">
+                <div class="space-y-xs">
+                    <label class="text-[10px] uppercase font-bold text-outline">Card Number</label>
+                    <input type="text" id="card-number" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-secondary" placeholder="4242 •••• •••• 4242" value="4242 4242 4242 4242"/>
+                </div>
+                <div class="grid grid-cols-2 gap-sm">
+                    <div class="space-y-xs">
+                        <label class="text-[10px] uppercase font-bold text-outline">Expiry</label>
+                        <input type="text" id="card-expiry" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-secondary" placeholder="MM/YY" value="12/29"/>
+                    </div>
+                    <div class="space-y-xs">
+                        <label class="text-[10px] uppercase font-bold text-outline">CVC</label>
+                        <input type="text" id="card-cvc" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-secondary" placeholder="•••" value="123"/>
+                    </div>
+                </div>
+            </div>
+            <div id="checkout-status-box" class="hidden font-mono text-[10px] p-sm rounded bg-primary-container/10 border border-primary/20 text-primary text-left flex items-start gap-sm animate-pulse mb-4">
+                <span class="material-symbols-outlined text-sm animate-spin mt-0.5">sync</span>
+                <span id="checkout-status-text" class="flex-1 leading-normal">Connecting...</span>
+            </div>
+            <button id="confirm-checkout-btn" class="w-full py-md bg-secondary text-on-secondary font-bold text-xs rounded-xl hover:shadow-lg shadow-secondary/20 transition-all">Pay ₹8,999 Now</button>
+        </div>
+    </div>
+    <canvas id="confetti-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-[120] hidden"></canvas>
+
+    <!-- Footer -->
+    <footer class="w-full py-lg px-margin-desktop flex flex-col md:flex-row justify-between items-center bg-surface-dim border-t border-outline-variant/30 gap-lg">
+        <div class="flex flex-col gap-xs text-center md:text-left">
+            <div class="font-title-md text-title-md text-on-surface font-semibold">FinanceFit AI</div>
+            <div class="font-label-sm text-label-sm text-outline">© 2026 FinanceFit AI. Institutional Grade Intelligence.</div>
+        </div>
+        <div class="flex flex-wrap justify-center gap-xl">
+            <a class="font-label-sm text-label-sm text-outline hover:text-primary-fixed transition-colors" href="#">Privacy Policy</a>
+            <a class="font-label-sm text-label-sm text-outline hover:text-primary-fixed transition-colors" href="#">Terms of Service</a>
+            <a class="font-label-sm text-label-sm text-outline hover:text-primary-fixed transition-colors" href="#">Security</a>
+            <a class="font-label-sm text-label-sm text-outline hover:text-primary-fixed transition-colors" href="#">Trust Center</a>
+        </div>
+    </footer>
+
+    <!-- Interactive script -->
+    <script>
+        const token = localStorage.getItem('financefit_token');
+        const authBtn = document.getElementById('auth-status-btn');
+        const statusBox = document.getElementById('welcome-status-box');
+
+        // Splash screen log simulator
+        const splash = document.getElementById('splash-screen');
+        const splashLogs = document.getElementById('splash-logs');
+        const logs = [
+            "Connecting to secure financial ledger...",
+            "Synchronizing 288k entity records...",
+            "Initializing Ridge regression inference model...",
+            "Activating quantum biometric auth pipelines...",
+            "FinanceFit AI systems ready."
+        ];
+        let logIndex = 0;
+        const logInterval = setInterval(() => {
+            if (logIndex < logs.length) {
+                splashLogs.textContent = logs[logIndex++];
+            } else {
+                clearInterval(logInterval);
+                splash.classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => splash.remove(), 1000);
+            }
+        }, 350);
+
+        // Render dynamic auth button status
+        if (token) {
+            authBtn.textContent = 'Go to Dashboard';
+            authBtn.classList.remove('text-on-primary', 'bg-primary');
+            authBtn.classList.add('text-secondary-fixed', 'border', 'border-secondary/20', 'bg-secondary/10');
+            authBtn.addEventListener('click', () => {
+                window.location.href = '/dashboard';
+            });
+        } else {
+            authBtn.addEventListener('click', () => {
+                window.location.href = '/login';
+            });
+        }
+
+        // Nav auth check
+        document.querySelectorAll('.nav-auth-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (localStorage.getItem('financefit_token')) {
+                    window.location.href = '/dashboard';
+                } else {
+                    window.location.href = '/login';
+                }
+            });
+        });
+
+        // Get Started
+        document.getElementById('get-started-btn').addEventListener('click', () => {
+            window.location.href = '/login';
+        });
+
+        // Explore Demo
+        document.getElementById('explore-demo-btn').addEventListener('click', () => {
+            localStorage.setItem('financefit_token', 'demo-token-777');
+            localStorage.setItem('financefit_user', JSON.stringify({ name: 'Demo User', tier: 'Standard Tier' }));
+            showStatus('Demo access granted. Loading portal...');
+            setTimeout(() => {
+                window.location.href = '/dashboard';
+            }, 1000);
+        });
+
+        // Status reporter
+        function showStatus(msg) {
+            statusBox.textContent = msg;
+            statusBox.classList.remove('hidden');
+        }
+
+        // ----------------------------------------------------
+        // GOOGLE AUTH POPUP HANDLER
+        // ----------------------------------------------------
+        document.getElementById('google-auth-btn').addEventListener('click', () => {
+            showStatus('Initializing Google OAuth protocol...');
+            
+            // Open a centered popup window for Google Authentication
+            const width = 500;
+            const height = 600;
+            const left = (window.screen.width / 2) - (width / 2);
+            const top = (window.screen.height / 2) - (height / 2);
+            
+            const popup = window.open(
+                '/static/google_auth.html', 
+                'GoogleAuthPopup', 
+                `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,status=no`
+            );
+            
+            if (window.focus && popup) popup.focus();
+        });
+
+        // Listen for message from the google auth popup window
+        window.addEventListener('message', (event) => {
+            // Verify origin matches for security
+            if (event.origin !== window.location.origin) return;
+            
+            const msg = event.data;
+            if (msg.type === 'OAUTH_SUCCESS') {
+                showStatus(`Google credentials verified. Authenticated as: ${msg.user.name}`);
+                
+                // Save token and user details to localStorage
+                localStorage.setItem('financefit_token', msg.token);
+                localStorage.setItem('financefit_user', JSON.stringify(msg.user));
+                
+                // Redirect to dashboard after a brief delay
+                setTimeout(() => {
+                    window.location.href = '/dashboard';
+                }, 1000);
+            } else if (msg.type === 'OAUTH_FAILURE') {
+                showStatus(`Authentication aborted: ${msg.error}`);
+            }
+        });
+
+        // ----------------------------------------------------
+        // Checkout flow logic on Landing Page
+        // ----------------------------------------------------
+        const checkoutModal = document.getElementById('checkout-modal');
+        const confirmCheckoutBtn = document.getElementById('confirm-checkout-btn');
+        const closeCheckoutBtn = document.getElementById('close-checkout-btn');
+        const checkoutStatusBox = document.getElementById('checkout-status-box');
+        const checkoutStatusText = document.getElementById('checkout-status-text');
+
+        document.getElementById('upgrade-tier-landing-btn').addEventListener('click', () => {
+            checkoutModal.classList.remove('hidden');
+            checkoutStatusBox.classList.add('hidden');
+            confirmCheckoutBtn.disabled = false;
+            confirmCheckoutBtn.textContent = 'Pay ₹8,999 Now';
+        });
+
+        closeCheckoutBtn.addEventListener('click', () => {
+            checkoutModal.classList.add('hidden');
+        });
+
+        confirmCheckoutBtn.addEventListener('click', () => {
+            confirmCheckoutBtn.disabled = true;
+            confirmCheckoutBtn.textContent = 'Processing...';
+            checkoutStatusBox.classList.remove('hidden');
+            checkoutStatusText.textContent = "Connecting to Stripe secure billing portal...";
+
+            setTimeout(() => {
+                checkoutStatusText.textContent = "Authorizing credit transaction token...";
+                setTimeout(async () => {
+                    checkoutStatusText.textContent = "Updating user tier permissions...";
+                    
+                    let activeToken = localStorage.getItem('financefit_token');
+                    let activeUser = localStorage.getItem('financefit_user');
+
+                    if (!activeToken || !activeUser) {
+                        // Create a standard test user first, then upgrade them
+                        activeToken = "test-token-456";
+                        activeUser = JSON.stringify({ name: "Demo User", tier: "Standard Tier" });
+                        localStorage.setItem('financefit_token', activeToken);
+                        localStorage.setItem('financefit_user', activeUser);
+                    }
+
+                    try {
+                        const res = await fetch('/api/user/upgrade', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ token: activeToken })
+                        });
+                        const data = await res.json();
+                        if (res.ok && data.success) {
+                            // Update local session
+                            const parsed = JSON.parse(activeUser);
+                            parsed.tier = "Elite Tier";
+                            localStorage.setItem('financefit_user', JSON.stringify(parsed));
+
+                            checkoutStatusText.textContent = "Upgrade complete! Launching confetti...";
+                            triggerConfetti();
+                            
+                            setTimeout(() => {
+                                checkoutModal.classList.add('hidden');
+                                window.location.href = '/dashboard';
+                            }, 1500);
+                        } else {
+                            checkoutStatusText.textContent = "Upgrade rejected. Check token.";
+                            confirmCheckoutBtn.disabled = false;
+                        }
+                    } catch(err) {
+                        checkoutStatusText.textContent = "Network error connecting to payment core.";
+                        confirmCheckoutBtn.disabled = false;
+                    }
+                }, 1000);
+            }, 1000);
+        });
+
+        // Lightweight confetti burst using canvas
+        function triggerConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            canvas.classList.remove('hidden');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            let particles = [];
+            const colors = ['#43efae', '#0052ff', '#c0c1ff', '#5153de', '#ffb4ab'];
+            
+            for (let i = 0; i < 150; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    size: Math.random() * 6 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    speedY: Math.random() * 5 + 3,
+                    speedX: Math.random() * 4 - 2,
+                    rotation: Math.random() * 360,
+                    rotationSpeed: Math.random() * 4 - 2
+                });
+            }
+            
+            let animationFrame;
+            function drawConfetti() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let active = false;
+                
+                particles.forEach(p => {
+                    p.y += p.speedY;
+                    p.x += p.speedX;
+                    p.rotation += p.rotationSpeed;
+                    
+                    if (p.y < canvas.height) {
+                        active = true;
+                    }
+                    
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rotation * Math.PI / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+                    ctx.restore();
+                });
+                
+                if (active) {
+                    animationFrame = requestAnimationFrame(drawConfetti);
+                } else {
+                    canvas.classList.add('hidden');
+                    cancelAnimationFrame(animationFrame);
+                }
+            }
+            drawConfetti();
+        }
+
+        // ----------------------------------------------------
+        // Particle Background Animation
+        // ----------------------------------------------------
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = Math.random() * 0.3 - 0.15;
+                this.speedY = Math.random() * 0.3 - 0.15;
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+                    this.reset();
+                }
+            }
+            draw() {
+                ctx.fillStyle = `rgba(183, 196, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 80; i++) {
+            particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>

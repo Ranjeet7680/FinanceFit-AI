@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Sign in - Google Accounts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet"/>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #ffffff;
+        }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #1a73e8;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen px-6 py-8">
+    <div class="w-full max-w-sm border border-gray-200 rounded-lg p-8 shadow-sm">
+        
+        <!-- Google Logo -->
+        <div class="flex justify-center mb-6">
+            <svg class="w-10 h-10" viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+                <g transform="matrix(1, 0, 0, 1, 0, 0)">
+                    <path d="M21.35,11.1H12v2.7h5.38C16.88,16.58,14.67,18,12,18c-3.31,0-6-2.69-6-6s2.69-6,6-6c1.66,0,3.14,0.69,4.22,1.78l2-2C16.38,3.95,14.3,3,12,3C7.03,3,3,7.03,3,12s4.03,9,9,9c4.97,0,8.75-3.5,8.75-8.75A7.51,7.51,0,0,0,21.35,11.1Z" fill="#4285F4"/>
+                    <path d="M12,21c4.97,0,8.75-3.5,8.75-8.75a7.51,7.51,0,0,0-.4-1.15H12v2.7h5.38C16.88,16.58,14.67,18,12,18Z" fill="#34A853"/>
+                    <path d="M17.38,13.8c-.5,2.78-2.71,4.2-5.38,4.2c-3.31,0-6-2.69-6-6H3c0,4.97,4.03,9,9,9c4.97,0,8.75-3.5,8.75-8.75A7.51,7.51,0,0,0,20.75,12.65Z" fill="#FBBC05"/>
+                    <path d="M12,6c1.66,0,3.14,0.69,4.22,1.78l2-2C16.38,3.95,14.3,3,12,3C7.03,3,3,7.03,3,12h3C6,8.69,8.69,6,12,6Z" fill="#EA4335"/>
+                </g>
+            </svg>
+        </div>
+
+        <!-- Headers -->
+        <div class="text-center mb-8">
+            <h1 class="text-xl font-medium text-gray-900">Sign in with Google</h1>
+            <p class="text-sm text-gray-500 mt-1">to continue to <span class="font-medium text-gray-700">FinanceFit AI</span></p>
+        </div>
+
+        <!-- Account Selection Sheet -->
+        <div id="account-selection" class="space-y-4">
+            <button class="account-row w-full flex items-center gap-4 p-3 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors text-left" data-email="alex@sterling.com" data-name="Alex Sterling">
+                <img alt="Alex Profile" class="w-8 h-8 rounded-full bg-gray-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBq9SmkzfNsyxewpJLGWx32_BD4n-fVyAsRNOniAh4cTZY9Kt9Nzo59WF7-HRHutlvSP1J-t4DaUjJR-ZjaX9f1H0n0t3u2QePVBU6YIY5qWJg2l0HxyFVDNH_XivH2D9uwBeh4L2s2T6QWroev2zffwhvobRpFV360c5oaDlLUR1qd5QoGIJnPx4Lex1uL2Zz_WiExDBpIAAtIxD92eLC551FcffQFog6VHSJfzrvL1VWpgZKbz0jm4wMGoLMsjjvFgRSsySekDAY"/>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 truncate">Alex Sterling</p>
+                    <p class="text-xs text-gray-500 truncate">alex@sterling.com</p>
+                </div>
+            </button>
+
+            <button class="account-row w-full flex items-center gap-4 p-3 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors text-left" data-email="guest@financefit.ai" data-name="Standard Tester">
+                <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm">
+                    T
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 truncate">Standard Tester</p>
+                    <p class="text-xs text-gray-500 truncate">guest@financefit.ai</p>
+                </div>
+            </button>
+            
+            <button id="cancel-btn" class="w-full text-center text-sm text-gray-500 hover:text-gray-700 py-2 mt-2">
+                Cancel
+            </button>
+        </div>
+
+        <!-- Processing Screen -->
+        <div id="processing" class="hidden flex flex-col items-center justify-center py-6 space-y-4">
+            <div class="spinner"></div>
+            <p class="text-sm text-gray-600 font-medium">Authorizing secure connection...</p>
+        </div>
+        
+    </div>
+
+    <!-- Security details -->
+    <div class="mt-8 text-center text-xs text-gray-400 max-w-xs leading-normal">
+        To continue, Google will share your name, email address, language preference, and profile picture with FinanceFit AI.
+    </div>
+
+    <script>
+        const selectionSheet = document.getElementById('account-selection');
+        const processingSheet = document.getElementById('processing');
+
+        document.querySelectorAll('.account-row').forEach(row => {
+            row.addEventListener('click', () => {
+                const email = row.getAttribute('data-email');
+                const name = row.getAttribute('data-name');
+                const tier = email === 'alex@sterling.com' ? 'Elite Tier' : 'Standard Tier';
+
+                // Swap views
+                selectionSheet.classList.add('hidden');
+                processingSheet.classList.remove('hidden');
+
+                // Simulate authentication handshake
+                setTimeout(() => {
+                    // Send message back to parent window
+                    if (window.opener) {
+                        window.opener.postMessage({
+                            type: 'OAUTH_SUCCESS',
+                            token: 'google-oauth-token-' + Math.random().toString(36).substr(2, 9),
+                            user: {
+                                name: name,
+                                email: email,
+                                tier: tier
+                            }
+                        }, window.location.origin);
+                    }
+                    
+                    // Close popup
+                    window.close();
+                }, 1200);
+            });
+        });
+
+        document.getElementById('cancel-btn').addEventListener('click', () => {
+            if (window.opener) {
+                window.opener.postMessage({
+                    type: 'OAUTH_FAILURE',
+                    error: 'User cancelled auth prompt'
+                }, window.location.origin);
+            }
+            window.close();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+/* login.css - Premium Animations & Custom Styles for FinanceFit AI Login */
+
+/* Standard material icons configuration */
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Glassmorphism Card Style */
+.glass-card {
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    background: rgba(23, 31, 51, 0.45);
+    position: relative;
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                box-shadow 0.5s ease, 
+                border-color 0.5s ease;
+}
+
+.glass-card:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 
+                0 0 45px rgba(0, 82, 255, 0.12);
+}
+
+.glass-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 0.75rem;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05), rgba(183, 196, 255, 0.2));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+/* Background grid breathing pulse animation */
+@keyframes grid-pulse {
+    0% { opacity: 0.12; }
+    50% { opacity: 0.28; }
+    100% { opacity: 0.12; }
+}
+.grid-overlay {
+    animation: grid-pulse 8s ease-in-out infinite;
+}
+
+/* Staggered page entry animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+    animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.animate-fade-in-up {
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+
+/* Double concentric pulse rings for biometric fingerprint */
+@keyframes pulse-ring {
+    0% { transform: scale(0.95); opacity: 0; }
+    50% { opacity: 0.35; }
+    100% { transform: scale(1.45); opacity: 0; }
+}
+.biometric-pulse::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 2px solid #43efae;
+    animation: pulse-ring 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+    transition: all 0.5s ease;
+    pointer-events: none;
+}
+.biometric-pulse::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 1px solid #43efae;
+    animation: pulse-ring 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+    animation-delay: 1.25s;
+    transition: all 0.5s ease;
+    pointer-events: none;
+}
+
+/* Fast scanning pulse states */
+@keyframes pulse-ring-fast {
+    0% { transform: scale(0.95); opacity: 0; }
+    50% { opacity: 0.7; }
+    100% { transform: scale(1.5); opacity: 0; }
+}
+.biometric-pulse.scanning::before {
+    border-color: #0052ff;
+    animation: pulse-ring-fast 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+}
+.biometric-pulse.scanning::after {
+    border-color: #0052ff;
+    animation: pulse-ring-fast 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+    animation-delay: 0.5s;
+}
+
+/* Success flash & static halo state */
+@keyframes success-shockwave {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(67, 239, 174, 0.6); }
+    100% { transform: scale(1.05); box-shadow: 0 0 0 25px rgba(67, 239, 174, 0); }
+}
+.biometric-pulse.success {
+    animation: success-shockwave 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.biometric-pulse.success::before {
+    border-color: #43efae;
+    transform: scale(1.25);
+    box-shadow: 0 0 20px rgba(67, 239, 174, 0.8);
+    opacity: 1;
+    animation: none;
+}
+.biometric-pulse.success::after {
+    border-color: #43efae;
+    transform: scale(1.4);
+    box-shadow: 0 0 30px rgba(67, 239, 174, 0.4);
+    opacity: 1;
+    animation: none;
+}
+
+/* Color shifting fingerprint glow scanner */
+@keyframes scanner-glow {
+    0% { color: #43efae; filter: drop-shadow(0 0 2px rgba(67, 239, 174, 0.6)); }
+    50% { color: #0052ff; filter: drop-shadow(0 0 12px rgba(0, 82, 255, 0.8)); }
+    100% { color: #43efae; filter: drop-shadow(0 0 2px rgba(67, 239, 174, 0.6)); }
+}
+.scanning span.material-symbols-outlined {
+    animation: scanner-glow 1.5s ease-in-out infinite;
+}
+
+/* Bouncing laser scanline */
+@keyframes scanline {
+    0% { top: 15%; opacity: 0; }
+    10% { opacity: 0.8; }
+    90% { opacity: 0.8; }
+    100% { top: 85%; opacity: 0; }
+}
+.scan-line {
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #43efae, transparent);
+    box-shadow: 0 0 12px #43efae, 0 0 4px #43efae;
+    animation: scanline 1.5s ease-in-out infinite alternate;
+    display: none;
+    pointer-events: none;
+    z-index: 10;
+}
+.scanning .scan-line {
+    display: block;
+}
+
+/* Shimmer animation for submit buttons */
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+.shimmer-text {
+    background: linear-gradient(90deg, rgba(141, 144, 162, 0.4) 0%, rgba(183, 196, 255, 0.8) 50%, rgba(141, 144, 162, 0.4) 100%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 3s infinite linear;
+}
+
+/* Fallback Mesh gradient backdrops */
+.mesh-gradient {
+    background-color: #0b1326;
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(0, 82, 255, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(67, 239, 174, 0.1) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(192, 193, 255, 0.1) 0px, transparent 50%);
+}
+
+/* Springy bounce float labels interaction */
+.relative label {
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}

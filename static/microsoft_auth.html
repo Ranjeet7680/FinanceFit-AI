@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Sign in to your Microsoft account</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600&display=swap" rel="stylesheet"/>
+    <style>
+        body {
+            font-family: 'Segoe UI', -apple-system, system-ui, BlinkMacSystemFont, Roboto, sans-serif;
+            background-color: #f2f2f2;
+        }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #00a4ef;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen px-4">
+    <div class="w-full max-w-sm bg-white p-8 border border-gray-300 shadow-md">
+        
+        <!-- Microsoft Logo -->
+        <div class="flex items-center mb-6 gap-1.5 justify-start">
+            <svg class="w-9 h-9" viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="11" height="11" fill="#f25022"/>
+                <rect x="12" y="0" width="11" height="11" fill="#7fba00"/>
+                <rect x="0" y="12" width="11" height="11" fill="#00a4ef"/>
+                <rect x="12" y="12" width="11" height="11" fill="#ffb900"/>
+            </svg>
+            <span class="font-semibold text-gray-500 text-lg">Microsoft</span>
+        </div>
+
+        <!-- Headers -->
+        <div class="text-left mb-6">
+            <h1 class="text-xl font-semibold text-gray-900">Sign in</h1>
+            <p class="text-xs text-gray-500 mt-1">to continue to <span class="font-medium text-gray-700">FinanceFit AI</span></p>
+        </div>
+
+        <!-- Account Selection Sheet -->
+        <div id="account-selection" class="space-y-4">
+            <button class="account-row w-full flex items-center gap-4 p-3 hover:bg-gray-100 border border-gray-200 transition-colors text-left" data-email="alex@sterling.com" data-name="Alex Sterling">
+                <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">
+                    AS
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-gray-900 truncate">Alex Sterling</p>
+                    <p class="text-xs text-gray-500 truncate">alex@sterling.com</p>
+                </div>
+            </button>
+
+            <button class="account-row w-full flex items-center gap-4 p-3 hover:bg-gray-100 border border-gray-200 transition-colors text-left" data-email="office-test@financefit.ai" data-name="Azure Tester">
+                <div class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center font-bold text-sm">
+                    AT
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-gray-900 truncate">Azure Tester</p>
+                    <p class="text-xs text-gray-500 truncate">office-test@financefit.ai</p>
+                </div>
+            </button>
+            
+            <button id="cancel-btn" class="w-full text-center text-sm text-gray-500 hover:underline py-2 mt-2">
+                Cancel
+            </button>
+        </div>
+
+        <!-- Processing Screen -->
+        <div id="processing" class="hidden flex flex-col items-center justify-center py-6 space-y-4">
+            <div class="spinner"></div>
+            <p class="text-sm text-gray-600 font-medium">Contacting Azure Active Directory...</p>
+        </div>
+        
+    </div>
+
+    <!-- Security details -->
+    <div class="mt-8 text-center text-xs text-gray-400 max-w-xs leading-normal">
+        Secured by Microsoft Azure AD Identity Services. Multi-factor authentication active.
+    </div>
+
+    <script>
+        const selectionSheet = document.getElementById('account-selection');
+        const processingSheet = document.getElementById('processing');
+
+        document.querySelectorAll('.account-row').forEach(row => {
+            row.addEventListener('click', () => {
+                const email = row.getAttribute('data-email');
+                const name = row.getAttribute('data-name');
+                const tier = email === 'alex@sterling.com' ? 'Elite Tier' : 'Standard Tier';
+
+                // Swap views
+                selectionSheet.classList.add('hidden');
+                processingSheet.classList.remove('hidden');
+
+                // Simulate authentication handshake
+                setTimeout(() => {
+                    // Send message back to parent window
+                    if (window.opener) {
+                        window.opener.postMessage({
+                            type: 'OAUTH_SUCCESS',
+                            token: 'microsoft-oauth-token-' + Math.random().toString(36).substr(2, 9),
+                            user: {
+                                name: name,
+                                email: email,
+                                tier: tier
+                            }
+                        }, window.location.origin);
+                    }
+                    
+                    // Close popup
+                    window.close();
+                }, 1200);
+            });
+        });
+
+        document.getElementById('cancel-btn').addEventListener('click', () => {
+            if (window.opener) {
+                window.opener.postMessage({
+                    type: 'OAUTH_FAILURE',
+                    error: 'User cancelled Microsoft authentication prompt'
+                }, window.location.origin);
+            }
+            window.close();
+        });
+    </script>
+</body>
+</html>

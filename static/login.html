@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Login | FinanceFit AI</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Geist:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="/static/css/login.css" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#060e20",
+                        "tertiary": "#c0c1ff",
+                        "on-tertiary": "#1000a9",
+                        "on-tertiary-fixed-variant": "#2f2ebe",
+                        "on-background": "#dae2fd",
+                        "on-secondary": "#003825",
+                        "surface-container": "#171f33",
+                        "surface-container-low": "#131b2e",
+                        "surface-bright": "#31394d",
+                        "error-container": "#93000a",
+                        "outline": "#8d90a2",
+                        "inverse-on-surface": "#283044",
+                        "secondary-container": "#00d294",
+                        "tertiary-fixed": "#e1e0ff",
+                        "on-primary-container": "#dfe3ff",
+                        "secondary": "#43efae",
+                        "tertiary-container": "#5153de",
+                        "outline-variant": "#434656",
+                        "on-tertiary-container": "#e3e2ff",
+                        "tertiary-fixed-dim": "#c0c1ff",
+                        "secondary-fixed": "#56febc",
+                        "on-error-container": "#ffdad6",
+                        "error": "#ffb4ab",
+                        "surface-dim": "#0b1326",
+                        "surface-tint": "#b7c4ff",
+                        "on-primary": "#002682",
+                        "surface-variant": "#2d3449",
+                        "on-secondary-container": "#005439",
+                        "inverse-surface": "#dae2fd",
+                        "primary-container": "#0052ff",
+                        "surface-container-highest": "#2d3449",
+                        "on-error": "#690005",
+                        "primary-fixed": "#dde1ff",
+                        "background": "#0b1326",
+                        "primary-fixed-dim": "#b7c4ff",
+                        "on-primary-fixed-variant": "#0038b6",
+                        "surface-container-high": "#222a3d",
+                        "on-secondary-fixed-variant": "#005137",
+                        "on-primary-fixed": "#001452",
+                        "on-surface": "#dae2fd",
+                        "primary": "#b7c4ff",
+                        "on-surface-variant": "#c3c5d9",
+                        "surface": "#0b1326",
+                        "on-secondary-fixed": "#002114",
+                        "secondary-fixed-dim": "#2be1a1",
+                        "inverse-primary": "#004ced",
+                        "on-tertiary-fixed": "#07006c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "32px",
+                        "lg": "24px",
+                        "margin-desktop": "48px",
+                        "base": "4px",
+                        "gutter": "24px",
+                        "md": "16px",
+                        "margin-mobile": "16px",
+                        "xs": "4px",
+                        "sm": "8px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "title-md": ["Inter"],
+                        "label-sm": ["Geist"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["56px", {"lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                        "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "500"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md mesh-gradient min-h-screen flex flex-col items-center justify-center relative overflow-x-hidden py-12 md:py-16">
+    
+    <!-- Background Layers -->
+    <!-- WebGL Background Canvas -->
+    <div class="fixed inset-0 w-full h-full -z-30">
+        <canvas id="login-shader-canvas" class="w-full h-full block"></canvas>
+    </div>
+    
+    <!-- Background Atmospheric Image Layer -->
+    <div class="fixed inset-0 pointer-events-none -z-20 opacity-20">
+        <img alt="Abstract visualization of financial nodes" class="w-full h-full object-cover mix-blend-overlay" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYR8Zp4_8xeW3aR81tsq3YlamHY0xWBBfYPnc2wrIZIOr6C-f9PPl6Y-dLHATigCDWcysiiCka_oqbsjUGFBjkYYY5g-KVl5qkhsT2A5TRJNjouqJEyOmCWcmNlY2lA-jFX1KHYpeymJL3M0mmVg3j5vdUEdAKuhdSItq4rcwpbmfogjy0jhTmRN3Yfml9YCwmVJwN6gx4MkEWVoQAL0nemq6tTPFylPUoplHhYb1RbWRGNKLSKXt7Or6qH87JxYnj0MY9R2tzzGU"/>
+    </div>
+
+    <!-- Dot Grid Overlay -->
+    <div class="fixed inset-0 -z-10 pointer-events-none">
+        <div class="absolute inset-0 bg-[radial-gradient(#43efae_1px,transparent_1px)] [background-size:40px_40px] grid-overlay"></div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="relative z-10 w-full max-w-[480px] px-margin-mobile md:px-0 mb-16">
+        <!-- Brand Header -->
+        <div class="mb-xl text-center opacity-0 animate-fade-in delay-100">
+            <h1 class="font-display-lg text-display-lg font-bold bg-gradient-to-r from-primary via-tertiary to-secondary bg-clip-text text-transparent tracking-tight">FinanceFit AI</h1>
+            <p class="text-on-surface-variant font-title-md text-title-md mt-xs">Institutional Grade Intelligence.</p>
+        </div>
+        
+        <!-- Biometric Illustration Row -->
+        <div class="flex justify-center mb-lg opacity-0 animate-fade-in-up delay-200">
+            <div id="biometric-btn" class="relative w-20 h-20 bg-surface-container/30 rounded-full flex items-center justify-center border border-white/10 biometric-pulse cursor-pointer group transition-all duration-300 hover:border-secondary/40 active:scale-95" title="Biometric Authenticate">
+                <span class="material-symbols-outlined text-secondary text-5xl transition-all duration-500 group-hover:scale-110" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+                <div class="scan-line"></div>
+            </div>
+        </div>
+        
+        <!-- Login Card -->
+        <div class="glass-card rounded-xl p-xl shadow-2xl overflow-hidden border border-white/5 opacity-0 animate-fade-in-up delay-300">
+            <!-- Social Sign-In Grid -->
+            <div class="space-y-md">
+                <button id="google-btn" class="w-full flex items-center justify-center gap-md py-md px-lg bg-white text-surface-container-lowest font-title-md text-title-md rounded-lg hover:bg-on-primary-container hover:-translate-y-0.5 hover:shadow-lg hover:shadow-white/10 active:scale-[0.98] transition-all duration-300">
+                    <img alt="Google" class="w-6 h-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAv4zXAlNs9YiWerNK_t3mkDlkwrRr3BDsvilVhnPD7nEn_IHJrHe5PRbM9QZ6QwTwzFxzsjXHnlOeaRxFqEMvKxxIiC47hyDOrF3GgbV72EDs4KtD90OSStI8rh4nSr9EORojLcmg1nsDVZTcNKBLPQ1hGVrcGr685qike0l3EZrxO3fJtAOb1lEvazJEu5w9JQBAvFRALPAnBi5HCAvzb-S_XrVbwfOhYE3dCbYokVF3ANtOP1RHzrXFd7s5dfC_ldvt1b9FMC1I"/>
+                    <span>Continue with Google</span>
+                </button>
+                <div class="grid grid-cols-2 gap-md">
+                    <button id="microsoft-btn" class="flex items-center justify-center gap-sm py-md px-md bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 hover:-translate-y-0.5 hover:border-[#f25022]/40 hover:shadow-lg hover:shadow-[#f25022]/10 active:scale-[0.98] transition-all duration-300 text-on-surface" title="Microsoft Login">
+                        <svg class="w-5 h-5 text-on-surface/85" fill="currentColor" viewbox="0 0 23 23"><path d="M11.4 24H0V12.6h11.4V24zM24 24H12.6V12.6H24V24zM11.4 11.4H0V0h11.4v11.4zM24 11.4H12.6V0H24v11.4z"></path></svg>
+                        <span class="text-label-sm font-semibold">Microsoft</span>
+                    </button>
+                    <button id="github-btn" class="flex items-center justify-center gap-sm py-md px-md bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 hover:-translate-y-0.5 hover:border-white/30 hover:shadow-lg hover:shadow-white/5 active:scale-[0.98] transition-all duration-300 text-on-surface" title="GitHub Login">
+                        <svg class="w-5 h-5 text-on-surface/85" fill="currentColor" viewbox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"></path></svg>
+                        <span class="text-label-sm font-semibold">GitHub</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Divider -->
+            <div class="flex items-center gap-md py-md">
+                <div class="h-[1px] flex-1 bg-outline-variant/30"></div>
+                <span class="font-label-sm text-label-sm text-outline uppercase tracking-widest">or email login</span>
+                <div class="h-[1px] flex-1 bg-outline-variant/30"></div>
+            </div>
+            
+            <!-- Sleek monospaced console status box -->
+            <div id="status-box" class="hidden font-mono text-[11px] p-md rounded-lg border flex items-start gap-sm transition-all duration-300 mb-lg">
+                <span class="material-symbols-outlined text-[16px] mt-0.5">info</span>
+                <span class="flex-1 leading-normal" id="status-text">Ready</span>
+            </div>
+            
+            <!-- Email Form -->
+            <form id="login-form" class="space-y-lg">
+                <!-- Email Address -->
+                <div class="space-y-sm">
+                    <div class="relative group">
+                        <input class="peer w-full bg-transparent border-2 border-outline-variant/30 rounded-lg px-md py-lg text-on-surface placeholder-transparent focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none" id="email" value="alex@sterling.com" placeholder="Email address" type="email" required/>
+                        <label class="absolute left-md -top-3 bg-[#0b1326] px-xs text-xs text-outline peer-placeholder-shown:text-body-md peer-placeholder-shown:top-lg peer-placeholder-shown:bg-transparent peer-focus:-top-3 peer-focus:text-xs peer-focus:text-primary peer-focus:bg-[#0b1326] transition-all duration-300 pointer-events-none" for="email">Email Address</label>
+                    </div>
+                </div>
+                
+                <!-- Password -->
+                <div class="space-y-sm">
+                    <div class="relative group">
+                        <input class="peer w-full bg-transparent border-2 border-outline-variant/30 rounded-lg px-md py-lg text-on-surface placeholder-transparent focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none" id="password" value="admin123" placeholder="Password" type="password" required/>
+                        <label class="absolute left-md -top-3 bg-[#0b1326] px-xs text-xs text-outline peer-placeholder-shown:text-body-md peer-placeholder-shown:top-lg peer-placeholder-shown:bg-transparent peer-focus:-top-3 peer-focus:text-xs peer-focus:text-primary peer-focus:bg-[#0b1326] transition-all duration-300 pointer-events-none" for="password">Password</label>
+                        <button id="toggle-pwd" class="absolute right-md top-lg text-outline-variant hover:text-on-surface transition-colors" type="button" title="Toggle password visibility">
+                            <span class="material-symbols-outlined">visibility_off</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Options -->
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center gap-sm cursor-pointer group">
+                        <input class="w-4 h-4 rounded border-outline-variant/50 bg-transparent text-primary focus:ring-0 focus:ring-offset-0 transition-colors" type="checkbox" checked/>
+                        <span class="font-label-sm text-label-sm text-on-surface-variant group-hover:text-on-surface transition-colors">Remember Me</span>
+                    </label>
+                    <a class="font-label-sm text-label-sm text-primary hover:text-secondary transition-colors underline decoration-primary/30 underline-offset-4" href="#">Forgot Password?</a>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="space-y-md pt-sm">
+                    <div class="relative group">
+                        <button id="submit-btn" class="w-full py-md bg-primary-container text-on-primary-container font-title-md text-title-md rounded-lg hover:bg-primary-container/80 transition-all duration-300 shadow-lg shadow-primary-container/20 active:scale-[0.98] flex items-center justify-center gap-sm" type="submit">
+                            <span class="btn-text">Sign In to Portal</span>
+                            <span class="material-symbols-outlined text-[20px] animate-spin hidden" id="submit-spinner">sync</span>
+                        </button>
+                        <div class="mt-xs text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <span class="shimmer-text font-label-sm text-[10px] uppercase tracking-widest">Connecting to Secure Vault...</span>
+                        </div>
+                    </div>
+                    <button id="magic-link-btn" class="w-full py-md bg-white/5 border border-primary/20 text-primary font-title-md text-title-md rounded-lg hover:bg-primary/10 hover:-translate-y-0.5 hover:shadow-md hover:shadow-primary/5 active:scale-[0.98] transition-all duration-300" type="button">
+                        Send Magic Link
+                    </button>
+                </div>
+            </form>
+            
+            <!-- Footer Text -->
+            <div class="text-center pt-md">
+                <p class="font-label-sm text-label-sm text-on-surface-variant">
+                    New to FinanceFit? 
+                    <a class="text-secondary font-bold hover:underline ml-xs" href="#">Create Account</a>
+                </p>
+            </div>
+        </div>
+        
+        <!-- Trust Badges & Security -->
+        <div class="mt-xl flex flex-col items-center gap-lg opacity-0 animate-fade-in delay-300">
+            <div class="flex items-center gap-lg opacity-60">
+                <div class="flex items-center gap-xs">
+                    <span class="material-symbols-outlined text-secondary-container">verified_user</span>
+                    <span class="font-label-sm text-label-sm text-outline">ISO 27001 Certified</span>
+                </div>
+                <div class="flex items-center gap-xs">
+                    <span class="material-symbols-outlined text-secondary-container">shield_with_heart</span>
+                    <span class="font-label-sm text-label-sm text-outline">SOC2 Type II</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-sm p-sm rounded-full bg-surface-container/30 border border-white/5 shadow-inner">
+                <span class="material-symbols-outlined text-secondary text-[16px]">lock</span>
+                <span class="font-label-sm text-[10px] uppercase tracking-[0.1em] text-outline">End-to-End Quantum Encryption Active</span>
+                <span class="relative flex h-1.5 w-1.5 ml-0.5">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-secondary"></span>
+                </span>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="w-full absolute bottom-0 py-lg px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-md border-t border-outline-variant/10 z-10 bg-background/50 backdrop-blur-md">
+        <p class="font-label-sm text-label-sm text-outline">© 2026 FinanceFit AI. Institutional Grade Intelligence.</p>
+        <div class="flex gap-lg">
+            <a class="font-label-sm text-label-sm text-outline hover:text-primary transition-colors" href="#">Privacy Policy</a>
+            <a class="font-label-sm text-label-sm text-outline hover:text-primary transition-colors" href="#">Terms of Service</a>
+            <a class="font-label-sm text-label-sm text-outline hover:text-primary transition-colors" href="#">Trust Center</a>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/static/js/shader.js"></script>
+    <script>
+        // Start WebGL shader background
+        window.addEventListener('DOMContentLoaded', () => {
+            initWebGLShader('login-shader-canvas');
+        });
+
+        // 3D Tilt Parallax Effect on Mouse Move
+        const card = document.querySelector('.glass-card');
+        const main = document.querySelector('main');
+        
+        main.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+            
+            // Subtle 3D tilt calculation (max 5 degrees)
+            const rotateX = -(y / rect.height) * 5;
+            const rotateY = (x / rect.width) * 5;
+            
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-2px)`;
+            card.style.transition = 'none';
+        });
+        
+        main.addEventListener('mouseleave', () => {
+            card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+            card.style.transition = 'transform 0.5s ease-out, box-shadow 0.5s ease, border-color 0.5s ease';
+        });
+
+        // Focus ring depth layering helper
+        const inputs = document.querySelectorAll('input[type="email"], input[type="password"]');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.classList.add('z-20');
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.classList.remove('z-20');
+            });
+        });
+
+        // Toggle password visibility
+        const togglePwd = document.getElementById('toggle-pwd');
+        const pwdInput = document.getElementById('password');
+        togglePwd.addEventListener('click', () => {
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                togglePwd.querySelector('span').textContent = 'visibility';
+            } else {
+                pwdInput.type = 'password';
+                togglePwd.querySelector('span').textContent = 'visibility_off';
+            }
+        });
+
+        // UI Console status notification helper
+        const statusBox = document.getElementById('status-box');
+        const statusText = document.getElementById('status-text');
+        const statusIcon = statusBox.querySelector('.material-symbols-outlined');
+
+        function showStatus(msg, type = 'info') {
+            statusText.textContent = msg;
+            statusBox.classList.remove('hidden');
+            
+            // Reset classes
+            statusBox.className = "font-mono text-[11px] p-md rounded-lg border flex items-start gap-sm transition-all duration-300 mb-lg";
+            statusIcon.className = "material-symbols-outlined text-[16px] mt-0.5";
+            
+            if (type === 'error') {
+                statusBox.classList.add('bg-error-container/20', 'border-error/20', 'text-error');
+                statusIcon.textContent = 'error';
+                statusIcon.classList.remove('animate-spin');
+            } else if (type === 'success') {
+                statusBox.classList.add('bg-secondary/15', 'border-secondary/35', 'text-secondary');
+                statusIcon.textContent = 'check_circle';
+                statusIcon.classList.remove('animate-spin');
+            } else if (type === 'loading') {
+                statusBox.classList.add('bg-primary-container/10', 'border-primary/20', 'text-primary');
+                statusIcon.textContent = 'sync';
+                statusIcon.classList.add('animate-spin');
+            } else {
+                // Info default
+                statusBox.classList.add('bg-surface-container-high/80', 'border-white/10', 'text-outline');
+                statusIcon.textContent = 'info';
+                statusIcon.classList.remove('animate-spin');
+            }
+        }
+
+        // Handle Form Submission
+        const form = document.getElementById('login-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const submitSpinner = document.getElementById('submit-spinner');
+        const btnText = submitBtn.querySelector('.btn-text');
+        const shimmerText = document.querySelector('.shimmer-text');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = pwdInput.value;
+            
+            showStatus('Establishing secure TLS link...', 'loading');
+            
+            // Start spinner loader
+            submitBtn.disabled = true;
+            submitSpinner.classList.remove('hidden');
+            btnText.textContent = "Authenticating...";
+            
+            // Force hover label permanent state during connection
+            shimmerText.textContent = "Connecting to Secure Vault...";
+            shimmerText.parentElement.style.opacity = '1';
+            shimmerText.parentElement.classList.remove('opacity-0');
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await res.json();
+                if (res.ok) {
+                    showStatus('Access Granted. Aligning encryption protocols...', 'success');
+                    localStorage.setItem('financefit_token', data.token);
+                    localStorage.setItem('financefit_user', JSON.stringify(data.user));
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 1000);
+                } else {
+                    showStatus(data.detail || 'Authorization failed. Please check credentials.', 'error');
+                    submitBtn.disabled = false;
+                    submitSpinner.classList.add('hidden');
+                    btnText.textContent = "Sign In to Portal";
+                    shimmerText.textContent = "Connecting to Secure Vault...";
+                    shimmerText.parentElement.style.opacity = '';
+                }
+            } catch (err) {
+                showStatus('Network connection anomaly detected.', 'error');
+                console.error(err);
+                submitBtn.disabled = false;
+                submitSpinner.classList.add('hidden');
+                btnText.textContent = "Sign In to Portal";
+                shimmerText.textContent = "Connecting to Secure Vault...";
+                shimmerText.parentElement.style.opacity = '';
+            }
+        });
+
+        // Biometric Scanning Simulation
+        const bioBtn = document.getElementById('biometric-btn');
+        bioBtn.addEventListener('click', () => {
+            if (bioBtn.classList.contains('scanning') || bioBtn.classList.contains('success')) return;
+            
+            bioBtn.classList.add('scanning');
+            showStatus('Initializing quantum biometric sensor...', 'loading');
+            
+            setTimeout(() => {
+                showStatus('Scanning fingerprint... verifying cryptographic signatures...', 'loading');
+                setTimeout(async () => {
+                    try {
+                        const res = await fetch('/api/auth/login', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email: 'alex@sterling.com', password: 'admin123' })
+                        });
+                        const data = await res.json();
+                        if (res.ok) {
+                            bioBtn.classList.remove('scanning');
+                            bioBtn.classList.add('success');
+                            showStatus('Biometrics matched. User: Alex Sterling (Elite)', 'success');
+                            localStorage.setItem('financefit_token', data.token);
+                            localStorage.setItem('financefit_user', JSON.stringify(data.user));
+                            setTimeout(() => {
+                                window.location.href = '/dashboard';
+                            }, 1000);
+                        } else {
+                            bioBtn.classList.remove('scanning');
+                            showStatus('Biometric signature mismatch.', 'error');
+                        }
+                    } catch (err) {
+                        bioBtn.classList.remove('scanning');
+                        showStatus('Biometric handshake failure.', 'error');
+                    }
+                }, 1800);
+            }, 1000);
+        });
+
+        // Google Sign-In with popup simulation
+        document.getElementById('google-btn').addEventListener('click', () => {
+            showStatus('Initializing Google OAuth protocol...', 'loading');
+            
+            const width = 500;
+            const height = 600;
+            const left = (window.screen.width / 2) - (width / 2);
+            const top = (window.screen.height / 2) - (height / 2);
+            
+            const popup = window.open(
+                '/static/google_auth.html', 
+                'GoogleAuthPopup', 
+                `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,status=no`
+            );
+            
+            if (window.focus && popup) popup.focus();
+        });
+
+        // Listen for Google Auth Popup response
+        window.addEventListener('message', (event) => {
+            if (event.origin !== window.location.origin) return;
+            
+            const msg = event.data;
+            if (msg.type === 'OAUTH_SUCCESS') {
+                showStatus(`Federated login successful. User: ${msg.user.name}`, 'success');
+                localStorage.setItem('financefit_token', msg.token);
+                localStorage.setItem('financefit_user', JSON.stringify(msg.user));
+                setTimeout(() => {
+                    window.location.href = '/dashboard';
+                }, 1000);
+            } else if (msg.type === 'OAUTH_FAILURE') {
+                showStatus(`Authentication aborted: ${msg.error}`, 'error');
+            }
+        });
+
+        // Microsoft Sign-In Popup Simulation
+        document.getElementById('microsoft-btn').addEventListener('click', () => {
+            showStatus('Connecting to Azure AD directory...', 'loading');
+            
+            const width = 500;
+            const height = 600;
+            const left = (window.screen.width / 2) - (width / 2);
+            const top = (window.screen.height / 2) - (height / 2);
+            
+            const popup = window.open(
+                '/static/microsoft_auth.html', 
+                'MicrosoftAuthPopup', 
+                `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,status=no`
+            );
+            
+            if (window.focus && popup) popup.focus();
+        });
+
+        // GitHub Sign-In Popup Simulation
+        document.getElementById('github-btn').addEventListener('click', () => {
+            showStatus('Authorizing via GitHub OAuth secure node...', 'loading');
+            
+            const width = 500;
+            const height = 600;
+            const left = (window.screen.width / 2) - (width / 2);
+            const top = (window.screen.height / 2) - (height / 2);
+            
+            const popup = window.open(
+                '/static/github_auth.html', 
+                'GitHubAuthPopup', 
+                `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,status=no`
+            );
+            
+            if (window.focus && popup) popup.focus();
+        });
+
+        // Magic link simulation
+        document.getElementById('magic-link-btn').addEventListener('click', () => {
+            const email = document.getElementById('email').value;
+            if(!email) {
+                showStatus('Please input an email address.', 'error');
+                return;
+            }
+            showStatus(`Cryptographic login link dispatched to ${email}.`, 'success');
+        });
+    </script>
+</body>
+</html>

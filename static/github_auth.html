@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Authorize FinanceFit AI - GitHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, system-ui, BlinkMacSystemFont, sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+        }
+        .spinner {
+            border: 3px solid #30363d;
+            border-top: 3px solid #2ea043;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen px-4 py-8">
+    <div class="w-full max-w-md bg-[#161b22] border border-[#30363d] rounded-lg p-6 shadow-xl">
+        
+        <!-- GitHub Logo & App Logo Linking -->
+        <div class="flex items-center justify-center gap-6 mb-6">
+            <!-- App Logo Icon -->
+            <div class="w-12 h-12 bg-blue-600/10 rounded-full flex items-center justify-center border border-blue-600/30 text-blue-400 font-bold text-sm">
+                FF
+            </div>
+            
+            <!-- Link Sync icon -->
+            <span class="material-symbols-outlined text-[#8b949e]">sync_alt</span>
+            
+            <!-- GitHub logo -->
+            <svg class="w-12 h-12 text-[#f0f6fc]" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"></path>
+            </svg>
+        </div>
+
+        <!-- Title -->
+        <h2 class="text-lg font-semibold text-[#f0f6fc] text-center mb-1">Authorize FinanceFit AI</h2>
+        <p class="text-xs text-[#8b949e] text-center mb-6">wants to access your GitHub account details</p>
+
+        <!-- Auth Sheet options -->
+        <div id="account-selection" class="space-y-4">
+            <div class="p-3 bg-[#0d1117] rounded-lg border border-[#30363d] space-y-2 text-xs">
+                <p class="text-[#f0f6fc] font-semibold">Permissions requested:</p>
+                <ul class="list-disc list-inside text-[#8b949e] space-y-1">
+                    <li>Read access to public profile (name, avatar, username)</li>
+                    <li>Read access to primary email address</li>
+                </ul>
+            </div>
+            
+            <div class="space-y-2">
+                <button class="account-row w-full py-2 bg-[#2ea043] hover:bg-[#3fb950] text-[#ffffff] font-semibold text-sm rounded-lg transition-colors" data-email="alex@sterling.com" data-name="Alex Sterling">
+                    Authorize Alex Sterling (alex@sterling.com)
+                </button>
+                <button class="account-row w-full py-2 bg-[#21262d] hover:bg-[#30363d] text-[#c9d1d9] border border-[#30363d] font-semibold text-sm rounded-lg transition-colors" data-email="git-test@financefit.ai" data-name="Octocat Tester">
+                    Authorize Git Tester (git-test@financefit.ai)
+                </button>
+            </div>
+            
+            <button id="cancel-btn" class="w-full text-center text-xs text-[#8b949e] hover:underline py-2 mt-2">
+                Cancel
+            </button>
+        </div>
+
+        <!-- Processing Screen -->
+        <div id="processing" class="hidden flex flex-col items-center justify-center py-6 space-y-4">
+            <div class="spinner"></div>
+            <p class="text-sm text-[#8b949e] font-medium">Validating GitHub OAuth Token...</p>
+        </div>
+        
+    </div>
+
+    <!-- Security details -->
+    <div class="mt-8 text-center text-xs text-[#8b949e] max-w-xs leading-normal">
+        Authorizing redirects you to FinanceFit AI. You can revoke access in your GitHub Settings at any time.
+    </div>
+
+    <script>
+        const selectionSheet = document.getElementById('account-selection');
+        const processingSheet = document.getElementById('processing');
+
+        document.querySelectorAll('.account-row').forEach(row => {
+            row.addEventListener('click', () => {
+                const email = row.getAttribute('data-email');
+                const name = row.getAttribute('data-name');
+                const tier = email === 'alex@sterling.com' ? 'Elite Tier' : 'Standard Tier';
+
+                // Swap views
+                selectionSheet.classList.add('hidden');
+                processingSheet.classList.remove('hidden');
+
+                // Simulate authentication handshake
+                setTimeout(() => {
+                    // Send message back to parent window
+                    if (window.opener) {
+                        window.opener.postMessage({
+                            type: 'OAUTH_SUCCESS',
+                            token: 'github-oauth-token-' + Math.random().toString(36).substr(2, 9),
+                            user: {
+                                name: name,
+                                email: email,
+                                tier: tier
+                            }
+                        }, window.location.origin);
+                    }
+                    
+                    // Close popup
+                    window.close();
+                }, 1200);
+            });
+        });
+
+        document.getElementById('cancel-btn').addEventListener('click', () => {
+            if (window.opener) {
+                window.opener.postMessage({
+                    type: 'OAUTH_FAILURE',
+                    error: 'GitHub OAuth Authorization Denied'
+                }, window.location.origin);
+            }
+            window.close();
+        });
+    </script>
+</body>
+</html>
