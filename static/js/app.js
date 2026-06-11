@@ -1215,11 +1215,13 @@ function setupUpgrade() {
 // Voice Copilot (STT & TTS)
 // ----------------------------------------------------
 let ttsActive = true;
+let handsFreeActive = false;
 let recognition = null;
 let isVoiceRecording = false;
 
 function setupVoiceCopilot() {
     const voiceOutBtn = document.getElementById('toggle-voice-out-btn');
+    const handsFreeBtn = document.getElementById('toggle-hands-free-btn');
     const micBtn = document.getElementById('mic-chat-btn');
     const chatInput = document.getElementById('chat-input');
     const sendBtn = document.getElementById('send-chat-btn');
@@ -1241,6 +1243,33 @@ function setupVoiceCopilot() {
         });
     }
 
+    if (handsFreeBtn) {
+        handsFreeBtn.addEventListener('click', () => {
+            handsFreeActive = !handsFreeActive;
+            if (handsFreeActive) {
+                handsFreeBtn.classList.add('text-secondary');
+                handsFreeBtn.classList.remove('text-outline');
+                handsFreeBtn.querySelector('span').textContent = 'settings_accessibility';
+                handsFreeBtn.querySelector('span').nextElementSibling.textContent = 'Hands-Free On';
+                speak("Hands free voice assistant activated.");
+                
+                // Start listening automatically
+                if (!isVoiceRecording && recognition) {
+                    try { recognition.start(); } catch(e) {}
+                }
+            } else {
+                handsFreeBtn.classList.remove('text-secondary');
+                handsFreeBtn.classList.add('text-outline');
+                handsFreeBtn.querySelector('span').textContent = 'quick_phrases';
+                handsFreeBtn.querySelector('span').nextElementSibling.textContent = 'Hands-Free Off';
+                speak("Hands free voice assistant deactivated.");
+                if (isVoiceRecording && recognition) {
+                    try { recognition.stop(); } catch(e) {}
+                }
+            }
+        });
+    }
+
     // Speech Recognition setup (Speech-to-Text)
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
@@ -1252,11 +1281,31 @@ function setupVoiceCopilot() {
         recognition.onstart = () => {
             isVoiceRecording = true;
             micBtn.classList.add('text-red-400', 'animate-pulse', 'border', 'border-red-400/20', 'bg-red-400/10');
+            
+            // Turn on visualizer wave
+            const waves = document.getElementById('avatar-waves');
+            const avatarIcon = document.getElementById('avatar-icon');
+            if (waves) {
+                waves.classList.remove('opacity-0');
+                waves.classList.add('opacity-100');
+            }
+            if (avatarIcon) avatarIcon.classList.add('opacity-0');
         };
 
         recognition.onend = () => {
             isVoiceRecording = false;
             micBtn.classList.remove('text-red-400', 'animate-pulse', 'border', 'border-red-400/20', 'bg-red-400/10');
+            
+            // Turn off visualizer wave unless speech synthesis is currently active
+            if (!window.speechSynthesis.speaking) {
+                const waves = document.getElementById('avatar-waves');
+                const avatarIcon = document.getElementById('avatar-icon');
+                if (waves) {
+                    waves.classList.add('opacity-0');
+                    waves.classList.remove('opacity-100');
+                }
+                if (avatarIcon) avatarIcon.classList.remove('opacity-0');
+            }
         };
 
         recognition.onresult = (event) => {
@@ -1272,6 +1321,15 @@ function setupVoiceCopilot() {
             console.error("Speech Recognition Error", e);
             isVoiceRecording = false;
             micBtn.classList.remove('text-red-400', 'animate-pulse');
+            
+            // Restart listening in hands-free mode unless AI is speaking
+            if (handsFreeActive && !window.speechSynthesis.speaking) {
+                setTimeout(() => {
+                    if (handsFreeActive && !isVoiceRecording) {
+                        try { recognition.start(); } catch(err) {}
+                    }
+                }, 1000);
+            }
         };
 
         micBtn.addEventListener('click', () => {
@@ -1291,6 +1349,12 @@ function setupVoiceCopilot() {
 // Speak AI response out loud (Text-to-Speech)
 function speakAI(text) {
     if (!ttsActive) return;
+    
+    // Stop recording first to avoid speaking while microphone is hot
+    if (isVoiceRecording && recognition) {
+        try { recognition.stop(); } catch(e) {}
+    }
+    
     window.speechSynthesis.cancel(); // cancel current speak
     
     // Clean markdown before speaking
@@ -1314,6 +1378,15 @@ function speakAI(text) {
             waves.classList.remove('opacity-100');
         }
         if (avatarIcon) avatarIcon.classList.remove('opacity-0');
+        
+        // Restart microphone automatically if in hands-free mode
+        if (handsFreeActive && recognition) {
+            setTimeout(() => {
+                if (handsFreeActive && !isVoiceRecording) {
+                    try { recognition.start(); } catch(e) {}
+                }
+            }, 600);
+        }
     };
 
     window.speechSynthesis.speak(utterance);
