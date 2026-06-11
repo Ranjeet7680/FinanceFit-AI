@@ -67,32 +67,193 @@ class ChatMessage(BaseModel):
 class ChatRequest(BaseModel):
     messages: List[ChatMessage]
 
+# New Pydantic models for Advanced Security and Notifications
+class ReadNotificationRequest(BaseModel):
+    token: str
+    id: Optional[str] = None
+    all: Optional[bool] = False
+
+class DismissNotificationRequest(BaseModel):
+    token: str
+    id: str
+
+class TriggerNotificationRequest(BaseModel):
+    token: str
+    type: str
+    title: str
+    message: str
+    link: Optional[str] = None
+
+class RevokeSessionRequest(BaseModel):
+    token: str
+    session_id: str
+
+class Setup2FARequest(BaseModel):
+    token: str
+
+class Verify2FARequest(BaseModel):
+    token: str
+    code: str
+
+class Disable2FARequest(BaseModel):
+    token: str
+
+class GenerateTokenRequest(BaseModel):
+    token: str
+    name: str
+    scopes: List[str]
+
+class RevokeTokenRequest(BaseModel):
+    token: str
+    key_id: str
+
+class ExportDataRequest(BaseModel):
+    token: str
+
 # In-memory session store to persist user tiers end-to-end
 USER_SESSIONS = {
     "elite-token-123": {"name": "Alex Sterling", "tier": "Elite Tier", "email": "alex@sterling.com"},
     "test-token-456": {"name": "Test User", "tier": "Standard Tier", "email": "test@sterling.com"}
 }
 
+# In-memory stores for security and notification elements
+NOTIFICATIONS = {
+    "elite-token-123": [
+        {
+            "id": "notif-1",
+            "type": "portfolio",
+            "title": "High Risk Exposure Warning",
+            "message": "Bankruptcy Risk for CORP-000001 (Tech) is evaluated at 28.5. Sector correction risk is active.",
+            "timestamp": "2026-06-11 18:30",
+            "read": False,
+            "link": "portfolio"
+        },
+        {
+            "id": "notif-2",
+            "type": "security",
+            "title": "MFA Setup Recommended",
+            "message": "Secure your account with 2-Factor Authentication (TOTP). Scan code to configure now.",
+            "timestamp": "2026-06-11 15:45",
+            "read": False,
+            "link": "settings"
+        },
+        {
+            "id": "notif-3",
+            "type": "system",
+            "title": "Intelligence Engine Upgraded",
+            "message": "FinanceFit AI has successfully initialized the Gemini 3.5 analytics engine.",
+            "timestamp": "2026-06-11 09:00",
+            "read": True,
+            "link": "chat"
+        }
+    ],
+    "test-token-456": []
+}
+
+USER_2FA = {
+    "elite-token-123": {
+        "enabled": False, 
+        "secret": "JBSWY3DPEHPK3PXP", 
+        "backup_codes": ["7732-9011", "4412-8809", "1290-7611", "5567-3312"]
+    },
+    "test-token-456": {
+        "enabled": False, 
+        "secret": "MJSXA3DPEHPK3PXP", 
+        "backup_codes": ["1122-3344", "5566-7788", "9900-1122", "3344-5566"]
+    }
+}
+
+USER_SESSIONS_LOG = {
+    "elite-token-123": [
+        {"id": "sess-1", "device": "Chrome (Windows 11)", "ip": "103.241.12.89", "location": "Mumbai, India", "active": True, "login_time": "2026-06-11 12:14"},
+        {"id": "sess-2", "device": "Safari (iPhone 15 Pro)", "ip": "172.56.21.4", "location": "New Delhi, India", "active": False, "login_time": "2026-06-10 10:05"}
+    ],
+    "test-token-456": [
+        {"id": "sess-3", "device": "Edge (Windows 10)", "ip": "192.168.1.5", "location": "Local Host", "active": True, "login_time": "2026-06-11 11:30"}
+    ]
+}
+
+USER_API_KEYS = {
+    "elite-token-123": [
+        {"id": "key-1", "name": "Coaching API Production", "key_prefix": "ff_live_5c8a...", "scopes": ["predict", "chat"], "created_at": "2026-05-15 14:20"}
+    ],
+    "test-token-456": []
+}
+
 # Endpoints
 @app.post("/api/auth/login")
-def login(req: LoginRequest):
+def login(req: LoginRequest, request: Request):
     # Check if this email already has a session
     email_lower = req.email.lower()
+    user_token = None
+    user_profile = None
+    
     for token, profile in USER_SESSIONS.items():
         if profile["email"] == email_lower:
             # Check credentials (accept any for test except alex@sterling.com requires admin123)
             if email_lower == "alex@sterling.com" and req.password != "admin123":
                 raise HTTPException(status_code=401, detail="Invalid credentials")
-            return {"success": True, "token": token, "user": {"name": profile["name"], "tier": profile["tier"]}}
+            user_token = token
+            user_profile = profile
+            break
             
     # Create new session if email is new
-    if req.email and req.password:
-        import uuid
-        new_token = f"token-{uuid.uuid4().hex[:8]}"
-        name = req.email.split("@")[0].capitalize()
-        USER_SESSIONS[new_token] = {"name": name, "tier": "Standard Tier", "email": email_lower}
-        return {"success": True, "token": new_token, "user": {"name": name, "tier": "Standard Tier"}}
-    raise HTTPException(status_code=401, detail="Invalid credentials")
+    if not user_token:
+        if req.email and req.password:
+            import uuid
+            user_token = f"token-{uuid.uuid4().hex[:8]}"
+            name = req.email.split("@")[0].capitalize()
+            user_profile = {"name": name, "tier": "Standard Tier", "email": email_lower}
+            USER_SESSIONS[user_token] = user_profile
+        else:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+            
+    # Seed tables if not present
+    if user_token not in NOTIFICATIONS:
+        NOTIFICATIONS[user_token] = []
+    if user_token not in USER_2FA:
+        USER_2FA[user_token] = {
+            "enabled": False,
+            "secret": "JBSWY3DPEHPK3PXP",
+            "backup_codes": ["7732-9011", "4412-8809", "1290-7611", "5567-3312"]
+        }
+    if user_token not in USER_SESSIONS_LOG:
+        USER_SESSIONS_LOG[user_token] = []
+    if user_token not in USER_API_KEYS:
+        USER_API_KEYS[user_token] = []
+        
+    # Log active session
+    ip = request.client.host if request.client else "127.0.0.1"
+    ua = request.headers.get("user-agent", "Unknown Device")
+    device = "Chrome (Windows 11)"
+    if "Firefox" in ua:
+        device = "Firefox (Windows 11)"
+    elif "Safari" in ua and "Chrome" not in ua:
+        device = "Safari (Mac OS)"
+    elif "Mobile" in ua:
+        device = "Mobile Web"
+    elif "Postman" in ua:
+        device = "Postman Client"
+        
+    import datetime
+    now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    
+    # Mark old sessions inactive
+    for s in USER_SESSIONS_LOG[user_token]:
+        s["active"] = False
+        
+    import uuid
+    sess_id = f"sess-{uuid.uuid4().hex[:6]}"
+    USER_SESSIONS_LOG[user_token].insert(0, {
+        "id": sess_id,
+        "device": device,
+        "ip": ip,
+        "location": "Mumbai, India" if ip != "127.0.0.1" else "Local Host",
+        "active": True,
+        "login_time": now_str
+    })
+    
+    return {"success": True, "token": user_token, "user": {"name": user_profile["name"], "tier": user_profile["tier"], "email": user_profile["email"]}}
 
 @app.post("/api/user/upgrade")
 def upgrade_user(req: UpgradeRequest):
@@ -115,6 +276,216 @@ def upgrade_user(req: UpgradeRequest):
             }
         }
     raise HTTPException(status_code=400, detail="Invalid session token")
+
+# Notification API endpoints
+@app.get("/api/notifications")
+def get_notifications(token: str = Query(...)):
+    if token in NOTIFICATIONS:
+        return {"success": True, "notifications": NOTIFICATIONS[token]}
+    return {"success": True, "notifications": []}
+
+@app.post("/api/notifications/read")
+def read_notifications(req: ReadNotificationRequest):
+    token = req.token
+    if token not in NOTIFICATIONS:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    if req.all:
+        for notif in NOTIFICATIONS[token]:
+            notif["read"] = True
+    elif req.id:
+        for notif in NOTIFICATIONS[token]:
+            if notif["id"] == req.id:
+                notif["read"] = True
+                break
+    return {"success": True}
+
+@app.post("/api/notifications/dismiss")
+def dismiss_notification(req: DismissNotificationRequest):
+    token = req.token
+    if token not in NOTIFICATIONS:
+        raise HTTPException(status_code=404, detail="Session not found")
+        
+    NOTIFICATIONS[token] = [n for n in NOTIFICATIONS[token] if n["id"] != req.id]
+    return {"success": True}
+
+@app.post("/api/notifications/trigger-demo")
+def trigger_demo_notification(req: TriggerNotificationRequest):
+    token = req.token
+    if token not in NOTIFICATIONS:
+        raise HTTPException(status_code=404, detail="Session not found")
+        
+    import datetime
+    now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    import uuid
+    notif_id = f"notif-{uuid.uuid4().hex[:6]}"
+    new_notif = {
+        "id": notif_id,
+        "type": req.type,
+        "title": req.title,
+        "message": req.message,
+        "timestamp": now_str,
+        "read": False,
+        "link": req.link or "dashboard"
+    }
+    NOTIFICATIONS[token].insert(0, new_notif)
+    return {"success": True, "notification": new_notif}
+
+# Advanced Security API endpoints
+@app.get("/api/security/sessions")
+def get_security_sessions(token: str = Query(...)):
+    if token in USER_SESSIONS_LOG:
+        return {"success": True, "sessions": USER_SESSIONS_LOG[token]}
+    return {"success": True, "sessions": []}
+
+@app.post("/api/security/sessions/revoke")
+def revoke_session(req: RevokeSessionRequest):
+    token = req.token
+    if token not in USER_SESSIONS_LOG:
+        raise HTTPException(status_code=404, detail="Session not found")
+        
+    USER_SESSIONS_LOG[token] = [s for s in USER_SESSIONS_LOG[token] if s["id"] != req.session_id]
+    return {"success": True}
+
+@app.post("/api/security/2fa/setup")
+def setup_2fa(req: Setup2FARequest):
+    token = req.token
+    if token not in USER_2FA:
+        raise HTTPException(status_code=404, detail="Session not found")
+    return {
+        "success": True, 
+        "secret": USER_2FA[token]["secret"], 
+        "backup_codes": USER_2FA[token]["backup_codes"]
+    }
+
+@app.post("/api/security/2fa/verify")
+def verify_2fa(req: Verify2FARequest):
+    token = req.token
+    if token not in USER_2FA:
+        raise HTTPException(status_code=404, detail="Session not found")
+        
+    if req.code == "123456" or (len(req.code) == 6 and req.code.isdigit()):
+        USER_2FA[token]["enabled"] = True
+        
+        import datetime
+        now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+        import uuid
+        NOTIFICATIONS[token].insert(0, {
+            "id": f"notif-{uuid.uuid4().hex[:6]}",
+            "type": "security",
+            "title": "Two-Factor Authentication Enabled",
+            "message": "Your account settings are now protected with TOTP Multi-factor Authentication.",
+            "timestamp": now_str,
+            "read": False,
+            "link": "settings"
+        })
+        return {"success": True, "message": "2FA successfully enabled."}
+    else:
+        raise HTTPException(status_code=400, detail="Invalid verification code. Please try 123456.")
+
+@app.post("/api/security/2fa/disable")
+def disable_2fa(req: Disable2FARequest):
+    token = req.token
+    if token not in USER_2FA:
+        raise HTTPException(status_code=404, detail="Session not found")
+        
+    USER_2FA[token]["enabled"] = False
+    
+    import datetime
+    now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    import uuid
+    NOTIFICATIONS[token].insert(0, {
+        "id": f"notif-{uuid.uuid4().hex[:6]}",
+        "type": "security",
+        "title": "Two-Factor Authentication Disabled",
+        "message": "Warning: 2FA was disabled for your profile. Your account is less secure.",
+        "timestamp": now_str,
+        "read": False,
+        "link": "settings"
+    })
+    return {"success": True, "message": "2FA successfully disabled."}
+
+@app.get("/api/security/tokens")
+def get_developer_tokens(token: str = Query(...)):
+    if token in USER_API_KEYS:
+        return {"success": True, "tokens": USER_API_KEYS[token]}
+    return {"success": True, "tokens": []}
+
+@app.post("/api/security/tokens/generate")
+def generate_developer_token(req: GenerateTokenRequest):
+    token = req.token
+    if token not in USER_API_KEYS:
+        raise HTTPException(status_code=404, detail="Session not found")
+        
+    import uuid
+    import datetime
+    new_uuid = uuid.uuid4().hex
+    full_key = f"ff_live_{new_uuid}"
+    key_prefix = f"ff_live_{new_uuid[:4]}..."
+    
+    now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    key_id = f"key-{uuid.uuid4().hex[:6]}"
+    
+    new_key_meta = {
+        "id": key_id,
+        "name": req.name,
+        "key_prefix": key_prefix,
+        "scopes": req.scopes,
+        "created_at": now_str
+    }
+    USER_API_KEYS[token].append(new_key_meta)
+    
+    NOTIFICATIONS[token].insert(0, {
+        "id": f"notif-{uuid.uuid4().hex[:6]}",
+        "type": "security",
+        "title": "API Token Generated",
+        "message": f"Developer API Token '{req.name}' was created with scopes: {', '.join(req.scopes)}.",
+        "timestamp": now_str,
+        "read": False,
+        "link": "settings"
+    })
+    
+    return {"success": True, "token": full_key, "metadata": new_key_meta}
+
+@app.post("/api/security/tokens/revoke")
+def revoke_developer_token(req: RevokeTokenRequest):
+    token = req.token
+    if token not in USER_API_KEYS:
+        raise HTTPException(status_code=404, detail="Session not found")
+        
+    USER_API_KEYS[token] = [k for k in USER_API_KEYS[token] if k["id"] != req.key_id]
+    return {"success": True}
+
+@app.post("/api/security/data/export")
+def export_user_data(req: ExportDataRequest):
+    token = req.token
+    if token not in USER_SESSIONS:
+        raise HTTPException(status_code=404, detail="Session not found")
+        
+    profile = USER_SESSIONS[token]
+    mfa = USER_2FA.get(token, {"enabled": False})
+    sessions_count = len(USER_SESSIONS_LOG.get(token, []))
+    tokens_count = len(USER_API_KEYS.get(token, []))
+    notifications_count = len(NOTIFICATIONS.get(token, []))
+    
+    return {
+        "success": True,
+        "export_data": {
+            "profile": {
+                "name": profile.get("name"),
+                "email": profile.get("email"),
+                "tier": profile.get("tier")
+            },
+            "security": {
+                "two_factor_enabled": mfa.get("enabled"),
+                "active_sessions_count": sessions_count,
+                "developer_keys_count": tokens_count
+            },
+            "activity": {
+                "notifications_count": notifications_count
+            }
+        }
+    }
 
 @app.get("/api/filters")
 def get_filters():

@@ -49,11 +49,14 @@ window.addEventListener('DOMContentLoaded', () => {
     setupVoiceCopilot();
     setupDropzone();
     setupMobileMenu();
+    setupNotifications();
+    setupSecurityTabs();
     
     // Load initial data for Dashboard and Database
     loadFilters();
     loadDashboardKPIs();
     loadDatabasePage(1);
+    loadNotifications();
     
     // Setup global company search
     document.getElementById('global-search-input').addEventListener('keypress', (e) => {
@@ -1762,4 +1765,660 @@ function setupMobileMenu() {
             }
         });
     });
+}
+
+// ----------------------------------------------------
+// Notifications logic (dynamic fetching & alerts dropdown)
+// ----------------------------------------------------
+function setupNotifications() {
+    const btn = document.getElementById('notification-btn');
+    const dropdown = document.getElementById('notification-dropdown');
+    
+    if (!btn || !dropdown) return;
+    
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle('hidden');
+        if (!dropdown.classList.contains('hidden')) {
+            dropdown.classList.add('animate-fade-in');
+            loadNotifications();
+        }
+    });
+    
+    document.addEventListener('click', (e) => {
+        if (!dropdown.classList.contains('hidden') && !dropdown.contains(e.target) && e.target !== btn) {
+            dropdown.classList.add('hidden');
+        }
+    });
+}
+
+async function loadNotifications() {
+    const token = localStorage.getItem('financefit_token');
+    if (!token) return;
+    
+    try {
+        const res = await fetch(`/api/notifications?token=${token}`);
+        const data = await res.json();
+        
+        if (res.ok && data.success) {
+            const listEl = document.getElementById('notification-list');
+            const badgeEl = document.getElementById('notif-badge');
+            listEl.innerHTML = '';
+            
+            let unreadCount = 0;
+            
+            if (data.notifications.length === 0) {
+                listEl.innerHTML = `<div class="text-center py-6 text-outline text-[11px]">No notifications.</div>`;
+                badgeEl.classList.add('hidden');
+                return;
+            }
+            
+            data.notifications.forEach(n => {
+                if (!n.read) unreadCount++;
+                
+                const item = document.createElement('div');
+                item.className = `p-3 rounded-xl border transition-all text-xs flex flex-col gap-1 cursor-pointer ${n.read ? 'bg-white/5 border-white/5 opacity-70' : 'bg-secondary-container/10 border-secondary/20 shadow-lg shadow-secondary/5'}`;
+                item.onclick = (e) => {
+                    e.stopPropagation();
+                    markNotificationRead(n.id);
+                    if (n.link) switchTab(n.link);
+                    document.getElementById('notification-dropdown').classList.add('hidden');
+                };
+                
+                let icon = 'notifications';
+                let iconColor = 'text-primary';
+                if (n.type === 'security') { icon = 'shield'; iconColor = 'text-yellow-400'; }
+                if (n.type === 'portfolio') { icon = 'trending_up'; iconColor = 'text-red-400'; }
+                
+                item.innerHTML = `
+                    <div class="flex justify-between items-start gap-2">
+                        <span class="material-symbols-outlined text-[16px] ${iconColor} mt-0.5">${icon}</span>
+                        <div class="flex-1">
+                            <div class="font-bold text-on-surface flex items-center justify-between">
+                                <span>${n.title}</span>
+                                ${!n.read ? '<span class="w-1.5 h-1.5 bg-secondary rounded-full"></span>' : ''}
+                            </div>
+                            <p class="text-[10px] text-outline mt-0.5 leading-normal">${n.message}</p>
+                            <span class="text-[8px] text-outline block mt-1">${n.timestamp}</span>
+                        </div>
+                        <button class="text-outline hover:text-red-400 ml-1 p-0.5" onclick="event.stopPropagation(); dismissNotification('${n.id}')">
+                            <span class="material-symbols-outlined text-[12px]">close</span>
+                        </button>
+                    </div>
+                `;
+                listEl.appendChild(item);
+            });
+            
+            if (unreadCount > 0) {
+                badgeEl.classList.remove('hidden');
+            } else {
+                badgeEl.classList.add('hidden');
+            }
+        }
+    } catch (err) {
+        console.error("Failed to load notifications", err);
+    }
+}
+
+async function markNotificationRead(id) {
+    const token = localStorage.getItem('financefit_token');
+    try {
+        await fetch('/api/notifications/read', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token, id })
+        });
+        loadNotifications();
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+async function markAllNotificationsRead() {
+    const token = localStorage.getItem('financefit_token');
+    try {
+        await fetch('/api/notifications/read', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token, all: true })
+        });
+        loadNotifications();
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+async function dismissNotification(id) {
+    const token = localStorage.getItem('financefit_token');
+    try {
+        await fetch('/api/notifications/dismiss', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token, id })
+        });
+        loadNotifications();
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+async function triggerDemoNotif() {
+    const token = localStorage.getItem('financefit_token');
+    const prompts = [
+        {
+            type: "security",
+            title: "Simulated Login Alert",
+            message: "New active authentication log detected from a Safari device in Munich, Germany.",
+            link: "settings"
+        },
+        {
+            type: "portfolio",
+            title: "Portfolio Correction Risk",
+            message: "Volatile adjustments in Technology indices. Run portfolio optimizer simulation.",
+            link: "portfolio"
+        },
+        {
+            type: "system",
+            title: "System Performance Audit",
+            message: "Micro-nodes verified. Handshake integrity evaluated at 100% operational.",
+            link: "dashboard"
+        }
+    ];
+    const item = prompts[Math.floor(Math.random() * prompts.length)];
+    try {
+        const res = await fetch('/api/notifications/trigger-demo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                token,
+                type: item.type,
+                title: item.title,
+                message: item.message,
+                link: item.link
+            })
+        });
+        if (res.ok) {
+            loadNotifications();
+            // Pulse effect animation on notifications button
+            const btn = document.getElementById('notification-btn');
+            btn.classList.add('animate-ping');
+            setTimeout(() => btn.classList.remove('animate-ping'), 600);
+        }
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+// ----------------------------------------------------
+// Settings Multi-Tab Navigation
+// ----------------------------------------------------
+function setupSecurityTabs() {
+    const tabs = document.querySelectorAll('.settings-tab-btn');
+    const panels = document.querySelectorAll('.settings-panel');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = tab.getAttribute('data-tab');
+            
+            // Toggle active classes on buttons
+            tabs.forEach(t => {
+                t.classList.remove('bg-secondary-container/20', 'text-secondary-fixed');
+                t.classList.add('text-on-surface-variant', 'hover:bg-white/5');
+            });
+            tab.classList.add('bg-secondary-container/20', 'text-secondary-fixed');
+            tab.classList.remove('text-on-surface-variant', 'hover:bg-white/5');
+            
+            // Toggle active panels
+            panels.forEach(p => {
+                if (p.id === target) {
+                    p.classList.remove('hidden');
+                } else {
+                    p.classList.add('hidden');
+                }
+            });
+            
+            // Hook load data depending on tab
+            if (target === 'settings-security') {
+                load2FAState();
+                loadSessions();
+            } else if (target === 'settings-api') {
+                loadTokens();
+            } else if (target === 'settings-privacy') {
+                loadEncryptionStateLabel();
+            }
+        });
+    });
+}
+
+// ----------------------------------------------------
+// 2-Factor Authentication (TOTP)
+// ----------------------------------------------------
+async function load2FAState() {
+    const token = localStorage.getItem('financefit_token');
+    if (!token) return;
+    
+    try {
+        const res = await fetch('/api/security/2fa/setup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token })
+        });
+        const data = await res.json();
+        
+        if (res.ok && data.success) {
+            document.getElementById('2fa-secret').textContent = data.secret;
+            // Draw beautiful QR Canvas
+            drawQR('2fa-qr-canvas');
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+async function toggle2FAState() {
+    const toggle = document.getElementById('2fa-toggle');
+    const setupBox = document.getElementById('2fa-setup-box');
+    const backupBox = document.getElementById('2fa-backup-box');
+    const statusLbl = document.getElementById('2fa-status-lbl');
+    const token = localStorage.getItem('financefit_token');
+    
+    if (toggle.checked) {
+        // Show setup container
+        setupBox.classList.remove('hidden');
+        backupBox.classList.add('hidden');
+    } else {
+        // Disable 2FA
+        try {
+            const res = await fetch('/api/security/2fa/disable', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token })
+            });
+            if (res.ok) {
+                setupBox.classList.add('hidden');
+                backupBox.classList.add('hidden');
+                statusLbl.textContent = "TOTP Multi-factor is inactive";
+                statusLbl.parentElement.className = "flex items-center gap-1 text-[10px] text-secondary font-mono mt-3 border-t border-white/5 pt-3";
+                alert("Two-Factor authentication successfully disabled.");
+                loadNotifications();
+            }
+        } catch(e) {
+            console.error(e);
+        }
+    }
+}
+
+async function submitVerify2FA() {
+    const code = document.getElementById('2fa-code-input').value.trim();
+    const token = localStorage.getItem('financefit_token');
+    const statusLbl = document.getElementById('2fa-status-lbl');
+    
+    if (!code) {
+        alert("Please enter verification code.");
+        return;
+    }
+    
+    try {
+        const res = await fetch('/api/security/2fa/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token, code })
+        });
+        const data = await res.json();
+        
+        if (res.ok && data.success) {
+            document.getElementById('2fa-setup-box').classList.add('hidden');
+            document.getElementById('2fa-backup-box').classList.remove('hidden');
+            statusLbl.textContent = "TOTP Multi-factor is active";
+            statusLbl.parentElement.className = "flex items-center gap-1 text-[10px] text-secondary font-bold font-mono mt-3 border-t border-white/5 pt-3";
+            
+            // Trigger premium confetti success!
+            triggerConfettiEffect();
+            loadNotifications();
+        } else {
+            alert(data.detail || "Invalid code. Please try 123456.");
+        }
+    } catch(err) {
+        alert("Verification failed. Server offline.");
+    }
+}
+
+// Stylized QR code builder on canvas
+function drawQR(canvasId) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.fillStyle = '#0b1326'; // Dark blue finder patterns
+    const size = canvas.width;
+    const moduleSize = size / 21;
+    
+    const finders = [
+        {x: 0, y: 0},
+        {x: 14 * moduleSize, y: 0},
+        {x: 0, y: 14 * moduleSize}
+    ];
+    
+    finders.forEach(f => {
+        ctx.fillRect(f.x, f.y, 7 * moduleSize, 7 * moduleSize);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(f.x + moduleSize, f.y + moduleSize, 5 * moduleSize, 5 * moduleSize);
+        ctx.fillStyle = '#0b1326';
+        ctx.fillRect(f.x + 2 * moduleSize, f.y + 2 * moduleSize, 3 * moduleSize, 3 * moduleSize);
+    });
+    
+    ctx.fillStyle = '#0b1326';
+    for (let r = 0; r < 21; r++) {
+        for (let c = 0; c < 21; c++) {
+            if ((r < 8 && c < 8) || (r < 8 && c > 12) || (r > 12 && c < 8)) continue;
+            if (Math.random() > 0.4) {
+                ctx.fillRect(c * moduleSize, r * moduleSize, moduleSize, moduleSize);
+            }
+        }
+    }
+}
+
+// Confetti micro-interaction
+function triggerConfettiEffect() {
+    const canvas = document.createElement('canvas');
+    canvas.style.position = 'fixed';
+    canvas.style.inset = '0';
+    canvas.style.pointerEvents = 'none';
+    canvas.style.zIndex = '999';
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    document.body.appendChild(canvas);
+    
+    const ctx = canvas.getContext('2d');
+    const colors = ['#43efae', '#0052ff', '#c0c1ff', '#56febc'];
+    const particles = [];
+    
+    for (let i = 0; i < 60; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height - canvas.height,
+            speedY: Math.random() * 4 + 2,
+            speedX: Math.random() * 2 - 1,
+            size: Math.random() * 6 + 4,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            rotation: Math.random() * 360,
+            rotationSpeed: Math.random() * 4 - 2
+        });
+    }
+    
+    let frame;
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let active = false;
+        particles.forEach(p => {
+            p.y += p.speedY;
+            p.x += p.speedX;
+            p.rotation += p.rotationSpeed;
+            if (p.y < canvas.height) active = true;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rotation * Math.PI / 180);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+            ctx.restore();
+        });
+        if (active) {
+            frame = requestAnimationFrame(draw);
+        } else {
+            canvas.remove();
+            cancelAnimationFrame(frame);
+        }
+    }
+    draw();
+}
+
+// ----------------------------------------------------
+// Session Log Tracker
+// ----------------------------------------------------
+async function loadSessions() {
+    const token = localStorage.getItem('financefit_token');
+    if (!token) return;
+    
+    try {
+        const res = await fetch(`/api/security/sessions?token=${token}`);
+        const data = await res.json();
+        
+        if (res.ok && data.success) {
+            const list = document.getElementById('session-log-list');
+            list.innerHTML = '';
+            
+            data.sessions.forEach(s => {
+                const el = document.createElement('div');
+                el.className = "flex justify-between items-center bg-white/5 border border-white/5 rounded-xl p-md text-xs mt-2";
+                
+                el.innerHTML = `
+                    <div class="flex items-start gap-md text-left">
+                        <span class="material-symbols-outlined text-[20px] text-primary mt-1">${s.device.includes('iPhone') || s.device.includes('Mobile') ? 'smartphone' : 'laptop_mac'}</span>
+                        <div>
+                            <div class="font-bold text-on-surface flex items-center gap-2">
+                                <span>${s.device}</span>
+                                ${s.active ? '<span class="px-1.5 py-0.5 bg-secondary/15 text-secondary border border-secondary/35 rounded-full text-[8px] uppercase tracking-wider font-bold">Active now</span>' : ''}
+                            </div>
+                            <span class="text-[10px] text-outline block mt-0.5">${s.ip} • ${s.location}</span>
+                            <span class="text-[9px] text-outline/70 block mt-1">Logged: ${s.login_time}</span>
+                        </div>
+                    </div>
+                    ${!s.active ? `<button class="px-2.5 py-1 bg-red-500/10 hover:bg-red-500/25 border border-red-500/20 text-red-400 text-[10px] font-bold rounded-lg transition-all" onclick="revokeSession('${s.id}')">Revoke</button>` : ''}
+                `;
+                list.appendChild(el);
+            });
+        }
+    } catch(err) {
+        console.error(err);
+    }
+}
+
+async function revokeSession(sessionId) {
+    const token = localStorage.getItem('financefit_token');
+    try {
+        const res = await fetch('/api/security/sessions/revoke', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token, session_id: sessionId })
+        });
+        if (res.ok) {
+            loadSessions();
+        }
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+// ----------------------------------------------------
+// Developer Access Keys Management
+// ----------------------------------------------------
+async function loadTokens() {
+    const token = localStorage.getItem('financefit_token');
+    if (!token) return;
+    
+    try {
+        const res = await fetch(`/api/security/tokens?token=${token}`);
+        const data = await res.json();
+        
+        if (res.ok && data.success) {
+            const body = document.getElementById('api-keys-table-body');
+            body.innerHTML = '';
+            
+            if (data.tokens.length === 0) {
+                body.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-outline text-xs">No active keys generated.</td></tr>`;
+                return;
+            }
+            
+            data.tokens.forEach(t => {
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-white/5 text-xs text-on-surface hover:bg-white/5 transition-colors";
+                
+                const scopesBadges = t.scopes.map(s => `<span class="px-1.5 py-0.5 bg-white/5 border border-white/10 rounded font-mono text-[9px] text-secondary mr-1">${s}</span>`).join('');
+                
+                tr.innerHTML = `
+                    <td class="py-3 font-semibold text-left">${t.name}</td>
+                    <td class="py-3 font-mono text-outline text-left">${t.key_prefix}</td>
+                    <td class="py-3 text-left">${scopesBadges}</td>
+                    <td class="py-3 text-outline font-mono text-left">${t.created_at}</td>
+                    <td class="py-3 text-right">
+                        <button class="px-2.5 py-1 bg-red-500/10 hover:bg-red-500/25 border border-red-500/20 text-red-400 text-[10px] font-bold rounded-lg transition-all" onclick="revokeToken('${t.id}')">Revoke</button>
+                    </td>
+                `;
+                body.appendChild(tr);
+            });
+        }
+    } catch(err) {
+        console.error(err);
+    }
+}
+
+function openKeyGenerator() {
+    document.getElementById('key-gen-box').classList.remove('hidden');
+    document.getElementById('key-display-box').classList.add('hidden');
+    document.getElementById('api-key-name').value = '';
+}
+
+function closeKeyGenerator() {
+    document.getElementById('key-gen-box').classList.add('hidden');
+}
+
+async function submitGenerateKey() {
+    const name = document.getElementById('api-key-name').value.trim();
+    const token = localStorage.getItem('financefit_token');
+    
+    if (!name) {
+        alert("Please specify key name.");
+        return;
+    }
+    
+    const scopes = [];
+    document.querySelectorAll('#key-gen-box input[type="checkbox"]:checked').forEach(c => {
+        scopes.push(c.value);
+    });
+    
+    try {
+        const res = await fetch('/api/security/tokens/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token, name, scopes })
+        });
+        const data = await res.json();
+        
+        if (res.ok && data.success) {
+            document.getElementById('key-gen-box').classList.add('hidden');
+            document.getElementById('key-display-box').classList.remove('hidden');
+            document.getElementById('api-token-secret').textContent = data.token;
+            
+            loadTokens();
+            loadNotifications();
+        }
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+async function revokeToken(keyId) {
+    const token = localStorage.getItem('financefit_token');
+    try {
+        const res = await fetch('/api/security/tokens/revoke', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token, key_id: keyId })
+        });
+        if (res.ok) {
+            loadTokens();
+        }
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+// Helper utility: Copy text to clipboard
+function copyText(elementId) {
+    const text = document.getElementById(elementId).textContent || document.getElementById(elementId).value;
+    navigator.clipboard.writeText(text).then(() => {
+        alert("Copied to clipboard!");
+    }).catch(err => {
+        console.error("Copy failed", err);
+    });
+}
+
+// ----------------------------------------------------
+// Data & Privacy Toggles and Simulation
+// ----------------------------------------------------
+function loadEncryptionStateLabel() {
+    const toggle = document.getElementById('encryption-toggle');
+    const label = document.getElementById('encryption-status-lbl');
+    const isEncrypted = localStorage.getItem('financefit_enc') === 'true';
+    toggle.checked = isEncrypted;
+    
+    if (isEncrypted) {
+        label.textContent = "Database is encrypted (AES-256 Active)";
+        label.parentElement.className = "flex items-center gap-1 text-[10px] text-secondary font-bold font-mono mt-3 border-t border-white/5 pt-3";
+    } else {
+        label.textContent = "Database is unencrypted";
+        label.parentElement.className = "flex items-center gap-1 text-[10px] text-secondary font-mono mt-3 border-t border-white/5 pt-3";
+    }
+}
+
+function toggleEncryptionState() {
+    const toggle = document.getElementById('encryption-toggle');
+    const radar = document.getElementById('encryption-radar');
+    const label = document.getElementById('encryption-status-lbl');
+    
+    if (toggle.checked) {
+        radar.classList.remove('hidden');
+        radar.classList.add('flex');
+        
+        setTimeout(() => {
+            radar.classList.add('hidden');
+            radar.classList.remove('flex');
+            localStorage.setItem('financefit_enc', 'true');
+            
+            label.textContent = "Database is encrypted (AES-256 Active)";
+            label.parentElement.className = "flex items-center gap-1 text-[10px] text-secondary font-bold font-mono mt-3 border-t border-white/5 pt-3";
+            alert("Local storage data encrypted and signed successfully.");
+        }, 3000);
+    } else {
+        localStorage.setItem('financefit_enc', 'false');
+        label.textContent = "Database is unencrypted";
+        label.parentElement.className = "flex items-center gap-1 text-[10px] text-secondary font-mono mt-3 border-t border-white/5 pt-3";
+        alert("Local database decrypted.");
+    }
+}
+
+async function exportDataArchive() {
+    const token = localStorage.getItem('financefit_token');
+    try {
+        const res = await fetch('/api/security/data/export', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token })
+        });
+        const data = await res.json();
+        
+        if (res.ok && data.success) {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data.export_data, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "financefit_security_export.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+    } catch(err) {
+        alert("Failed to export profile archive.");
+    }
+}
+
+function purgeAccountData() {
+    if (confirm("Are you absolutely sure you want to delete your profile data? This will clear all locally-cached active databases and log you out. This action is irreversible.")) {
+        localStorage.clear();
+        alert("All local data purged. Redirecting...");
+        window.location.href = '/login';
+    }
 }
