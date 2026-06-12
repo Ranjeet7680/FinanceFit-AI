@@ -2090,6 +2090,18 @@ async function load2FAState() {
             document.getElementById('2fa-secret').textContent = data.secret;
             // Draw beautiful QR Canvas
             drawQR('2fa-qr-canvas');
+            
+            const toggle = document.getElementById('2fa-toggle');
+            const statusLbl = document.getElementById('2fa-status-lbl');
+            if (data.enabled) {
+                toggle.checked = true;
+                statusLbl.textContent = "TOTP Multi-factor is active";
+                statusLbl.parentElement.className = "flex items-center gap-1 text-[10px] text-secondary font-bold font-mono mt-3 border-t border-white/5 pt-3";
+            } else {
+                toggle.checked = false;
+                statusLbl.textContent = "TOTP Multi-factor is inactive";
+                statusLbl.parentElement.className = "flex items-center gap-1 text-[10px] text-secondary font-mono mt-3 border-t border-white/5 pt-3";
+            }
         }
     } catch (e) {
         console.error(e);
@@ -2799,4 +2811,51 @@ async function sendReferralInvite() {
     } catch(e) {
         statusBox.textContent = "Network error sending invitation.";
     }
+}
+
+function getReferralPromoMessage(code) {
+    const origin = window.location.origin;
+    return `Hey! Try out FinanceFit AI, the ultimate AI-powered wealth intelligence dashboard. Use my referral code: ${code} to get an instant upgrade to the Elite Tier and save 20% on Pro plans! Join now at: ${origin}/login?ref=${code}`;
+}
+
+function shareReferral(platform) {
+    const codeLabel = document.getElementById('referral-code-lbl');
+    const code = (codeLabel && codeLabel.textContent !== "FINFIT-LOADING...") ? codeLabel.textContent : 'FINFIT-DEMO-777';
+    const message = getReferralPromoMessage(code);
+    const url = `${window.location.origin}/login?ref=${code}`;
+    
+    let shareUrl = "";
+    if (platform === 'whatsapp') {
+        shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+    } else if (platform === 'twitter') {
+        shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}`;
+    } else if (platform === 'linkedin') {
+        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+        // Pre-copy message to clipboard so they can paste it in their LinkedIn share popup
+        navigator.clipboard.writeText(message).then(() => {
+            console.log("LinkedIn promo text copied to clipboard.");
+        });
+    }
+    
+    if (shareUrl) {
+        window.open(shareUrl, '_blank');
+    }
+}
+
+function copyReferralMessage() {
+    const codeLabel = document.getElementById('referral-code-lbl');
+    const code = (codeLabel && codeLabel.textContent !== "FINFIT-LOADING...") ? codeLabel.textContent : 'FINFIT-DEMO-777';
+    const message = getReferralPromoMessage(code);
+    const statusBox = document.getElementById('referral-share-status');
+    
+    navigator.clipboard.writeText(message).then(() => {
+        speak("Referral message copied to clipboard.");
+        if (statusBox) {
+            statusBox.textContent = "Message copied! Share it on LinkedIn, WhatsApp, or email.";
+            statusBox.classList.remove('hidden');
+            setTimeout(() => {
+                statusBox.classList.add('hidden');
+            }, 3000);
+        }
+    });
 }

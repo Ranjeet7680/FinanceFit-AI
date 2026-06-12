@@ -168,6 +168,14 @@
             
             <!-- Email Form -->
             <form id="login-form" class="space-y-lg">
+                <!-- Full Name (shown only in Register mode) -->
+                <div class="space-y-sm hidden" id="name-container">
+                    <div class="relative group">
+                        <input class="peer w-full bg-transparent border-2 border-outline-variant/30 rounded-lg px-md py-lg text-on-surface placeholder-transparent focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none" id="name" placeholder="Full name" type="text"/>
+                        <label class="absolute left-md -top-3 bg-[#0b1326] px-xs text-xs text-outline peer-placeholder-shown:text-body-md peer-placeholder-shown:top-lg peer-placeholder-shown:bg-transparent peer-focus:-top-3 peer-focus:text-xs peer-focus:text-primary peer-focus:bg-[#0b1326] transition-all duration-300 pointer-events-none" for="name">Full Name</label>
+                    </div>
+                </div>
+
                 <!-- Email Address -->
                 <div class="space-y-sm">
                     <div class="relative group">
@@ -186,9 +194,17 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- Referral Code (Optional, shown only in Register mode) -->
+                <div class="space-y-sm hidden" id="referral-container">
+                    <div class="relative group">
+                        <input class="peer w-full bg-transparent border-2 border-outline-variant/30 rounded-lg px-md py-lg text-on-surface placeholder-transparent focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none" id="referral_code" placeholder="Referral Code (Optional)" type="text"/>
+                        <label class="absolute left-md -top-3 bg-[#0b1326] px-xs text-xs text-outline peer-placeholder-shown:text-body-md peer-placeholder-shown:top-lg peer-placeholder-shown:bg-transparent peer-focus:-top-3 peer-focus:text-xs peer-focus:text-primary peer-focus:bg-[#0b1326] transition-all duration-300 pointer-events-none" for="referral_code">Referral Code (Optional)</label>
+                    </div>
+                </div>
                 
                 <!-- Options -->
-                <div class="flex items-center justify-between">
+                <div class="flex items-center justify-between" id="options-container">
                     <label class="flex items-center gap-sm cursor-pointer group">
                         <input class="w-4 h-4 rounded border-outline-variant/50 bg-transparent text-primary focus:ring-0 focus:ring-offset-0 transition-colors" type="checkbox" checked/>
                         <span class="font-label-sm text-label-sm text-on-surface-variant group-hover:text-on-surface transition-colors">Remember Me</span>
@@ -212,12 +228,39 @@
                     </button>
                 </div>
             </form>
+
+            <!-- 2FA Login Container -->
+            <div id="2fa-login-container" class="hidden space-y-lg">
+                <div class="space-y-sm text-center">
+                    <h3 class="text-xl font-bold text-secondary flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-secondary text-2xl animate-pulse">security</span>
+                        2-Factor Verification
+                    </h3>
+                    <p class="text-xs text-outline leading-relaxed">Enter the 6-digit verification code from your authenticator app or a backup code.</p>
+                </div>
+                
+                <div class="space-y-sm">
+                    <div class="relative group">
+                        <input class="peer w-full bg-transparent border-2 border-outline-variant/30 rounded-lg px-md py-lg text-on-surface placeholder-transparent focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-center font-bold tracking-[0.4em] font-mono text-lg" id="2fa-login-code" placeholder="123456" type="text" maxlength="9"/>
+                        <label class="absolute left-md -top-3 bg-[#0b1326] px-xs text-xs text-outline peer-placeholder-shown:text-body-md peer-placeholder-shown:top-lg peer-placeholder-shown:bg-transparent peer-focus:-top-3 peer-focus:text-xs peer-focus:text-primary peer-focus:bg-[#0b1326] transition-all duration-300 pointer-events-none w-full text-center left-0" for="2fa-login-code">Verification Code</label>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-md">
+                    <button id="2fa-login-verify-btn" class="flex-1 py-md bg-secondary text-on-secondary font-title-md text-title-md rounded-lg hover:shadow-[0_0_15px_rgba(67,239,174,0.3)] transition-all duration-300 active:scale-[0.98] flex items-center justify-center gap-sm" type="button">
+                        <span>Verify Code</span>
+                    </button>
+                    <button id="2fa-login-cancel-btn" class="px-md py-md bg-white/5 border border-white/10 text-on-surface font-title-md text-title-md rounded-lg hover:bg-white/10 transition-all duration-300 active:scale-[0.98]" type="button">
+                        Cancel
+                    </button>
+                </div>
+            </div>
             
             <!-- Footer Text -->
-            <div class="text-center pt-md">
-                <p class="font-label-sm text-label-sm text-on-surface-variant">
+            <div class="text-center pt-md" id="footer-toggle-box">
+                <p class="font-label-sm text-label-sm text-on-surface-variant" id="footer-toggle-text">
                     New to FinanceFit? 
-                    <a class="text-secondary font-bold hover:underline ml-xs" href="#">Create Account</a>
+                    <a class="text-secondary font-bold hover:underline ml-xs cursor-pointer" id="toggle-signup-btn">Create Account</a>
                 </p>
             </div>
         </div>
@@ -342,62 +385,213 @@
             }
         }
 
-        // Handle Form Submission
-        const form = document.getElementById('login-form');
+        // Toggle Sign In vs Sign Up mode
+        let isSignUpMode = false;
+        const nameContainer = document.getElementById('name-container');
+        const referralContainer = document.getElementById('referral-container');
+        const nameInput = document.getElementById('name');
+        const referralInput = document.getElementById('referral_code');
+        const optionsContainer = document.getElementById('options-container');
+        const footerToggleText = document.getElementById('footer-toggle-text');
         const submitBtn = document.getElementById('submit-btn');
-        const submitSpinner = document.getElementById('submit-spinner');
         const btnText = submitBtn.querySelector('.btn-text');
         const shimmerText = document.querySelector('.shimmer-text');
+        const magicLinkBtn = document.getElementById('magic-link-btn');
+
+        function handleToggleMode() {
+            isSignUpMode = !isSignUpMode;
+            if (isSignUpMode) {
+                nameContainer.classList.remove('hidden');
+                referralContainer.classList.remove('hidden');
+                nameInput.required = true;
+                optionsContainer.classList.add('hidden');
+                magicLinkBtn.classList.add('hidden');
+                
+                btnText.textContent = "Register & Create Account";
+                shimmerText.textContent = "Registering Secure Credentials...";
+                
+                footerToggleText.innerHTML = `Already have an account? <a class="text-secondary font-bold hover:underline ml-xs cursor-pointer" id="toggle-signup-btn">Sign In</a>`;
+            } else {
+                nameContainer.classList.add('hidden');
+                referralContainer.classList.add('hidden');
+                nameInput.required = false;
+                nameInput.value = '';
+                referralInput.value = '';
+                optionsContainer.classList.remove('hidden');
+                magicLinkBtn.classList.remove('hidden');
+                
+                btnText.textContent = "Sign In to Portal";
+                shimmerText.textContent = "Connecting to Secure Vault...";
+                
+                footerToggleText.innerHTML = `New to FinanceFit? <a class="text-secondary font-bold hover:underline ml-xs cursor-pointer" id="toggle-signup-btn">Create Account</a>`;
+            }
+            // Bind listener to newly generated DOM element
+            document.getElementById('toggle-signup-btn').addEventListener('click', handleToggleMode);
+        }
+
+        document.getElementById('toggle-signup-btn').addEventListener('click', handleToggleMode);
+
+        // Handle Form Submission
+        const form = document.getElementById('login-form');
+        const submitSpinner = document.getElementById('submit-spinner');
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const password = pwdInput.value;
             
-            showStatus('Establishing secure TLS link...', 'loading');
-            
-            // Start spinner loader
             submitBtn.disabled = true;
             submitSpinner.classList.remove('hidden');
-            btnText.textContent = "Authenticating...";
             
             // Force hover label permanent state during connection
-            shimmerText.textContent = "Connecting to Secure Vault...";
             shimmerText.parentElement.style.opacity = '1';
             shimmerText.parentElement.classList.remove('opacity-0');
 
+            if (isSignUpMode) {
+                const name = nameInput.value.trim();
+                const referral_code = referralInput.value.trim() || null;
+                showStatus('Registering credentials & allocating security partitions...', 'loading');
+                btnText.textContent = "Registering...";
+                
+                try {
+                    const res = await fetch('/api/auth/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, email, password, referral_code })
+                    });
+                    
+                    const data = await res.json();
+                    if (res.ok) {
+                        showStatus('Account Created successfully! Syncing keys...', 'success');
+                        localStorage.setItem('financefit_token', data.token);
+                        localStorage.setItem('financefit_user', JSON.stringify(data.user));
+                        setTimeout(() => {
+                            window.location.href = '/dashboard';
+                        }, 1000);
+                    } else {
+                        showStatus(data.detail || 'Registration failed. Check inputs.', 'error');
+                        submitBtn.disabled = false;
+                        submitSpinner.classList.add('hidden');
+                        btnText.textContent = "Register & Create Account";
+                        shimmerText.parentElement.style.opacity = '';
+                    }
+                } catch (err) {
+                    showStatus('Connection failed during registration.', 'error');
+                    submitBtn.disabled = false;
+                    submitSpinner.classList.add('hidden');
+                    btnText.textContent = "Register & Create Account";
+                    shimmerText.parentElement.style.opacity = '';
+                }
+            } else {
+                showStatus('Establishing secure TLS link...', 'loading');
+                btnText.textContent = "Authenticating...";
+                
+                try {
+                    const res = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+                    
+                    const data = await res.json();
+                    if (res.ok) {
+                        if (data.two_factor_required) {
+                            showStatus('Two-Factor Authentication required. Enter verification code.', 'info');
+                            
+                            // Save temp credentials
+                            window.temp2FAEmail = data.email;
+                            window.temp2FAToken = data.temp_token;
+                            
+                            // Hide login form & footer
+                            form.classList.add('hidden');
+                            document.getElementById('footer-toggle-box').classList.add('hidden');
+                            
+                            // Show 2FA container
+                            document.getElementById('2fa-login-container').classList.remove('hidden');
+                            document.getElementById('2fa-login-code').focus();
+                            
+                            // Reset submit button state
+                            submitBtn.disabled = false;
+                            submitSpinner.classList.add('hidden');
+                            btnText.textContent = "Sign In to Portal";
+                            shimmerText.parentElement.style.opacity = '';
+                        } else {
+                            showStatus('Access Granted. Aligning encryption protocols...', 'success');
+                            localStorage.setItem('financefit_token', data.token);
+                            localStorage.setItem('financefit_user', JSON.stringify(data.user));
+                            setTimeout(() => {
+                                window.location.href = '/dashboard';
+                            }, 1000);
+                        }
+                    } else {
+                        showStatus(data.detail || 'Authorization failed. Please check credentials.', 'error');
+                        submitBtn.disabled = false;
+                        submitSpinner.classList.add('hidden');
+                        btnText.textContent = "Sign In to Portal";
+                        shimmerText.parentElement.style.opacity = '';
+                    }
+                } catch (err) {
+                    showStatus('Network connection anomaly detected.', 'error');
+                    console.error(err);
+                    submitBtn.disabled = false;
+                    submitSpinner.classList.add('hidden');
+                    btnText.textContent = "Sign In to Portal";
+                    shimmerText.parentElement.style.opacity = '';
+                }
+            }
+        });
+
+        // 2FA Verification Form Flow Handlers
+        document.getElementById('2fa-login-verify-btn').addEventListener('click', async () => {
+            const codeInput = document.getElementById('2fa-login-code');
+            const code = codeInput.value.trim();
+            if (!code) {
+                showStatus('Please enter the verification code.', 'error');
+                return;
+            }
+            
+            showStatus('Verifying cryptographic 2FA signature...', 'loading');
+            
             try {
-                const res = await fetch('/api/auth/login', {
+                const res = await fetch('/api/auth/login/verify-2fa', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify({
+                        email: window.temp2FAEmail,
+                        temp_token: window.temp2FAToken,
+                        code: code
+                    })
                 });
-                
                 const data = await res.json();
-                if (res.ok) {
-                    showStatus('Access Granted. Aligning encryption protocols...', 'success');
+                if (res.ok && data.success) {
+                    showStatus('2FA Verified. Welcome to the secure portal.', 'success');
                     localStorage.setItem('financefit_token', data.token);
                     localStorage.setItem('financefit_user', JSON.stringify(data.user));
                     setTimeout(() => {
                         window.location.href = '/dashboard';
                     }, 1000);
                 } else {
-                    showStatus(data.detail || 'Authorization failed. Please check credentials.', 'error');
-                    submitBtn.disabled = false;
-                    submitSpinner.classList.add('hidden');
-                    btnText.textContent = "Sign In to Portal";
-                    shimmerText.textContent = "Connecting to Secure Vault...";
-                    shimmerText.parentElement.style.opacity = '';
+                    showStatus(data.detail || '2FA verification failed.', 'error');
                 }
             } catch (err) {
-                showStatus('Network connection anomaly detected.', 'error');
-                console.error(err);
-                submitBtn.disabled = false;
-                submitSpinner.classList.add('hidden');
-                btnText.textContent = "Sign In to Portal";
-                shimmerText.textContent = "Connecting to Secure Vault...";
-                shimmerText.parentElement.style.opacity = '';
+                showStatus('Network error during 2FA verification.', 'error');
             }
+        });
+        
+        document.getElementById('2fa-login-code').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('2fa-login-verify-btn').click();
+            }
+        });
+
+        document.getElementById('2fa-login-cancel-btn').addEventListener('click', () => {
+            document.getElementById('2fa-login-container').classList.add('hidden');
+            form.classList.remove('hidden');
+            document.getElementById('footer-toggle-box').classList.remove('hidden');
+            showStatus('Establishing secure TLS link...', 'info');
+            pwdInput.value = '';
+            document.getElementById('2fa-login-code').value = '';
         });
 
         // Biometric Scanning Simulation
@@ -458,21 +652,55 @@
         });
 
         // Listen for Google Auth Popup response
-        window.addEventListener('message', (event) => {
+        window.addEventListener('message', async (event) => {
             if (event.origin !== window.location.origin) return;
             
             const msg = event.data;
             if (msg.type === 'OAUTH_SUCCESS') {
-                showStatus(`Federated login successful. User: ${msg.user.name}`, 'success');
-                localStorage.setItem('financefit_token', msg.token);
-                localStorage.setItem('financefit_user', JSON.stringify(msg.user));
-                setTimeout(() => {
-                    window.location.href = '/dashboard';
-                }, 1000);
+                showStatus(`Federated login successful. User: ${msg.user.name}. Registering session...`, 'loading');
+                
+                try {
+                    const res = await fetch('/api/auth/oauth-session', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            token: msg.token,
+                            email: msg.user.email,
+                            name: msg.user.name,
+                            tier: msg.user.tier
+                        })
+                    });
+                    if (res.ok) {
+                        showStatus(`Federated login successful. User: ${msg.user.name}`, 'success');
+                        localStorage.setItem('financefit_token', msg.token);
+                        localStorage.setItem('financefit_user', JSON.stringify(msg.user));
+                        setTimeout(() => {
+                            window.location.href = '/dashboard';
+                        }, 1000);
+                    } else {
+                        showStatus('Failed to sync OAuth session with the database.', 'error');
+                    }
+                } catch(e) {
+                    showStatus('Connection failure during OAuth session sync.', 'error');
+                }
             } else if (msg.type === 'OAUTH_FAILURE') {
                 showStatus(`Authentication aborted: ${msg.error}`, 'error');
             }
         });
+
+        // Check for referral code in URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const refCode = urlParams.get('ref') || urlParams.get('referral_code');
+        if (refCode) {
+            if (!isSignUpMode) {
+                handleToggleMode();
+            }
+            if (referralInput) {
+                referralInput.value = refCode;
+                showStatus(`Referral code "${refCode}" applied! You've unlocked Elite Tier rewards on sign up.`, 'success');
+            }
+        }
+        
 
         // Microsoft Sign-In Popup Simulation
         document.getElementById('microsoft-btn').addEventListener('click', () => {

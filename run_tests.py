@@ -9,6 +9,9 @@ def run_all_tests():
         ("Portfolio Rebalancer", test_api.test_portfolio_rebalance),
         ("AI Coach Intent Chat", test_api.test_chat),
         ("User Tier Pro Upgrade", test_api.test_upgrade),
+        ("End-to-End Referral Sign Up", test_api.test_referral_signup),
+        ("2FA Enforced Secure Login", test_api.test_two_factor_auth_login),
+        ("Developer API Key End-to-End", test_api.test_developer_api_keys),
     ]
     
     print("==================================================")

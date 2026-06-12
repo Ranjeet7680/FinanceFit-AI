@@ -330,7 +330,7 @@
     <!-- Main Content Area -->
     <main class="flex-1 flex flex-col relative md:ml-64 overflow-hidden h-screen">
         <!-- TopAppBar -->
-        <header class="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-md w-full sticky top-0 z-50 bg-surface-container/15 backdrop-blur-xl border-b border-white/10 shadow-sm">
+        <header class="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-md w-full sticky top-0 z-30 bg-surface-container/15 backdrop-blur-xl border-b border-white/10 shadow-sm">
             <div class="flex items-center gap-md md:gap-xl">
                 <!-- Hamburger menu button for mobile -->
                 <button id="mobile-menu-toggle-btn" class="md:hidden p-2 hover:bg-white/10 rounded-xl transition-colors text-on-surface-variant flex items-center justify-center" title="Open Menu">
@@ -1867,7 +1867,7 @@
 
                         <!-- PANEL 6: Invite & Referrals -->
                         <div id="settings-referral" class="settings-panel space-y-lg hidden animate-fade-in">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
                                 <!-- Referral Code & Copy -->
                                 <div class="glass p-lg rounded-2xl border border-white/5 space-y-md flex flex-col justify-between">
                                     <div class="space-y-sm">
@@ -1885,6 +1885,46 @@
                                     <div class="flex items-center gap-1 text-[10px] text-secondary font-mono mt-3 border-t border-white/5 pt-3">
                                         <span class="material-symbols-outlined text-[14px]">celebrate</span>
                                         <span>Referral codes never expire</span>
+                                    </div>
+                                </div>
+
+                                <!-- Social Share & 20% Off -->
+                                <div class="glass p-lg rounded-2xl border border-white/5 space-y-md flex flex-col justify-between">
+                                    <div class="space-y-sm">
+                                        <h4 class="font-semibold text-sm border-b border-white/5 pb-2 text-on-surface flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-secondary text-sm">share</span>
+                                            Social Share & 20% Off
+                                        </h4>
+                                        <p class="text-[11px] text-outline leading-relaxed">Spread the word directly. Your friends get <strong>20% off</strong> on Pro plans, and you both get Elite Access!</p>
+                                        
+                                        <div class="flex flex-wrap items-center gap-sm pt-2">
+                                            <!-- WhatsApp -->
+                                            <button onclick="shareReferral('whatsapp')" class="flex items-center justify-center w-10 h-10 rounded-xl bg-white/5 hover:bg-emerald-500/20 border border-white/10 hover:border-emerald-500/40 text-outline hover:text-emerald-400 transition-all" title="Share on WhatsApp">
+                                                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                                                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.42 9.863-9.864.001-2.63-1.023-5.101-2.885-6.963C16.48 1.96 14.017.937 11.397.936c-5.44 0-9.866 4.42-9.869 9.865-.001 1.77.461 3.5 1.336 5.025l-1.01 3.686 3.793-.995zM17.522 14c-.302-.15-1.786-.88-2.062-.98-.277-.1-.478-.15-.678.15-.2.3-.775.98-.95 1.18-.175.2-.35.225-.652.075-.302-.15-1.276-.47-2.43-1.5-.897-.8-1.502-1.79-1.678-2.09-.176-.3-.02-.462.13-.61.137-.135.302-.35.454-.525.152-.175.202-.3.303-.5.101-.2.05-.375-.025-.525-.075-.15-.678-1.635-.93-2.245-.244-.59-.493-.51-.678-.52-.175-.01-.375-.01-.575-.01-.2 0-.525.075-.8.375-.276.3-1.05 1.025-1.05 2.5 0 1.475 1.075 2.9 1.225 3.1.15.2 2.11 3.22 5.11 4.52.714.31 1.272.496 1.71.635.717.227 1.37.195 1.885.118.574-.086 1.786-.73 2.037-1.435.252-.705.252-1.31.176-1.435-.076-.125-.277-.2-.578-.35z"/>
+                                                </svg>
+                                            </button>
+                                            <!-- LinkedIn -->
+                                            <button onclick="shareReferral('linkedin')" class="flex items-center justify-center w-10 h-10 rounded-xl bg-white/5 hover:bg-blue-600/20 border border-white/10 hover:border-blue-600/40 text-outline hover:text-blue-400 transition-all" title="Share on LinkedIn">
+                                                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                                                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                                                </svg>
+                                            </button>
+                                            <!-- Twitter / X -->
+                                            <button onclick="shareReferral('twitter')" class="flex items-center justify-center w-10 h-10 rounded-xl bg-white/5 hover:bg-sky-500/20 border border-white/10 hover:border-sky-500/40 text-outline hover:text-sky-400 transition-all" title="Share on X">
+                                                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                                </svg>
+                                            </button>
+                                            <!-- Copy Message Button -->
+                                            <button onclick="copyReferralMessage()" class="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-outline hover:text-on-surface transition-all flex-1" title="Copy Invitation Message">
+                                                <span class="material-symbols-outlined text-[16px]">file_copy</span>
+                                                <span>Copy Post</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div id="referral-share-status" class="hidden text-[10px] font-mono text-secondary mt-3 border-t border-white/5 pt-3">
+                                        Message copied to clipboard!
                                     </div>
                                 </div>
 
@@ -1909,7 +1949,7 @@
                                 </div>
 
                                 <!-- Referrals List -->
-                                <div class="glass p-lg rounded-2xl border border-white/5 space-y-md md:col-span-2">
+                                <div class="glass p-lg rounded-2xl border border-white/5 space-y-md md:col-span-3">
                                     <h4 class="font-semibold text-sm border-b border-white/5 pb-2 text-on-surface">Referred Friends Log</h4>
                                     <div class="overflow-x-auto custom-scrollbar">
                                         <table class="w-full text-left text-xs border-collapse">
@@ -1938,11 +1978,11 @@
                             <div class="grid grid-cols-1 lg:grid-cols-3 gap-lg items-stretch text-[#11192e]">
                                 <!-- Team Card -->
                                 <div class="lg:col-span-1">
-                                    <div class="bg-white rounded-3xl p-lg shadow-xl border border-gray-100 flex flex-col justify-between h-full min-h-[220px]">
+                                    <div class="bg-white rounded-3xl p-lg shadow-xl border border-gray-100 flex flex-col justify-between h-full min-h-[220px] transition-all duration-500 hover:shadow-[0_10px_30px_rgba(255,153,51,0.12),_0_10px_30px_rgba(19,136,8,0.12)] hover:-translate-y-1">
                                         <div class="flex justify-between items-start">
                                             <div class="flex gap-md items-center">
                                                 <!-- Logo -->
-                                                <img src="/static/team_logo.png" alt="Bharatiya Veer Logo" class="w-20 h-20 object-contain rounded-xl"/>
+                                                <img src="/static/team_logo.png" alt="Bharatiya Veer Logo" class="w-20 h-20 object-contain rounded-xl border border-gray-100 bg-gray-50 p-1"/>
                                                 <div>
                                                     <h4 class="text-xl font-bold font-title-md">Bharatiya Veer</h4>
                                                     <!-- Overlapping Avatars Row -->
@@ -1950,7 +1990,7 @@
                                                         <img src="/static/avatar_ranjeet.png" alt="Ranjeet" class="w-8 h-8 rounded-full border-2 border-white object-cover"/>
                                                         <img src="/static/avatar_gaurav.png" alt="Gaurav" class="w-8 h-8 rounded-full border-2 border-white object-cover"/>
                                                         <img src="/static/avatar_sai.png" alt="Sai" class="w-8 h-8 rounded-full border-2 border-white object-cover"/>
-                                                        <div class="w-8 h-8 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-500">M</div>
+                                                        <img src="/static/avatar_manjunath.png" alt="Manjunath" class="w-8 h-8 rounded-full border-2 border-white object-cover"/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1959,8 +1999,13 @@
                                                 <span class="material-symbols-outlined text-sm">edit</span>
                                             </button>
                                         </div>
-                                        <div class="mt-lg border-t border-gray-100 pt-4">
-                                            <p class="text-md font-semibold text-gray-700 italic">वीरता, नेतृत्व और राष्ट्र निर्माण</p>
+                                        <div class="mt-lg border-t border-gray-100 pt-4 flex flex-col gap-2">
+                                            <div class="h-[3px] w-full rounded flex overflow-hidden">
+                                                <div class="h-full w-1/3 bg-[#FF9933]"></div>
+                                                <div class="h-full w-1/3 bg-white border-y border-gray-200"></div>
+                                                <div class="h-full w-1/3 bg-[#138808]"></div>
+                                            </div>
+                                            <p class="text-sm font-bold text-gray-700 italic mt-1 text-center font-mono">वीरता, नेतृत्व और राष्ट्र निर्माण</p>
                                         </div>
                                     </div>
                                 </div>
@@ -1972,11 +2017,9 @@
                                         
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
                                             <!-- Manjunath -->
-                                            <div class="flex items-center justify-between p-md border border-gray-100 rounded-2xl hover:shadow-md transition-shadow">
+                                            <div class="flex items-center justify-between p-md border border-gray-100 rounded-2xl hover:shadow-lg hover:border-gray-200 transition-all duration-300 transform hover:-translate-y-0.5 bg-gray-50/30">
                                                 <div class="flex items-center gap-md">
-                                                    <div class="w-12 h-12 rounded-full border-2 border-gray-200 bg-gray-50 flex items-center justify-center text-xs font-bold text-gray-500">
-                                                        M
-                                                    </div>
+                                                    <img src="/static/avatar_manjunath.png" alt="Manjunath" class="w-12 h-12 rounded-full border-2 border-gray-100 object-cover"/>
                                                     <div>
                                                         <div class="font-bold text-sm">Manjunath L Patat</div>
                                                         <div class="text-[11px] text-gray-500 font-mono">manjupatat80@gmail.com</div>
@@ -1986,7 +2029,7 @@
                                             </div>
                                             
                                             <!-- Sai -->
-                                            <div class="flex items-center justify-between p-md border border-gray-100 rounded-2xl hover:shadow-md transition-shadow">
+                                            <div class="flex items-center justify-between p-md border border-gray-100 rounded-2xl hover:shadow-lg hover:border-gray-200 transition-all duration-300 transform hover:-translate-y-0.5 bg-gray-50/30">
                                                 <div class="flex items-center gap-md">
                                                     <img src="/static/avatar_sai.png" alt="Sai" class="w-12 h-12 rounded-full border-2 border-gray-100 object-cover"/>
                                                     <div>
@@ -1998,7 +2041,7 @@
                                             </div>
 
                                             <!-- Gaurav -->
-                                            <div class="flex items-center justify-between p-md border border-gray-100 rounded-2xl hover:shadow-md transition-shadow">
+                                            <div class="flex items-center justify-between p-md border border-gray-100 rounded-2xl hover:shadow-lg hover:border-gray-200 transition-all duration-300 transform hover:-translate-y-0.5 bg-gray-50/30">
                                                 <div class="flex items-center gap-md">
                                                     <img src="/static/avatar_gaurav.png" alt="Gaurav" class="w-12 h-12 rounded-full border-2 border-gray-100 object-cover"/>
                                                     <div>
@@ -2010,7 +2053,7 @@
                                             </div>
 
                                             <!-- Ranjeet -->
-                                            <div class="flex items-center justify-between p-md border border-gray-100 rounded-2xl hover:shadow-md transition-shadow">
+                                            <div class="flex items-center justify-between p-md border border-gray-100 rounded-2xl hover:shadow-lg hover:border-gray-200 transition-all duration-300 transform hover:-translate-y-0.5 bg-gray-50/30">
                                                 <div class="flex items-center gap-md">
                                                     <img src="/static/avatar_ranjeet.png" alt="Ranjeet" class="w-12 h-12 rounded-full border-2 border-gray-100 object-cover"/>
                                                     <div>

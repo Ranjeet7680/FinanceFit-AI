@@ -6,9 +6,10 @@ import pickle
 from sklearn.linear_model import Ridge
 from sklearn.preprocessing import StandardScaler
 
-DB_PATH = "financial_health.db"
-MODEL_PATH = "ml_models.pkl"
-CSV_PATH = "corporate_financial_health_bankruptcy_risk.csv"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "financial_health.db")
+MODEL_PATH = os.path.join(BASE_DIR, "ml_models.pkl")
+CSV_PATH = os.path.join(BASE_DIR, "corporate_financial_health_bankruptcy_risk.csv")
 
 import hashlib
 import os
@@ -79,11 +80,18 @@ def init_db():
         user_email TEXT,
         name TEXT,
         key_prefix TEXT,
+        secret_key TEXT,
         scopes TEXT,
         created_at TEXT,
         FOREIGN KEY(user_email) REFERENCES users(email)
     )
     """)
+    try:
+        cursor.execute("ALTER TABLE user_api_keys ADD COLUMN secret_key TEXT")
+        conn.commit()
+    except sqlite3.OperationalError:
+        pass
+
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS referrals (
         id TEXT PRIMARY KEY,
@@ -113,6 +121,11 @@ def init_db():
             "INSERT INTO users (email, password_hash, salt, name, tier, referral_code) VALUES (?, ?, ?, ?, ?, ?)",
             ("test@sterling.com", test_hash, test_salt, "Test User", "Standard Tier", "FINFIT-TEST-5678")
         )
+        # Prepopulate demo@financefit.ai (Demo login sandbox)
+        cursor.execute(
+            "INSERT INTO users (email, password_hash, salt, name, tier, referral_code) VALUES (?, ?, ?, ?, ?, ?)",
+            ("demo@financefit.ai", "", "", "Demo User", "Standard Tier", "FINFIT-DEMO-777")
+        )
         
         # Prepopulate default notifications for Alex
         import datetime
@@ -136,7 +149,7 @@ def init_db():
              now_str, 1, "chat")
         )
         
-        # Prepopulate default 2FA config for both
+        # Prepopulate default 2FA config for all
         cursor.execute(
             "INSERT INTO user_2fa (user_email, enabled, secret, backup_codes) VALUES (?, ?, ?, ?)",
             ("alex@sterling.com", 0, "JBSWY3DPEHPK3PXP", "7732-9011,4412-8809,1290-7611,5567-3312")
@@ -144,6 +157,10 @@ def init_db():
         cursor.execute(
             "INSERT INTO user_2fa (user_email, enabled, secret, backup_codes) VALUES (?, ?, ?, ?)",
             ("test@sterling.com", 0, "MJSXA3DPEHPK3PXP", "1122-3344,5566-7788,9900-1122,3344-5566")
+        )
+        cursor.execute(
+            "INSERT INTO user_2fa (user_email, enabled, secret, backup_codes) VALUES (?, ?, ?, ?)",
+            ("demo@financefit.ai", 0, "JBSWY3DPEHPK3PXP", "7732-9011,4412-8809,1290-7611,5567-3312")
         )
         
         # Prepopulate session logs
@@ -154,6 +171,10 @@ def init_db():
         cursor.execute(
             "INSERT INTO sessions (token, user_email, device, ip, location, active, login_time) VALUES (?, ?, ?, ?, ?, ?, ?)",
             ("test-token-456", "test@sterling.com", "Edge (Windows 10)", "192.168.1.5", "Local Host", 1, now_str)
+        )
+        cursor.execute(
+            "INSERT INTO sessions (token, user_email, device, ip, location, active, login_time) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            ("demo-token-777", "demo@financefit.ai", "Chrome (Windows 11)", "127.0.0.1", "Local Host", 1, "2026-06-11 00:00")
         )
         
         # Prepopulate API key
