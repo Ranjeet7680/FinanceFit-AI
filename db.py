@@ -10,10 +10,157 @@ DB_PATH = "financial_health.db"
 MODEL_PATH = "ml_models.pkl"
 CSV_PATH = "corporate_financial_health_bankruptcy_risk.csv"
 
+import hashlib
+import os
+
+def hash_password(password: str, salt: bytes = None) -> tuple[str, str]:
+    """Hashes a password using PBKDF2 with SHA-256 and a 16-byte salt."""
+    if salt is None:
+        salt = os.urandom(16)
+    elif isinstance(salt, str):
+        salt = bytes.fromhex(salt)
+    pwd_bytes = password.encode('utf-8')
+    key = hashlib.pbkdf2_hmac('sha256', pwd_bytes, salt, 100000)
+    return key.hex(), salt.hex()
+
 def init_db():
-    """Initializes the SQLite database from the CSV dataset if not already created."""
+    """Initializes the SQLite database and all user security tables."""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
+
+    # Create user and security metadata tables
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+        email TEXT PRIMARY KEY,
+        password_hash TEXT,
+        salt TEXT,
+        name TEXT,
+        tier TEXT,
+        referral_code TEXT
+    )
+    """)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS sessions (
+        token TEXT PRIMARY KEY,
+        user_email TEXT,
+        device TEXT,
+        ip TEXT,
+        location TEXT,
+        active INTEGER,
+        login_time TEXT,
+        FOREIGN KEY(user_email) REFERENCES users(email)
+    )
+    """)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS notifications (
+        id TEXT PRIMARY KEY,
+        user_email TEXT,
+        type TEXT,
+        title TEXT,
+        message TEXT,
+        timestamp TEXT,
+        read INTEGER,
+        link TEXT,
+        FOREIGN KEY(user_email) REFERENCES users(email)
+    )
+    """)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS user_2fa (
+        user_email TEXT PRIMARY KEY,
+        enabled INTEGER,
+        secret TEXT,
+        backup_codes TEXT,
+        FOREIGN KEY(user_email) REFERENCES users(email)
+    )
+    """)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS user_api_keys (
+        id TEXT PRIMARY KEY,
+        user_email TEXT,
+        name TEXT,
+        key_prefix TEXT,
+        scopes TEXT,
+        created_at TEXT,
+        FOREIGN KEY(user_email) REFERENCES users(email)
+    )
+    """)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS referrals (
+        id TEXT PRIMARY KEY,
+        referrer_email TEXT,
+        referee_email TEXT,
+        code TEXT,
+        status TEXT,
+        timestamp TEXT,
+        FOREIGN KEY(referrer_email) REFERENCES users(email)
+    )
+    """)
+
+    # Seed default user profiles if table is empty
+    cursor.execute("SELECT COUNT(*) FROM users")
+    user_count = cursor.fetchone()[0]
+    if user_count == 0:
+        print("Seeding default secure user records...")
+        # Prepopulate alex@sterling.com
+        alex_hash, alex_salt = hash_password("admin123")
+        cursor.execute(
+            "INSERT INTO users (email, password_hash, salt, name, tier, referral_code) VALUES (?, ?, ?, ?, ?, ?)",
+            ("alex@sterling.com", alex_hash, alex_salt, "Alex Sterling", "Elite Tier", "FINFIT-ALEX-1234")
+        )
+        # Prepopulate test@sterling.com
+        test_hash, test_salt = hash_password("test123")
+        cursor.execute(
+            "INSERT INTO users (email, password_hash, salt, name, tier, referral_code) VALUES (?, ?, ?, ?, ?, ?)",
+            ("test@sterling.com", test_hash, test_salt, "Test User", "Standard Tier", "FINFIT-TEST-5678")
+        )
+        
+        # Prepopulate default notifications for Alex
+        import datetime
+        now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+        cursor.execute(
+            "INSERT INTO notifications (id, user_email, type, title, message, timestamp, read, link) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            ("notif-1", "alex@sterling.com", "portfolio", "High Risk Exposure Warning", 
+             "Bankruptcy Risk for CORP-000001 (Tech) is evaluated at 28.5. Sector correction risk is active.", 
+             now_str, 0, "portfolio")
+        )
+        cursor.execute(
+            "INSERT INTO notifications (id, user_email, type, title, message, timestamp, read, link) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            ("notif-2", "alex@sterling.com", "security", "MFA Setup Recommended", 
+             "Secure your account with 2-Factor Authentication (TOTP). Scan code to configure now.", 
+             now_str, 0, "settings")
+        )
+        cursor.execute(
+            "INSERT INTO notifications (id, user_email, type, title, message, timestamp, read, link) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            ("notif-3", "alex@sterling.com", "system", "Intelligence Engine Upgraded", 
+             "FinanceFit AI has successfully initialized the Gemini 3.5 analytics engine.", 
+             now_str, 1, "chat")
+        )
+        
+        # Prepopulate default 2FA config for both
+        cursor.execute(
+            "INSERT INTO user_2fa (user_email, enabled, secret, backup_codes) VALUES (?, ?, ?, ?)",
+            ("alex@sterling.com", 0, "JBSWY3DPEHPK3PXP", "7732-9011,4412-8809,1290-7611,5567-3312")
+        )
+        cursor.execute(
+            "INSERT INTO user_2fa (user_email, enabled, secret, backup_codes) VALUES (?, ?, ?, ?)",
+            ("test@sterling.com", 0, "MJSXA3DPEHPK3PXP", "1122-3344,5566-7788,9900-1122,3344-5566")
+        )
+        
+        # Prepopulate session logs
+        cursor.execute(
+            "INSERT INTO sessions (token, user_email, device, ip, location, active, login_time) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            ("elite-token-123", "alex@sterling.com", "Chrome (Windows 11)", "103.241.12.89", "Mumbai, India", 1, now_str)
+        )
+        cursor.execute(
+            "INSERT INTO sessions (token, user_email, device, ip, location, active, login_time) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            ("test-token-456", "test@sterling.com", "Edge (Windows 10)", "192.168.1.5", "Local Host", 1, now_str)
+        )
+        
+        # Prepopulate API key
+        cursor.execute(
+            "INSERT INTO user_api_keys (id, user_email, name, key_prefix, scopes, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+            ("key-1", "alex@sterling.com", "Coaching API Production", "ff_live_5c8a...", "predict,chat", now_str)
+        )
 
     # Check if table already exists and has data
     try:
@@ -21,6 +168,7 @@ def init_db():
         count = cursor.fetchone()[0]
         if count > 0:
             print(f"Database already initialized with {count} records.")
+            conn.commit()
             conn.close()
             return
     except sqlite3.OperationalError:
@@ -31,6 +179,8 @@ def init_db():
     
     # Read CSV using pandas
     if not os.path.exists(CSV_PATH):
+        conn.commit()
+        conn.close()
         raise FileNotFoundError(f"Source CSV file not found at: {CSV_PATH}")
         
     df = pd.read_csv(CSV_PATH)

@@ -1492,6 +1492,18 @@
                             <span class="material-symbols-outlined text-[18px]">security</span>
                             Advanced Security (2FA)
                         </button>
+                        <button class="settings-tab-btn flex items-center gap-2 px-md py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all w-full text-left text-on-surface-variant hover:bg-white/5" data-tab="settings-accessibility">
+                            <span class="material-symbols-outlined text-[18px]">accessibility_new</span>
+                            Accessibility Settings
+                        </button>
+                        <button class="settings-tab-btn flex items-center gap-2 px-md py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all w-full text-left text-on-surface-variant hover:bg-white/5" data-tab="settings-referral">
+                            <span class="material-symbols-outlined text-[18px]">group_add</span>
+                            Invite & Referrals
+                        </button>
+                        <button class="settings-tab-btn flex items-center gap-2 px-md py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all w-full text-left text-on-surface-variant hover:bg-white/5" data-tab="settings-team">
+                            <span class="material-symbols-outlined text-[18px]">groups</span>
+                            Development Team
+                        </button>
                         <button class="settings-tab-btn flex items-center gap-2 px-md py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all w-full text-left text-on-surface-variant hover:bg-white/5" data-tab="settings-api">
                             <span class="material-symbols-outlined text-[18px]">developer_mode</span>
                             Developer API Keys
@@ -1773,6 +1785,248 @@
                                         </button>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- PANEL 5: Accessibility -->
+                        <div id="settings-accessibility" class="settings-panel space-y-lg hidden animate-fade-in">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+                                <!-- Accessibility Options -->
+                                <div class="glass p-lg rounded-2xl border border-white/5 space-y-md">
+                                    <h4 class="font-semibold text-sm border-b border-white/5 pb-2 text-on-surface flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-secondary text-sm">settings_accessibility</span>
+                                        Accessibility Overrides
+                                    </h4>
+                                    
+                                    <!-- High Contrast Toggle -->
+                                    <div class="flex justify-between items-center text-xs py-1">
+                                        <div>
+                                            <span class="font-bold block">High Contrast Mode</span>
+                                            <span class="text-outline text-[10px]">Boost color contrast for readability.</span>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" id="accessibility-contrast" class="sr-only peer" onchange="toggleHighContrast()">
+                                            <div class="w-9 h-5 bg-white/15 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-outline after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-secondary peer-checked:after:bg-on-secondary"></div>
+                                        </label>
+                                    </div>
+
+                                    <!-- Font Size Selector -->
+                                    <div class="flex justify-between items-center text-xs py-1 border-t border-white/5 pt-3">
+                                        <div>
+                                            <span class="font-bold block">Text Scale Size</span>
+                                            <span class="text-outline text-[10px]">Adjust app text sizing dynamically.</span>
+                                        </div>
+                                        <select id="accessibility-font-scale" class="bg-surface border border-white/10 rounded-lg px-2.5 py-1 text-xs text-on-surface focus:outline-none focus:border-secondary" onchange="adjustTextScale()">
+                                            <option value="scale-sm">Small (90%)</option>
+                                            <option value="scale-md" selected>Default (100%)</option>
+                                            <option value="scale-lg">Large (115%)</option>
+                                            <option value="scale-xl">Extra Large (130%)</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Motion Reduction Toggle -->
+                                    <div class="flex justify-between items-center text-xs py-1 border-t border-white/5 pt-3">
+                                        <div>
+                                            <span class="font-bold block">Reduce Motion</span>
+                                            <span class="text-outline text-[10px]">Disable shaders and particle animations.</span>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" id="accessibility-reduce-motion" class="sr-only peer" onchange="toggleReduceMotion()">
+                                            <div class="w-9 h-5 bg-white/15 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-outline after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-secondary peer-checked:after:bg-on-secondary"></div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Accessibility Screen Reader Announcements -->
+                                <div class="glass p-lg rounded-2xl border border-white/5 space-y-md flex flex-col justify-between">
+                                    <div class="space-y-sm">
+                                        <h4 class="font-semibold text-sm border-b border-white/5 pb-2 text-on-surface flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-secondary text-sm">hearing</span>
+                                            Screen Reader & Speech
+                                        </h4>
+                                        <p class="text-[11px] text-outline leading-relaxed">Customize speed and frequency of system voice announcements during app interaction.</p>
+                                        
+                                        <!-- Speech speed selector -->
+                                        <div class="space-y-1 text-xs pt-2">
+                                            <label class="text-[10px] uppercase font-bold text-outline">Vocalized Speech Speed</label>
+                                            <input type="range" id="accessibility-speech-rate" class="w-full accent-secondary h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" min="0.5" max="2.0" step="0.25" value="1.0" onchange="updateSpeechSettings()"/>
+                                            <div class="flex justify-between text-[9px] text-outline px-1">
+                                                <span>0.5x (Slow)</span>
+                                                <span>1.0x (Default)</span>
+                                                <span>2.0x (Fast)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-1 text-[10px] text-secondary font-mono mt-3 border-t border-white/5 pt-3">
+                                        <span class="material-symbols-outlined text-[14px]">record_voice_over</span>
+                                        <span>Aria screen reader mapping is enabled</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PANEL 6: Invite & Referrals -->
+                        <div id="settings-referral" class="settings-panel space-y-lg hidden animate-fade-in">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+                                <!-- Referral Code & Copy -->
+                                <div class="glass p-lg rounded-2xl border border-white/5 space-y-md flex flex-col justify-between">
+                                    <div class="space-y-sm">
+                                        <h4 class="font-semibold text-sm border-b border-white/5 pb-2 text-on-surface flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-secondary text-sm">loyalty</span>
+                                            Your Referral Code
+                                        </h4>
+                                        <p class="text-[11px] text-outline leading-relaxed">Share your unique code with friends. You both get <strong>1 month of Pro Access</strong> when they join!</p>
+                                        
+                                        <div class="flex items-center justify-between bg-white/5 rounded-xl border border-white/10 px-lg py-md text-base mt-md">
+                                            <span id="referral-code-lbl" class="font-bold tracking-wider font-mono text-secondary">FINFIT-LOADING...</span>
+                                            <button class="material-symbols-outlined text-outline hover:text-on-surface hover:scale-110 transition-all" onclick="copyReferralCode()" title="Copy Referral Code">content_copy</button>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-1 text-[10px] text-secondary font-mono mt-3 border-t border-white/5 pt-3">
+                                        <span class="material-symbols-outlined text-[14px]">celebrate</span>
+                                        <span>Referral codes never expire</span>
+                                    </div>
+                                </div>
+
+                                <!-- Send Invite Email -->
+                                <div class="glass p-lg rounded-2xl border border-white/5 space-y-md flex flex-col justify-between">
+                                    <div class="space-y-sm">
+                                        <h4 class="font-semibold text-sm border-b border-white/5 pb-2 text-on-surface flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-secondary text-sm">send</span>
+                                            Invite a Friend
+                                        </h4>
+                                        <div class="space-y-xs pt-1">
+                                            <label class="text-[9px] uppercase font-bold text-outline">Friend's Email Address</label>
+                                            <div class="flex gap-2">
+                                                <input type="email" id="referral-invite-email" class="bg-white/5 border border-white/10 rounded px-2.5 py-1.5 text-xs w-full focus:border-secondary focus:outline-none" placeholder="e.g. friend@email.com">
+                                                <button class="px-4 py-1.5 bg-secondary text-on-secondary text-xs font-bold rounded hover:shadow-[0_0_10px_rgba(67,239,174,0.3)] transition-all" onclick="sendReferralInvite()">Invite</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="referral-invite-status" class="hidden text-[10px] font-mono text-secondary mt-2">
+                                        Invitation dispatched successfully!
+                                    </div>
+                                </div>
+
+                                <!-- Referrals List -->
+                                <div class="glass p-lg rounded-2xl border border-white/5 space-y-md md:col-span-2">
+                                    <h4 class="font-semibold text-sm border-b border-white/5 pb-2 text-on-surface">Referred Friends Log</h4>
+                                    <div class="overflow-x-auto custom-scrollbar">
+                                        <table class="w-full text-left text-xs border-collapse">
+                                            <thead>
+                                                <tr class="border-b border-white/10 text-outline text-[10px] uppercase">
+                                                    <th class="py-2">Friend's Email</th>
+                                                    <th class="py-2">Referral Code Used</th>
+                                                    <th class="py-2">Invite Date</th>
+                                                    <th class="py-2 text-right">Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="referred-friends-table-body">
+                                                <!-- Populated by JS -->
+                                                <tr>
+                                                    <td colspan="4" class="text-center py-4 text-outline text-[10px]">No referrals yet. Share your code above to get started!</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PANEL 7: Development Team -->
+                        <div id="settings-team" class="settings-panel space-y-lg hidden animate-fade-in">
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-lg items-stretch text-[#11192e]">
+                                <!-- Team Card -->
+                                <div class="lg:col-span-1">
+                                    <div class="bg-white rounded-3xl p-lg shadow-xl border border-gray-100 flex flex-col justify-between h-full min-h-[220px]">
+                                        <div class="flex justify-between items-start">
+                                            <div class="flex gap-md items-center">
+                                                <!-- Logo -->
+                                                <img src="/static/team_logo.png" alt="Bharatiya Veer Logo" class="w-20 h-20 object-contain rounded-xl"/>
+                                                <div>
+                                                    <h4 class="text-xl font-bold font-title-md">Bharatiya Veer</h4>
+                                                    <!-- Overlapping Avatars Row -->
+                                                    <div class="flex -space-x-3 mt-2">
+                                                        <img src="/static/avatar_ranjeet.png" alt="Ranjeet" class="w-8 h-8 rounded-full border-2 border-white object-cover"/>
+                                                        <img src="/static/avatar_gaurav.png" alt="Gaurav" class="w-8 h-8 rounded-full border-2 border-white object-cover"/>
+                                                        <img src="/static/avatar_sai.png" alt="Sai" class="w-8 h-8 rounded-full border-2 border-white object-cover"/>
+                                                        <div class="w-8 h-8 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-500">M</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Edit icon -->
+                                            <button class="p-2 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors text-gray-600" title="Edit Team">
+                                                <span class="material-symbols-outlined text-sm">edit</span>
+                                            </button>
+                                        </div>
+                                        <div class="mt-lg border-t border-gray-100 pt-4">
+                                            <p class="text-md font-semibold text-gray-700 italic">वीरता, नेतृत्व और राष्ट्र निर्माण</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Team Members List -->
+                                <div class="lg:col-span-2">
+                                    <div class="bg-white rounded-3xl p-lg shadow-xl border border-gray-100 h-full">
+                                        <h4 class="text-lg font-bold font-title-md mb-lg border-b border-gray-100 pb-2">Team Member</h4>
+                                        
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+                                            <!-- Manjunath -->
+                                            <div class="flex items-center justify-between p-md border border-gray-100 rounded-2xl hover:shadow-md transition-shadow">
+                                                <div class="flex items-center gap-md">
+                                                    <div class="w-12 h-12 rounded-full border-2 border-gray-200 bg-gray-50 flex items-center justify-center text-xs font-bold text-gray-500">
+                                                        M
+                                                    </div>
+                                                    <div>
+                                                        <div class="font-bold text-sm">Manjunath L Patat</div>
+                                                        <div class="text-[11px] text-gray-500 font-mono">manjupatat80@gmail.com</div>
+                                                    </div>
+                                                </div>
+                                                <button class="text-gray-400 hover:text-gray-600" title="More Options"><span class="material-symbols-outlined text-sm">more_horiz</span></button>
+                                            </div>
+                                            
+                                            <!-- Sai -->
+                                            <div class="flex items-center justify-between p-md border border-gray-100 rounded-2xl hover:shadow-md transition-shadow">
+                                                <div class="flex items-center gap-md">
+                                                    <img src="/static/avatar_sai.png" alt="Sai" class="w-12 h-12 rounded-full border-2 border-gray-100 object-cover"/>
+                                                    <div>
+                                                        <div class="font-bold text-sm">SAI ASHIRBAD BEHERA</div>
+                                                        <div class="text-[11px] text-gray-500 font-mono">saiashribad05@gmail.com</div>
+                                                    </div>
+                                                </div>
+                                                <button class="text-gray-400 hover:text-gray-600" title="More Options"><span class="material-symbols-outlined text-sm">more_horiz</span></button>
+                                            </div>
+
+                                            <!-- Gaurav -->
+                                            <div class="flex items-center justify-between p-md border border-gray-100 rounded-2xl hover:shadow-md transition-shadow">
+                                                <div class="flex items-center gap-md">
+                                                    <img src="/static/avatar_gaurav.png" alt="Gaurav" class="w-12 h-12 rounded-full border-2 border-gray-100 object-cover"/>
+                                                    <div>
+                                                        <div class="font-bold text-sm">Gaurav Vijaykumar Gaikwad</div>
+                                                        <div class="text-[11px] text-gray-500 font-mono">gauravgaikwadv1997@gmail.com</div>
+                                                    </div>
+                                                </div>
+                                                <button class="text-gray-400 hover:text-gray-600" title="More Options"><span class="material-symbols-outlined text-sm">more_horiz</span></button>
+                                            </div>
+
+                                            <!-- Ranjeet -->
+                                            <div class="flex items-center justify-between p-md border border-gray-100 rounded-2xl hover:shadow-md transition-shadow">
+                                                <div class="flex items-center gap-md">
+                                                    <img src="/static/avatar_ranjeet.png" alt="Ranjeet" class="w-12 h-12 rounded-full border-2 border-gray-100 object-cover"/>
+                                                    <div>
+                                                        <div class="font-bold text-sm">
+                                                            Ranjeet Kumar <span class="text-amber-600 text-xs italic font-normal">(Leader)</span>
+                                                        </div>
+                                                        <div class="text-[11px] text-gray-500 font-mono">rajranjeet7680@gmail.com</div>
+                                                    </div>
+                                                </div>
+                                                <button class="text-gray-400 hover:text-gray-600" title="More Options"><span class="material-symbols-outlined text-sm">more_horiz</span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                             </div>
                         </div>
                     </div>

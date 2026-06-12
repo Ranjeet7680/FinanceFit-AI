@@ -38,6 +38,33 @@ Calculates a comprehensive credit score between **0–1000** compiled from Savin
 - **Risk Heatmap**: Grid mapping Investments, Debt, Expenses, and Cash Flow into Green (Low), Yellow (Moderate), and Red (High) risk.
 - **AI Action Center integration**: Click "Rebalance Tech" to instantly adjust virtual stock weights (trimming tech from 42% to 30%) and trigger a colorful confetti burst.
 
+### 7. 🔐 Security & Database Hardening
+- **SQLite3 Persistence**: Replaced mock in-memory stores with a multi-table SQLite schema containing `users`, `sessions`, `notifications`, `user_2fa`, `user_api_keys`, and `referrals` tables.
+- **PBKDF2 Hashing**: User credentials are encrypted with unique hex-salts via SHA-256 (100,000 iterations).
+- **Single-Session active lock**: Automatically invalidates concurrent older sessions upon a fresh login request.
+
+### 8. ♿ Modern Accessibility Suite
+- **High Contrast Override**: Dynamically injects high-contrast body & component styles to make elements border-solid and readable.
+- **Root Text Scaling**: Adjusts root rem base layout font-sizing dynamically from 90% up to 130%.
+- **Reduced Motion Toggle**: Disables heavy CPU WebGL canvas particle shaders and backgrounds.
+- **TTS Speech Control**: Connected voice assistance settings to custom Vocalized Speech Speed sliders.
+
+### 9. ✉️ Friend Referrals
+- Custom user referral code displays with one-click clipboard copying.
+- Dynamic email dispatch API logging referee emails, generating notification alarms, and displaying live invitation trackers.
+
+### 10. 📝 Dedicated Policies & Iframe Embeds
+- **Privacy Policy (`/privacy`) & Terms of Service (`/terms`)**: Dedicated dark-themed static pages mapping compliance, cookies, billing terms, and API scopes.
+- **Demo Video Embed**: Centers the LinkedIn update walkthrough iframe inside a sleek landing showcase block.
+
+### 11. 👥 Development Team ("Bharatiya Veer")
+- Showcases team logo and cropped member avatars for:
+  - Manjunath L Patat
+  - SAI ASHIRBAD BEHERA
+  - Gaurav Vijaykumar Gaikwad
+  - Ranjeet Kumar (Leader)
+- Featured on both welcome page landing blocks and application settings profiles.
+
 ---
 
 ## 🛠️ Technology Stack
@@ -83,3 +110,9 @@ Verify backend api endpoints and model training integrity:
 python run_tests.py
 ```
 All backend unit tests should report `[PASSED]`.
+
+To run supplementary database logging and API validations for referrals and accessibility preferences:
+```bash
+python test_referrals_and_accessibility.py
+```
+All supplementary tests should output `[PASSED]`.

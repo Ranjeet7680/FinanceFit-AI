@@ -144,9 +144,9 @@
         <div class="font-bold text-primary tracking-tight cursor-pointer text-xl md:text-2xl" onclick="window.location.href='/'">FinanceFit AI</div>
         <div class="hidden md:flex gap-xl items-center">
             <a class="nav-auth-link font-title-md text-title-md text-on-surface-variant hover:text-primary transition-colors px-sm py-xs rounded" href="#">Dashboard</a>
-            <a class="nav-auth-link font-title-md text-title-md text-on-surface-variant hover:text-primary transition-colors px-sm py-xs rounded" href="#">Portfolio</a>
-            <a class="nav-auth-link font-title-md text-title-md text-on-surface-variant hover:text-primary transition-colors px-sm py-xs rounded" href="#">AI Insights</a>
-            <a class="nav-auth-link font-title-md text-title-md text-on-surface-variant hover:text-primary transition-colors px-sm py-xs rounded" href="#">Markets</a>
+            <a class="font-title-md text-title-md text-on-surface-variant hover:text-primary transition-colors px-sm py-xs rounded" href="#portfolio">Portfolio</a>
+            <a class="font-title-md text-title-md text-on-surface-variant hover:text-primary transition-colors px-sm py-xs rounded" href="#ai-insights">AI Insights</a>
+            <a class="font-title-md text-title-md text-on-surface-variant hover:text-primary transition-colors px-sm py-xs rounded" href="#markets">Markets</a>
         </div>
         <div class="flex gap-md items-center">
             <!-- Show login/profile button dynamically -->
@@ -165,9 +165,9 @@
             <span class="material-symbols-outlined text-2xl">close</span>
         </button>
         <a class="nav-auth-link text-xl text-on-surface hover:text-primary transition-colors" href="#">Dashboard</a>
-        <a class="nav-auth-link text-xl text-on-surface hover:text-primary transition-colors" href="#">Portfolio</a>
-        <a class="nav-auth-link text-xl text-on-surface hover:text-primary transition-colors" href="#">AI Insights</a>
-        <a class="nav-auth-link text-xl text-on-surface hover:text-primary transition-colors" href="#">Markets</a>
+        <a class="mobile-nav-scroll text-xl text-on-surface hover:text-primary transition-colors" href="#portfolio">Portfolio</a>
+        <a class="mobile-nav-scroll text-xl text-on-surface hover:text-primary transition-colors" href="#ai-insights">AI Insights</a>
+        <a class="mobile-nav-scroll text-xl text-on-surface hover:text-primary transition-colors" href="#markets">Markets</a>
     </div>
 
     <main class="relative min-h-screen">
@@ -285,6 +285,245 @@
                 </div>
             </div>
         </section>
+
+        <!-- Portfolio Section -->
+        <section id="portfolio" class="relative z-10 px-margin-mobile md:px-margin-desktop py-xl max-w-7xl mx-auto scroll-mt-20">
+            <div class="mb-xl text-center">
+                <span class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">Active Portfolio</span>
+                <h2 class="font-headline-lg text-headline-lg text-on-surface mt-sm">Sophisticated Portfolio Optimizer</h2>
+                <p class="text-on-surface-variant text-sm mt-xs max-w-md mx-auto">Optimize your resource distribution with automated asset rebalancing and predictive wealth modeling.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-center">
+                <!-- Left: Features -->
+                <div class="lg:col-span-5 space-y-md">
+                    <div class="glass p-md rounded-2xl border border-white/5 flex gap-md items-start">
+                        <span class="material-symbols-outlined text-primary text-xl mt-1">balance</span>
+                        <div>
+                            <h4 class="font-bold text-sm text-on-surface">Auto-Rebalancing Sandbox</h4>
+                            <p class="text-xs text-on-surface-variant mt-1">Test adjustments to target asset classes and let the optimizer calculate required transactional actions instantly.</p>
+                        </div>
+                    </div>
+                    <div class="glass p-md rounded-2xl border border-white/5 flex gap-md items-start">
+                        <span class="material-symbols-outlined text-tertiary text-xl mt-1">flag</span>
+                        <div>
+                            <h4 class="font-bold text-sm text-on-surface">Smart Goal Tracker</h4>
+                            <p class="text-xs text-on-surface-variant mt-1">Bind investment strategies to specific milestones. Track progress via status indicators and celebrate achievements with dynamic confetti cues.</p>
+                        </div>
+                    </div>
+                    <div class="glass p-md rounded-2xl border border-white/5 flex gap-md items-start">
+                        <span class="material-symbols-outlined text-secondary text-xl mt-1">donut_large</span>
+                        <div>
+                            <h4 class="font-bold text-sm text-on-surface">Distribution Visualizations</h4>
+                            <p class="text-xs text-on-surface-variant mt-1">View target vs. current distributions via clear visual meters, ensuring asset allocations align with long-term goals.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Visual Mockup -->
+                <div class="lg:col-span-7 glass p-lg rounded-3xl border border-white/5 relative overflow-hidden">
+                    <div class="flex justify-between items-center border-b border-white/5 pb-3">
+                        <span class="text-xs font-bold text-on-surface font-display">Target vs Current Allocation</span>
+                        <span class="text-[10px] text-primary bg-primary/10 px-2 py-0.5 rounded-full">Elite Tool Active</span>
+                    </div>
+                    <div class="space-y-md mt-lg">
+                        <!-- Asset 1 -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span class="font-semibold">Technology & Equities</span>
+                                <span class="text-outline">Target: 45% / Current: 38%</span>
+                            </div>
+                            <div class="h-2 bg-white/5 rounded-full overflow-hidden flex">
+                                <div class="bg-primary h-full" style="width: 38%"></div>
+                                <div class="bg-primary-container/30 h-full" style="width: 7%"></div>
+                            </div>
+                        </div>
+                        <!-- Asset 2 -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span class="font-semibold">Bonds & Government Securities</span>
+                                <span class="text-outline">Target: 30% / Current: 35%</span>
+                            </div>
+                            <div class="h-2 bg-white/5 rounded-full overflow-hidden flex">
+                                <div class="bg-tertiary h-full" style="width: 30%"></div>
+                                <div class="bg-red-500/40 h-full" style="width: 5%"></div>
+                            </div>
+                        </div>
+                        <!-- Asset 3 -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span class="font-semibold">Liquid Reserves & Cash</span>
+                                <span class="text-outline">Target: 25% / Current: 27%</span>
+                            </div>
+                            <div class="h-2 bg-white/5 rounded-full overflow-hidden flex">
+                                <div class="bg-secondary h-full" style="width: 25%"></div>
+                                <div class="bg-secondary/40 h-full" style="width: 2%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Rebalance action summary teaser -->
+                    <div class="mt-lg p-md bg-white/5 rounded-xl border border-white/5 text-xs text-on-surface flex justify-between items-center">
+                        <div class="flex gap-2 items-center">
+                            <span class="material-symbols-outlined text-secondary text-sm">info</span>
+                            <span>Allocation mismatch: Rebalancing recommendation available</span>
+                        </div>
+                        <button class="bg-secondary/15 text-secondary px-3 py-1 rounded-lg text-[10px] font-bold border border-secondary/20 hover:bg-secondary/25 transition-all">Rebalance Now</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Insights Section -->
+        <section id="ai-insights" class="relative z-10 px-margin-mobile md:px-margin-desktop py-xl max-w-7xl mx-auto scroll-mt-20">
+            <div class="mb-xl text-center">
+                <span class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">Cognitive Intelligence</span>
+                <h2 class="font-headline-lg text-headline-lg text-on-surface mt-sm">AI Financial Coach & Voice Command</h2>
+                <p class="text-on-surface-variant text-sm mt-xs max-w-md mx-auto">Get contextual wealth advice, voice-driven controls, and text-to-speech accessibility options.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-center">
+                <!-- Left: AI Chat Teaser -->
+                <div class="lg:col-span-7 glass p-lg rounded-3xl border border-white/5 space-y-md">
+                    <div class="flex items-center justify-between border-b border-white/5 pb-2">
+                        <div class="flex items-center gap-sm">
+                            <div class="w-2.5 h-2.5 bg-primary rounded-full animate-pulse"></div>
+                            <span class="text-xs font-bold font-display">Aria AI Assistant</span>
+                        </div>
+                        <span class="material-symbols-outlined text-outline text-sm">settings_accessibility</span>
+                    </div>
+                    
+                    <!-- Conversational Stream -->
+                    <div class="space-y-md h-48 overflow-y-auto pr-2 text-xs">
+                        <div class="flex justify-end">
+                            <div class="bg-primary/10 text-on-surface p-sm rounded-2xl rounded-tr-none max-w-[80%] border border-primary/20">
+                                How is my liquidity ratio doing for this quarter?
+                            </div>
+                        </div>
+                        <div class="flex justify-start items-start gap-sm">
+                            <div class="w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center text-[10px] text-secondary font-bold">A</div>
+                            <div class="bg-white/5 text-on-surface-variant p-sm rounded-2xl rounded-tl-none max-w-[80%] border border-white/5">
+                                Your current liquidity ratio stands at <strong class="text-secondary">2.8</strong>. This represents a solid buffer exceeding the typical target of 2.0. Sector changes indicate minimal immediate exposure.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Voice Bar Simulation -->
+                    <div class="flex items-center gap-sm bg-white/5 rounded-full px-md py-sm border border-white/5">
+                        <span class="material-symbols-outlined text-outline text-sm">mic</span>
+                        <div class="flex-1 flex gap-1 items-center h-2 justify-center">
+                            <div class="w-1 bg-primary h-2 rounded-full animate-pulse"></div>
+                            <div class="w-1 bg-primary h-3 rounded-full animate-pulse" style="animation-delay: 0.1s"></div>
+                            <div class="w-1 bg-primary h-4 rounded-full animate-pulse" style="animation-delay: 0.2s"></div>
+                            <div class="w-1 bg-primary h-2 rounded-full animate-pulse" style="animation-delay: 0.3s"></div>
+                            <div class="w-1 bg-primary h-1 rounded-full animate-pulse" style="animation-delay: 0.4s"></div>
+                        </div>
+                        <span class="text-[9px] text-primary font-mono tracking-widest font-bold">LISTENING</span>
+                    </div>
+                </div>
+
+                <!-- Right: Speech Features -->
+                <div class="lg:col-span-5 space-y-md">
+                    <div class="glass p-md rounded-2xl border border-white/5 flex gap-md items-start">
+                        <span class="material-symbols-outlined text-primary text-xl mt-1">record_voice_over</span>
+                        <div>
+                            <h4 class="font-bold text-sm text-on-surface">Screen Reader (Talkback) Mode</h4>
+                            <p class="text-xs text-on-surface-variant mt-1">Vocalizes system clicks, menu navigation, intent results, and predictions automatically as you interact.</p>
+                        </div>
+                    </div>
+                    <div class="glass p-md rounded-2xl border border-white/5 flex gap-md items-start">
+                        <span class="material-symbols-outlined text-tertiary text-xl mt-1">keyboard_voice</span>
+                        <div>
+                            <h4 class="font-bold text-sm text-on-surface">Intent Voice Commands</h4>
+                            <p class="text-xs text-on-surface-variant mt-1">Speak simple queries like "go to portfolio" or "check risk status" to trigger quick, automated page navigation.</p>
+                        </div>
+                    </div>
+                    <div class="glass p-md rounded-2xl border border-white/5 flex gap-md items-start">
+                        <span class="material-symbols-outlined text-secondary text-xl mt-1">speed</span>
+                        <div>
+                            <h4 class="font-bold text-sm text-on-surface">Adjustable Voice Speeds</h4>
+                            <p class="text-xs text-on-surface-variant mt-1">Tune TTS speech speeds from 0.5x (slower) to 2.0x (faster) via settings to match your preferred listening pace.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Markets Section -->
+        <section id="markets" class="relative z-10 px-margin-mobile md:px-margin-desktop py-xl max-w-7xl mx-auto scroll-mt-20">
+            <div class="mb-xl text-center">
+                <span class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">Global Analytics</span>
+                <h2 class="font-headline-lg text-headline-lg text-on-surface mt-sm">Markets & Corporate Explorer</h2>
+                <p class="text-on-surface-variant text-sm mt-xs max-w-md mx-auto">Analyze bankruptcy risk metrics and credit scores using predictive Ridge Regression AI.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-center">
+                <!-- Left: Features -->
+                <div class="lg:col-span-5 space-y-md">
+                    <div class="glass p-md rounded-2xl border border-white/5 flex gap-md items-start">
+                        <span class="material-symbols-outlined text-primary text-xl mt-1">query_stats</span>
+                        <div>
+                            <h4 class="font-bold text-sm text-on-surface">Institutional Database Query</h4>
+                            <p class="text-xs text-on-surface-variant mt-1">Instantly query over 280,000 corporate records. Filter by country, industry sectors, and credit scores.</p>
+                        </div>
+                    </div>
+                    <div class="glass p-md rounded-2xl border border-white/5 flex gap-md items-start">
+                        <span class="material-symbols-outlined text-tertiary text-xl mt-1">show_chart</span>
+                        <div>
+                            <h4 class="font-bold text-sm text-on-surface">ML Ridge Predictors</h4>
+                            <p class="text-xs text-on-surface-variant mt-1">Trained on financial metrics (revenue, debt ratio, margins) to predict bankruptcy risk scores and default probability percentages.</p>
+                        </div>
+                    </div>
+                    <div class="glass p-md rounded-2xl border border-white/5 flex gap-md items-start">
+                        <span class="material-symbols-outlined text-secondary text-xl mt-1">security_update_good</span>
+                        <div>
+                            <h4 class="font-bold text-sm text-on-surface">Credit Score Ratings</h4>
+                            <p class="text-xs text-on-surface-variant mt-1">Index ratings (AAA to D) are fully queryable, mapping structural stability trends in real-time.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Visual List -->
+                <div class="lg:col-span-7 glass p-lg rounded-3xl border border-white/5 space-y-md">
+                    <div class="flex justify-between items-center text-xs border-b border-white/5 pb-2">
+                        <span class="font-bold">Recent Market Metrics (Teaser)</span>
+                        <span class="text-outline font-mono">288k total rows indexed</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="text-outline border-b border-white/5">
+                                    <th class="py-2">Sector / ID</th>
+                                    <th class="py-2">Country</th>
+                                    <th class="py-2">Credit Rating</th>
+                                    <th class="py-2 text-right">Risk Score</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-on-surface-variant divide-y divide-white/5">
+                                <tr>
+                                    <td class="py-2 font-mono">CORP-000001</td>
+                                    <td class="py-2">Germany</td>
+                                    <td class="py-2"><span class="bg-green-500/10 text-green-400 px-2 py-0.5 rounded text-[10px]">AAA</span></td>
+                                    <td class="py-2 text-right text-green-400 font-semibold">12.4</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2 font-mono">CORP-000002</td>
+                                    <td class="py-2">United States</td>
+                                    <td class="py-2"><span class="bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded text-[10px]">BB</span></td>
+                                    <td class="py-2 text-right text-amber-400 font-semibold">45.8</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2 font-mono">CORP-000003</td>
+                                    <td class="py-2">India</td>
+                                    <td class="py-2"><span class="bg-red-500/10 text-red-400 px-2 py-0.5 rounded text-[10px]">C</span></td>
+                                    <td class="py-2 text-right text-red-400 font-semibold">82.1</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Pricing Plans Section -->
         <section class="relative z-10 px-margin-mobile md:px-margin-desktop py-xl max-w-6xl mx-auto text-center">
             <div class="mb-xl">
@@ -331,6 +570,65 @@
                 </div>
             </div>
         </section>
+
+        <!-- Security & Trust Center Section -->
+        <section id="security" class="relative z-10 px-margin-mobile md:px-margin-desktop py-xl max-w-7xl mx-auto scroll-mt-20">
+            <div id="trust-center" class="mb-xl text-center scroll-mt-20">
+                <span class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">Compliance & Assurance</span>
+                <h2 class="font-headline-lg text-headline-lg text-on-surface mt-sm">Security & Trust Center</h2>
+                <p class="text-on-surface-variant text-sm mt-xs max-w-md mx-auto">Learn how we enforce zero-trust policies, data isolation, and cryptographic integrity across all platforms.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+                <!-- Security Column -->
+                <div class="glass p-lg rounded-3xl border border-white/5 space-y-md">
+                    <h3 class="text-lg font-bold text-on-surface flex items-center gap-sm font-display">
+                        <span class="material-symbols-outlined text-primary">gpp_maybe</span>
+                        Data Encryption & Hardening
+                    </h3>
+                    <p class="text-xs text-on-surface-variant leading-relaxed">
+                        Every password is salt-hashed using PBKDF2 cryptography running 100,000 iterations to protect against rainbow table attacks. Financial metrics and predictive data logs are isolated in individual SQLite partitions, ensuring total security.
+                    </p>
+                    <ul class="space-y-sm text-xs text-on-surface-variant font-mono">
+                        <li class="flex items-center gap-sm"><span class="material-symbols-outlined text-primary text-sm">lock_open</span>PBKDF2 SHA-256 Encryption</li>
+                        <li class="flex items-center gap-sm"><span class="material-symbols-outlined text-primary text-sm">shield_person</span>Single-Session Verification</li>
+                        <li class="flex items-center gap-sm"><span class="material-symbols-outlined text-primary text-sm">key_visualizer</span>Custom TOTP 2-Factor Auth</li>
+                    </ul>
+                </div>
+
+                <!-- Trust Center Column -->
+                <div class="glass p-lg rounded-3xl border border-white/5 space-y-md">
+                    <h3 class="text-lg font-bold text-on-surface flex items-center gap-sm font-display">
+                        <span class="material-symbols-outlined text-tertiary">workspace_premium</span>
+                        Transparency & Privacy Policy
+                    </h3>
+                    <p class="text-xs text-on-surface-variant leading-relaxed">
+                        We prioritize user data ownership. Developer API tokens support granular authorization scopes (such as <code>predict</code> and <code>chat</code>) that can be fully audited and revoked in real-time. We never monetize or rent transaction logs to third parties.
+                    </p>
+                    <ul class="space-y-sm text-xs text-on-surface-variant font-mono">
+                        <li class="flex items-center gap-sm"><span class="material-symbols-outlined text-tertiary text-sm">done_all</span>Granular API Revocations</li>
+                        <li class="flex items-center gap-sm"><span class="material-symbols-outlined text-tertiary text-sm">database</span>Encrypted DB Backups</li>
+                        <li class="flex items-center gap-sm"><span class="material-symbols-outlined text-tertiary text-sm">verified_user</span>Zero Advertising Share Policy</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Demo Video Section -->
+        <section class="relative z-10 px-margin-mobile md:px-margin-desktop py-xl max-w-4xl mx-auto text-center">
+            <div class="mb-lg">
+                <span class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">Product Demonstration</span>
+                <h2 class="font-headline-lg text-headline-lg text-on-surface mt-sm">Walkthrough Video</h2>
+                <p class="text-on-surface-variant text-sm mt-xs max-w-md mx-auto">Watch a high-fidelity demonstration of FinanceFit AI features, simulators, and voice accessibility tools in action.</p>
+            </div>
+            
+            <!-- Video Container -->
+            <div class="glass p-md rounded-3xl border border-white/10 shadow-2xl flex justify-center items-center max-w-[536px] mx-auto overflow-hidden">
+                <div class="w-full relative" style="min-height: 399px;">
+                    <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7471076887281451008?compact=1" height="399" width="100%" style="border: 0;" allowfullscreen="" title="Embedded post"></iframe>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Upgrade Checkout Modal -->
@@ -371,6 +669,106 @@
     </div>
     <canvas id="confetti-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-[120] hidden"></canvas>
 
+    <!-- Team Section -->
+    <section class="relative z-10 px-margin-mobile md:px-margin-desktop py-xl max-w-6xl mx-auto mt-lg">
+        <div class="mb-lg text-center">
+            <span class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">Development Team</span>
+            <h2 class="font-headline-lg text-headline-lg text-on-surface mt-sm">Meet the Creators</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-lg items-stretch">
+            <!-- Column 1: Team Card -->
+            <div class="lg:col-span-1">
+                <div class="bg-white text-[#11192e] rounded-3xl p-lg shadow-xl border border-gray-100 flex flex-col justify-between h-full min-h-[220px]">
+                    <div class="flex justify-between items-start">
+                        <div class="flex gap-md items-center">
+                            <!-- Logo -->
+                            <img src="/static/team_logo.png" alt="Bharatiya Veer Logo" class="w-20 h-20 object-contain rounded-xl"/>
+                            <div>
+                                <h4 class="text-xl font-bold font-title-md">Bharatiya Veer</h4>
+                                <!-- Overlapping Avatars Row -->
+                                <div class="flex -space-x-3 mt-2">
+                                    <img src="/static/avatar_ranjeet.png" alt="Ranjeet" class="w-8 h-8 rounded-full border-2 border-white object-cover"/>
+                                    <img src="/static/avatar_gaurav.png" alt="Gaurav" class="w-8 h-8 rounded-full border-2 border-white object-cover"/>
+                                    <img src="/static/avatar_sai.png" alt="Sai" class="w-8 h-8 rounded-full border-2 border-white object-cover"/>
+                                    <div class="w-8 h-8 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-500">M</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Edit icon -->
+                        <button class="p-2 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors text-gray-600" title="Edit Team">
+                            <span class="material-symbols-outlined text-sm">edit</span>
+                        </button>
+                    </div>
+                    <div class="mt-lg border-t border-gray-100 pt-4">
+                        <p class="text-md font-semibold text-gray-700 italic">वीरता, नेतृत्व और राष्ट्र निर्माण</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 2-3: Team Members List -->
+            <div class="lg:col-span-2">
+                <div class="bg-white text-[#11192e] rounded-3xl p-lg shadow-xl border border-gray-100 h-full">
+                    <h4 class="text-lg font-bold font-title-md mb-lg border-b border-gray-100 pb-2">Team Member</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+                        <!-- Manjunath -->
+                        <div class="flex items-center justify-between p-md border border-gray-100 rounded-2xl hover:shadow-md transition-shadow">
+                            <div class="flex items-center gap-md">
+                                <div class="w-12 h-12 rounded-full border-2 border-gray-200 bg-gray-50 flex items-center justify-center text-xs font-bold text-gray-500">
+                                    M
+                                </div>
+                                <div>
+                                    <div class="font-bold text-sm">Manjunath L Patat</div>
+                                    <div class="text-[11px] text-gray-500 font-mono">manjupatat80@gmail.com</div>
+                                </div>
+                            </div>
+                            <button class="text-gray-400 hover:text-gray-600" title="More Options"><span class="material-symbols-outlined text-sm">more_horiz</span></button>
+                        </div>
+                        
+                        <!-- Sai -->
+                        <div class="flex items-center justify-between p-md border border-gray-100 rounded-2xl hover:shadow-md transition-shadow">
+                            <div class="flex items-center gap-md">
+                                <img src="/static/avatar_sai.png" alt="Sai" class="w-12 h-12 rounded-full border-2 border-gray-100 object-cover"/>
+                                <div>
+                                    <div class="font-bold text-sm">SAI ASHIRBAD BEHERA</div>
+                                    <div class="text-[11px] text-gray-500 font-mono">saiashribad05@gmail.com</div>
+                                </div>
+                            </div>
+                            <button class="text-gray-400 hover:text-gray-600" title="More Options"><span class="material-symbols-outlined text-sm">more_horiz</span></button>
+                        </div>
+
+                        <!-- Gaurav -->
+                        <div class="flex items-center justify-between p-md border border-gray-100 rounded-2xl hover:shadow-md transition-shadow">
+                            <div class="flex items-center gap-md">
+                                <img src="/static/avatar_gaurav.png" alt="Gaurav" class="w-12 h-12 rounded-full border-2 border-gray-100 object-cover"/>
+                                <div>
+                                    <div class="font-bold text-sm">Gaurav Vijaykumar Gaikwad</div>
+                                    <div class="text-[11px] text-gray-500 font-mono">gauravgaikwadv1997@gmail.com</div>
+                                </div>
+                            </div>
+                            <button class="text-gray-400 hover:text-gray-600" title="More Options"><span class="material-symbols-outlined text-sm">more_horiz</span></button>
+                        </div>
+
+                        <!-- Ranjeet -->
+                        <div class="flex items-center justify-between p-md border border-gray-100 rounded-2xl hover:shadow-md transition-shadow">
+                            <div class="flex items-center gap-md">
+                                <img src="/static/avatar_ranjeet.png" alt="Ranjeet" class="w-12 h-12 rounded-full border-2 border-gray-100 object-cover"/>
+                                <div>
+                                    <div class="font-bold text-sm">
+                                        Ranjeet Kumar <span class="text-amber-600 text-xs italic font-normal">(Leader)</span>
+                                    </div>
+                                    <div class="text-[11px] text-gray-500 font-mono">rajranjeet7680@gmail.com</div>
+                                </div>
+                            </div>
+                            <button class="text-gray-400 hover:text-gray-600" title="More Options"><span class="material-symbols-outlined text-sm">more_horiz</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="w-full py-lg px-margin-desktop flex flex-col md:flex-row justify-between items-center bg-surface-dim border-t border-outline-variant/30 gap-lg">
         <div class="flex flex-col gap-xs text-center md:text-left">
@@ -378,10 +776,10 @@
             <div class="font-label-sm text-label-sm text-outline">© 2026 FinanceFit AI. Institutional Grade Intelligence.</div>
         </div>
         <div class="flex flex-wrap justify-center gap-xl">
-            <a class="font-label-sm text-label-sm text-outline hover:text-primary-fixed transition-colors" href="#">Privacy Policy</a>
-            <a class="font-label-sm text-label-sm text-outline hover:text-primary-fixed transition-colors" href="#">Terms of Service</a>
-            <a class="font-label-sm text-label-sm text-outline hover:text-primary-fixed transition-colors" href="#">Security</a>
-            <a class="font-label-sm text-label-sm text-outline hover:text-primary-fixed transition-colors" href="#">Trust Center</a>
+            <a class="font-label-sm text-label-sm text-outline hover:text-primary-fixed transition-colors" href="/privacy">Privacy Policy</a>
+            <a class="font-label-sm text-label-sm text-outline hover:text-primary-fixed transition-colors" href="/terms">Terms of Service</a>
+            <a class="font-label-sm text-label-sm text-outline hover:text-primary-fixed transition-colors" href="#security">Security</a>
+            <a class="font-label-sm text-label-sm text-outline hover:text-primary-fixed transition-colors" href="#trust-center">Trust Center</a>
         </div>
     </footer>
 
@@ -704,8 +1102,8 @@
                     landingMenu.classList.add('-translate-y-full');
                 });
             }
-            // Close landing menu when auth link triggers redirect
-            landingMenu.querySelectorAll('.nav-auth-link').forEach(link => {
+            // Close landing menu when auth link or scroll link is clicked
+            landingMenu.querySelectorAll('.nav-auth-link, .mobile-nav-scroll').forEach(link => {
                 link.addEventListener('click', () => {
                     landingMenu.classList.remove('translate-y-0');
                     landingMenu.classList.add('-translate-y-full');

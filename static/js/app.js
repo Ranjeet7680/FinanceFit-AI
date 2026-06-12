@@ -58,6 +58,7 @@ window.addEventListener('DOMContentLoaded', () => {
     loadDatabasePage(1);
     loadNotifications();
     loadTalkBackState();
+    loadAccessibilityPreferences();
     
     // Setup global company search
     document.getElementById('global-search-input').addEventListener('keypress', (e) => {
@@ -75,7 +76,7 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('logout-btn').addEventListener('click', () => {
         localStorage.removeItem('financefit_token');
         localStorage.removeItem('financefit_user');
-        window.location.href = '/login';
+        window.location.href = '/';
     });
 });
 
@@ -2061,6 +2062,10 @@ function setupSecurityTabs() {
                 loadTokens();
             } else if (target === 'settings-privacy') {
                 loadEncryptionStateLabel();
+            } else if (target === 'settings-referral') {
+                loadReferralInfo();
+            } else if (target === 'settings-accessibility') {
+                loadAccessibilityPreferences();
             }
         });
     });
@@ -2545,7 +2550,7 @@ function speak(text) {
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 1.05;
+        utterance.rate = speechRate;
         utterance.pitch = 1.0;
         window.speechSynthesis.speak(utterance);
     }
@@ -2576,3 +2581,222 @@ document.addEventListener('click', (e) => {
         }
     }
 });
+
+// ----------------------------------------------------
+// New Accessibility Controllers (Contrast, Font Sizing, Motion)
+// ----------------------------------------------------
+function toggleHighContrast() {
+    const checked = document.getElementById('accessibility-contrast').checked;
+    localStorage.setItem('accessibility_contrast', checked ? 'true' : 'false');
+    if (checked) {
+        document.documentElement.classList.add('high-contrast');
+        if (!document.getElementById('high-contrast-styles')) {
+            const style = document.createElement('style');
+            style.id = 'high-contrast-styles';
+            style.innerHTML = `
+                .high-contrast body, .high-contrast .glass, .high-contrast .glass-darker {
+                    background: #000000 !important;
+                    color: #ffffff !important;
+                    border: 2px solid #ffffff !important;
+                }
+                .high-contrast button, .high-contrast select, .high-contrast input {
+                    border: 2px solid #ffffff !important;
+                    color: #ffffff !important;
+                    background: #000000 !important;
+                }
+                .high-contrast .text-secondary, .high-contrast .text-primary, .high-contrast .text-secondary-fixed {
+                    color: #00ff00 !important;
+                }
+                .high-contrast a, .high-contrast span {
+                    color: #ffffff !important;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    } else {
+        document.documentElement.classList.remove('high-contrast');
+    }
+    speak("High contrast mode " + (checked ? "enabled" : "disabled"));
+}
+
+function adjustTextScale() {
+    const select = document.getElementById('accessibility-font-scale');
+    const scale = select.value;
+    localStorage.setItem('accessibility_font_scale', scale);
+    let size = '100%';
+    if (scale === 'scale-sm') size = '90%';
+    else if (scale === 'scale-lg') size = '115%';
+    else if (scale === 'scale-xl') size = '130%';
+    document.documentElement.style.fontSize = size;
+    speak("Text scale adjusted to " + select.options[select.selectedIndex].text);
+}
+
+function toggleReduceMotion() {
+    const checked = document.getElementById('accessibility-reduce-motion').checked;
+    localStorage.setItem('accessibility_reduce_motion', checked ? 'true' : 'false');
+    const shaders = ['dashboard-shader-canvas', 'login-shader-canvas'];
+    shaders.forEach(id => {
+        const canvas = document.getElementById(id);
+        if (canvas) {
+            canvas.style.display = checked ? 'none' : 'block';
+        }
+    });
+    const particlesCanvas = document.getElementById('particles');
+    if (particlesCanvas) {
+        particlesCanvas.style.display = checked ? 'none' : 'block';
+    }
+    speak("Animations and dynamic motion " + (checked ? "reduced" : "restored"));
+}
+
+let speechRate = 1.0;
+function updateSpeechSettings() {
+    const rateSlider = document.getElementById('accessibility-speech-rate');
+    if (rateSlider) {
+        speechRate = parseFloat(rateSlider.value);
+        localStorage.setItem('accessibility_speech_rate', rateSlider.value);
+        speak("Speech rate adjusted to " + speechRate + " times speed.");
+    }
+}
+
+function loadAccessibilityPreferences() {
+    const contrastToggle = document.getElementById('accessibility-contrast');
+    if (contrastToggle) {
+        contrastToggle.checked = localStorage.getItem('accessibility_contrast') === 'true';
+        if (contrastToggle.checked) {
+            document.documentElement.classList.add('high-contrast');
+            if (!document.getElementById('high-contrast-styles')) {
+                const style = document.createElement('style');
+                style.id = 'high-contrast-styles';
+                style.innerHTML = `
+                    .high-contrast body, .high-contrast .glass, .high-contrast .glass-darker {
+                        background: #000000 !important;
+                        color: #ffffff !important;
+                        border: 2px solid #ffffff !important;
+                    }
+                    .high-contrast button, .high-contrast select, .high-contrast input {
+                        border: 2px solid #ffffff !important;
+                        color: #ffffff !important;
+                        background: #000000 !important;
+                    }
+                    .high-contrast .text-secondary, .high-contrast .text-primary, .high-contrast .text-secondary-fixed {
+                        color: #00ff00 !important;
+                    }
+                    .high-contrast a, .high-contrast span {
+                        color: #ffffff !important;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+    }
+    
+    const scaleSelect = document.getElementById('accessibility-font-scale');
+    if (scaleSelect) {
+        const scale = localStorage.getItem('accessibility_font_scale') || 'scale-md';
+        scaleSelect.value = scale;
+        let size = '100%';
+        if (scale === 'scale-sm') size = '90%';
+        else if (scale === 'scale-lg') size = '115%';
+        else if (scale === 'scale-xl') size = '130%';
+        document.documentElement.style.fontSize = size;
+    }
+    
+    const motionToggle = document.getElementById('accessibility-reduce-motion');
+    if (motionToggle) {
+        motionToggle.checked = localStorage.getItem('accessibility_reduce_motion') === 'true';
+        if (motionToggle.checked) {
+            const shaders = ['dashboard-shader-canvas', 'login-shader-canvas', 'particles'];
+            shaders.forEach(id => {
+                const canvas = document.getElementById(id);
+                if (canvas) canvas.style.display = 'none';
+            });
+        }
+    }
+    
+    const rateSlider = document.getElementById('accessibility-speech-rate');
+    if (rateSlider) {
+        const rate = localStorage.getItem('accessibility_speech_rate') || '1.0';
+        rateSlider.value = rate;
+        speechRate = parseFloat(rate);
+    }
+}
+
+// ----------------------------------------------------
+// Invite & Referral code handlers
+// ----------------------------------------------------
+async function loadReferralInfo() {
+    const token = localStorage.getItem('financefit_token');
+    if (!token) return;
+    try {
+        const res = await fetch(`/api/referrals?token=${token}`);
+        const data = await res.json();
+        if (res.ok && data.success) {
+            document.getElementById('referral-code-lbl').textContent = data.referral_code;
+            
+            const tableBody = document.getElementById('referred-friends-table-body');
+            tableBody.innerHTML = '';
+            
+            if (data.referrals.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-outline text-[10px]">No referrals yet. Share your code above to get started!</td></tr>`;
+                return;
+            }
+            
+            data.referrals.forEach(ref => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-white/5 text-xs text-on-surface';
+                tr.innerHTML = `
+                    <td class="py-2.5 pr-2 font-bold">${ref.referee_email}</td>
+                    <td class="py-2.5 px-2 font-mono text-secondary">${ref.code}</td>
+                    <td class="py-2.5 px-2 text-outline">${ref.timestamp}</td>
+                    <td class="py-2.5 pl-2 text-right"><span class="px-1.5 py-0.5 rounded bg-yellow-400/10 text-yellow-400 text-[9px]">${ref.status}</span></td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+    } catch (e) {
+        console.error("Error loading referral code", e);
+    }
+}
+
+function copyReferralCode() {
+    const code = document.getElementById('referral-code-lbl').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+        speak("Referral code " + code + " copied to clipboard.");
+        const statusBox = document.getElementById('referral-invite-status');
+        statusBox.textContent = "Code copied to clipboard!";
+        statusBox.className = "text-[10px] font-mono text-secondary mt-2";
+        setTimeout(() => statusBox.className = "hidden text-[10px] font-mono text-secondary mt-2", 2000);
+    });
+}
+
+async function sendReferralInvite() {
+    const token = localStorage.getItem('financefit_token');
+    const emailInput = document.getElementById('referral-invite-email');
+    const email = emailInput.value.trim();
+    const statusBox = document.getElementById('referral-invite-status');
+    
+    if (!token || !email) return;
+    
+    statusBox.textContent = "Sending invitation...";
+    statusBox.className = "text-[10px] font-mono text-secondary mt-2";
+    
+    try {
+        const res = await fetch('/api/referrals/invite', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token, email })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+            statusBox.textContent = data.message;
+            emailInput.value = '';
+            loadReferralInfo();
+            speak("Invitation email sent successfully to " + email);
+            setTimeout(() => statusBox.className = "hidden text-[10px] font-mono text-secondary mt-2", 3000);
+        } else {
+            statusBox.textContent = data.detail || "Error sending invitation.";
+        }
+    } catch(e) {
+        statusBox.textContent = "Network error sending invitation.";
+    }
+}

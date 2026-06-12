@@ -110,162 +110,144 @@ class RevokeTokenRequest(BaseModel):
 class ExportDataRequest(BaseModel):
     token: str
 
-# In-memory session store to persist user tiers end-to-end
-USER_SESSIONS = {
-    "elite-token-123": {"name": "Alex Sterling", "tier": "Elite Tier", "email": "alex@sterling.com"},
-    "test-token-456": {"name": "Test User", "tier": "Standard Tier", "email": "test@sterling.com"}
-}
+# Helper functions for database-backed sessions and user details
+def get_user_by_token(token: str):
+    """Retrieves active user profile details mapped to a given session token, auto-seeding demo if needed."""
+    if token == "demo-token-777":
+        conn = db.get_db_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SELECT COUNT(*) FROM users WHERE email = 'demo@financefit.ai'")
+            if cursor.fetchone()[0] == 0:
+                cursor.execute(
+                    "INSERT OR IGNORE INTO users (email, password_hash, salt, name, tier, referral_code) VALUES (?, ?, ?, ?, ?, ?)",
+                    ("demo@financefit.ai", "", "", "Demo User", "Standard Tier", "FINFIT-DEMO-777")
+                )
+                cursor.execute(
+                    "INSERT OR IGNORE INTO sessions (token, user_email, device, ip, location, active, login_time) VALUES (?, ?, ?, ?, ?, 1, ?)",
+                    ("demo-token-777", "demo@financefit.ai", "Chrome (Windows 11)", "127.0.0.1", "Local Host", "2026-06-11 00:00")
+                )
+                cursor.execute(
+                    "INSERT OR IGNORE INTO user_2fa (user_email, enabled, secret, backup_codes) VALUES (?, 0, ?, ?)",
+                    ("demo@financefit.ai", 0, "JBSWY3DPEHPK3PXP", "7732-9011,4412-8809,1290-7611,5567-3312")
+                )
+                conn.commit()
+        finally:
+            conn.close()
 
-# In-memory stores for security and notification elements
-NOTIFICATIONS = {
-    "elite-token-123": [
-        {
-            "id": "notif-1",
-            "type": "portfolio",
-            "title": "High Risk Exposure Warning",
-            "message": "Bankruptcy Risk for CORP-000001 (Tech) is evaluated at 28.5. Sector correction risk is active.",
-            "timestamp": "2026-06-11 18:30",
-            "read": False,
-            "link": "portfolio"
-        },
-        {
-            "id": "notif-2",
-            "type": "security",
-            "title": "MFA Setup Recommended",
-            "message": "Secure your account with 2-Factor Authentication (TOTP). Scan code to configure now.",
-            "timestamp": "2026-06-11 15:45",
-            "read": False,
-            "link": "settings"
-        },
-        {
-            "id": "notif-3",
-            "type": "system",
-            "title": "Intelligence Engine Upgraded",
-            "message": "FinanceFit AI has successfully initialized the Gemini 3.5 analytics engine.",
-            "timestamp": "2026-06-11 09:00",
-            "read": True,
-            "link": "chat"
-        }
-    ],
-    "test-token-456": []
-}
-
-USER_2FA = {
-    "elite-token-123": {
-        "enabled": False, 
-        "secret": "JBSWY3DPEHPK3PXP", 
-        "backup_codes": ["7732-9011", "4412-8809", "1290-7611", "5567-3312"]
-    },
-    "test-token-456": {
-        "enabled": False, 
-        "secret": "MJSXA3DPEHPK3PXP", 
-        "backup_codes": ["1122-3344", "5566-7788", "9900-1122", "3344-5566"]
-    }
-}
-
-USER_SESSIONS_LOG = {
-    "elite-token-123": [
-        {"id": "sess-1", "device": "Chrome (Windows 11)", "ip": "103.241.12.89", "location": "Mumbai, India", "active": True, "login_time": "2026-06-11 12:14"},
-        {"id": "sess-2", "device": "Safari (iPhone 15 Pro)", "ip": "172.56.21.4", "location": "New Delhi, India", "active": False, "login_time": "2026-06-10 10:05"}
-    ],
-    "test-token-456": [
-        {"id": "sess-3", "device": "Edge (Windows 10)", "ip": "192.168.1.5", "location": "Local Host", "active": True, "login_time": "2026-06-11 11:30"}
-    ]
-}
-
-USER_API_KEYS = {
-    "elite-token-123": [
-        {"id": "key-1", "name": "Coaching API Production", "key_prefix": "ff_live_5c8a...", "scopes": ["predict", "chat"], "created_at": "2026-05-15 14:20"}
-    ],
-    "test-token-456": []
-}
+    conn = db.get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT u.email, u.name, u.tier, u.referral_code 
+            FROM sessions s 
+            JOIN users u ON s.user_email = u.email 
+            WHERE s.token = ? AND s.active = 1
+        """, (token,))
+        row = cursor.fetchone()
+        if row:
+            return dict(row)
+    finally:
+        conn.close()
+    return None
 
 # Endpoints
 @app.post("/api/auth/login")
 def login(req: LoginRequest, request: Request):
-    # Check if this email already has a session
     email_lower = req.email.lower()
-    user_token = None
-    user_profile = None
     
-    for token, profile in USER_SESSIONS.items():
-        if profile["email"] == email_lower:
-            # Check credentials (accept any for test except alex@sterling.com requires admin123)
+    conn = db.get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users WHERE email = ?", (email_lower,))
+        user_row = cursor.fetchone()
+        
+        if user_row:
+            user = dict(user_row)
+            # Custom rule: alex@sterling.com requires admin123
             if email_lower == "alex@sterling.com" and req.password != "admin123":
                 raise HTTPException(status_code=401, detail="Invalid credentials")
-            user_token = token
-            user_profile = profile
-            break
             
-    # Create new session if email is new
-    if not user_token:
-        if req.email and req.password:
-            import uuid
-            user_token = f"token-{uuid.uuid4().hex[:8]}"
-            name = req.email.split("@")[0].capitalize()
-            user_profile = {"name": name, "tier": "Standard Tier", "email": email_lower}
-            USER_SESSIONS[user_token] = user_profile
+            # Verify hashed password if present
+            if user["password_hash"]:
+                h, s = db.hash_password(req.password, user["salt"])
+                if h != user["password_hash"]:
+                    raise HTTPException(status_code=401, detail="Invalid credentials")
         else:
-            raise HTTPException(status_code=401, detail="Invalid credentials")
+            # Auto-register new email addresses on first login
+            import random
+            name = req.email.split("@")[0].capitalize()
+            ref_code = f"FINFIT-{name.upper()}-{random.randint(1000, 9999)}"
             
-    # Seed tables if not present
-    if user_token not in NOTIFICATIONS:
-        NOTIFICATIONS[user_token] = []
-    if user_token not in USER_2FA:
-        USER_2FA[user_token] = {
-            "enabled": False,
-            "secret": "JBSWY3DPEHPK3PXP",
-            "backup_codes": ["7732-9011", "4412-8809", "1290-7611", "5567-3312"]
-        }
-    if user_token not in USER_SESSIONS_LOG:
-        USER_SESSIONS_LOG[user_token] = []
-    if user_token not in USER_API_KEYS:
-        USER_API_KEYS[user_token] = []
+            pwd_hash, pwd_salt = db.hash_password(req.password)
+            cursor.execute(
+                "INSERT INTO users (email, password_hash, salt, name, tier, referral_code) VALUES (?, ?, ?, ?, ?, ?)",
+                (email_lower, pwd_hash, pwd_salt, name, "Standard Tier", ref_code)
+            )
+            cursor.execute(
+                "INSERT INTO user_2fa (user_email, enabled, secret, backup_codes) VALUES (?, 0, ?, ?)",
+                (email_lower, "JBSWY3DPEHPK3PXP", "7732-9011,4412-8809,1290-7611,5567-3312")
+            )
+            
+            cursor.execute("SELECT * FROM users WHERE email = ?", (email_lower,))
+            user = dict(cursor.fetchone())
+            
+        # Create new session token
+        import uuid
+        user_token = f"token-{uuid.uuid4().hex[:8]}"
         
-    # Log active session
-    ip = request.client.host if request.client else "127.0.0.1"
-    ua = request.headers.get("user-agent", "Unknown Device")
-    device = "Chrome (Windows 11)"
-    if "Firefox" in ua:
-        device = "Firefox (Windows 11)"
-    elif "Safari" in ua and "Chrome" not in ua:
-        device = "Safari (Mac OS)"
-    elif "Mobile" in ua:
-        device = "Mobile Web"
-    elif "Postman" in ua:
-        device = "Postman Client"
+        # Log active session attributes
+        ip = request.client.host if request.client else "127.0.0.1"
+        ua = request.headers.get("user-agent", "Unknown Device")
+        device = "Chrome (Windows 11)"
+        if "Firefox" in ua:
+            device = "Firefox (Windows 11)"
+        elif "Safari" in ua and "Chrome" not in ua:
+            device = "Safari (Mac OS)"
+        elif "Mobile" in ua:
+            device = "Mobile Web"
+        elif "Postman" in ua:
+            device = "Postman Client"
+            
+        import datetime
+        now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
         
-    import datetime
-    now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-    
-    # Mark old sessions inactive
-    for s in USER_SESSIONS_LOG[user_token]:
-        s["active"] = False
+        # Revoke old active sessions
+        cursor.execute("UPDATE sessions SET active = 0 WHERE user_email = ?", (email_lower,))
         
-    import uuid
-    sess_id = f"sess-{uuid.uuid4().hex[:6]}"
-    USER_SESSIONS_LOG[user_token].insert(0, {
-        "id": sess_id,
-        "device": device,
-        "ip": ip,
-        "location": "Mumbai, India" if ip != "127.0.0.1" else "Local Host",
-        "active": True,
-        "login_time": now_str
-    })
-    
-    return {"success": True, "token": user_token, "user": {"name": user_profile["name"], "tier": user_profile["tier"], "email": user_profile["email"]}}
+        # Save new active session record
+        cursor.execute(
+            "INSERT INTO sessions (token, user_email, device, ip, location, active, login_time) VALUES (?, ?, ?, ?, ?, 1, ?)",
+            (user_token, email_lower, device, ip, "Mumbai, India" if ip != "127.0.0.1" else "Local Host", now_str)
+        )
+        conn.commit()
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database login failure: {str(e)}")
+    finally:
+        conn.close()
+        
+    return {"success": True, "token": user_token, "user": {"name": user["name"], "tier": user["tier"], "email": user["email"]}}
 
 @app.post("/api/user/upgrade")
 def upgrade_user(req: UpgradeRequest):
-    if req.token in USER_SESSIONS:
-        USER_SESSIONS[req.token]["tier"] = "Elite Tier"
-        return {
-            "success": True,
-            "message": "Billing session verified. Tier elevated to Pro.",
-            "user": {
-                "tier": "Elite Tier"
+    user = get_user_by_token(req.token)
+    if user:
+        conn = db.get_db_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute("UPDATE users SET tier = 'Elite Tier' WHERE email = ?", (user["email"],))
+            conn.commit()
+            return {
+                "success": True,
+                "message": "Billing session verified. Tier elevated to Pro.",
+                "user": {
+                    "tier": "Elite Tier"
+                }
             }
-        }
+        finally:
+            conn.close()
     elif req.token:
         # Fallback for unrecognized tokens to keep testing smooth
         return {
@@ -280,39 +262,61 @@ def upgrade_user(req: UpgradeRequest):
 # Notification API endpoints
 @app.get("/api/notifications")
 def get_notifications(token: str = Query(...)):
-    if token in NOTIFICATIONS:
-        return {"success": True, "notifications": NOTIFICATIONS[token]}
-    return {"success": True, "notifications": []}
+    user = get_user_by_token(token)
+    if not user:
+        return {"success": True, "notifications": []}
+        
+    conn = db.get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, type, title, message, timestamp, read, link FROM notifications WHERE user_email = ? ORDER BY timestamp DESC", (user["email"],))
+        rows = cursor.fetchall()
+        notifications = []
+        for r in rows:
+            notif = dict(r)
+            notif["read"] = bool(notif["read"])
+            notifications.append(notif)
+        return {"success": True, "notifications": notifications}
+    finally:
+        conn.close()
 
 @app.post("/api/notifications/read")
 def read_notifications(req: ReadNotificationRequest):
-    token = req.token
-    if token not in NOTIFICATIONS:
+    user = get_user_by_token(req.token)
+    if not user:
         raise HTTPException(status_code=404, detail="Session not found")
-    
-    if req.all:
-        for notif in NOTIFICATIONS[token]:
-            notif["read"] = True
-    elif req.id:
-        for notif in NOTIFICATIONS[token]:
-            if notif["id"] == req.id:
-                notif["read"] = True
-                break
-    return {"success": True}
+        
+    conn = db.get_db_connection()
+    try:
+        cursor = conn.cursor()
+        if req.all:
+            cursor.execute("UPDATE notifications SET read = 1 WHERE user_email = ?", (user["email"],))
+        elif req.id:
+            cursor.execute("UPDATE notifications SET read = 1 WHERE id = ? AND user_email = ?", (req.id, user["email"]))
+        conn.commit()
+        return {"success": True}
+    finally:
+        conn.close()
 
 @app.post("/api/notifications/dismiss")
 def dismiss_notification(req: DismissNotificationRequest):
-    token = req.token
-    if token not in NOTIFICATIONS:
+    user = get_user_by_token(req.token)
+    if not user:
         raise HTTPException(status_code=404, detail="Session not found")
         
-    NOTIFICATIONS[token] = [n for n in NOTIFICATIONS[token] if n["id"] != req.id]
-    return {"success": True}
+    conn = db.get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM notifications WHERE id = ? AND user_email = ?", (req.id, user["email"]))
+        conn.commit()
+        return {"success": True}
+    finally:
+        conn.close()
 
 @app.post("/api/notifications/trigger-demo")
 def trigger_demo_notification(req: TriggerNotificationRequest):
-    token = req.token
-    if token not in NOTIFICATIONS:
+    user = get_user_by_token(req.token)
+    if not user:
         raise HTTPException(status_code=404, detail="Session not found")
         
     import datetime
@@ -328,93 +332,158 @@ def trigger_demo_notification(req: TriggerNotificationRequest):
         "read": False,
         "link": req.link or "dashboard"
     }
-    NOTIFICATIONS[token].insert(0, new_notif)
-    return {"success": True, "notification": new_notif}
+    
+    conn = db.get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO notifications (id, user_email, type, title, message, timestamp, read, link) VALUES (?, ?, ?, ?, ?, ?, 0, ?)",
+            (notif_id, user["email"], req.type, req.title, req.message, now_str, req.link or "dashboard")
+        )
+        conn.commit()
+        return {"success": True, "notification": new_notif}
+    finally:
+        conn.close()
 
 # Advanced Security API endpoints
 @app.get("/api/security/sessions")
 def get_security_sessions(token: str = Query(...)):
-    if token in USER_SESSIONS_LOG:
-        return {"success": True, "sessions": USER_SESSIONS_LOG[token]}
-    return {"success": True, "sessions": []}
+    user = get_user_by_token(token)
+    if not user:
+        return {"success": True, "sessions": []}
+        
+    conn = db.get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, device, ip, location, active, login_time FROM sessions WHERE user_email = ? ORDER BY login_time DESC", (user["email"],))
+        rows = cursor.fetchall()
+        sessions = []
+        for r in rows:
+            sess = dict(r)
+            sess["active"] = bool(sess["active"])
+            sessions.append(sess)
+        return {"success": True, "sessions": sessions}
+    finally:
+        conn.close()
 
 @app.post("/api/security/sessions/revoke")
 def revoke_session(req: RevokeSessionRequest):
-    token = req.token
-    if token not in USER_SESSIONS_LOG:
+    user = get_user_by_token(req.token)
+    if not user:
         raise HTTPException(status_code=404, detail="Session not found")
         
-    USER_SESSIONS_LOG[token] = [s for s in USER_SESSIONS_LOG[token] if s["id"] != req.session_id]
-    return {"success": True}
+    conn = db.get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("UPDATE sessions SET active = 0 WHERE id = ? AND user_email = ?", (req.session_id, user["email"]))
+        conn.commit()
+        return {"success": True}
+    finally:
+        conn.close()
 
 @app.post("/api/security/2fa/setup")
 def setup_2fa(req: Setup2FARequest):
-    token = req.token
-    if token not in USER_2FA:
+    user = get_user_by_token(req.token)
+    if not user:
         raise HTTPException(status_code=404, detail="Session not found")
-    return {
-        "success": True, 
-        "secret": USER_2FA[token]["secret"], 
-        "backup_codes": USER_2FA[token]["backup_codes"]
-    }
+        
+    conn = db.get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT secret, backup_codes FROM user_2fa WHERE user_email = ?", (user["email"],))
+        row = cursor.fetchone()
+        if not row:
+            secret = "JBSWY3DPEHPK3PXP"
+            backup_codes = "7732-9011,4412-8809,1290-7611,5567-3312"
+            cursor.execute("INSERT INTO user_2fa (user_email, enabled, secret, backup_codes) VALUES (?, 0, ?, ?)",
+                           (user["email"], secret, backup_codes))
+            conn.commit()
+            row_secret = secret
+            row_codes = backup_codes.split(",")
+        else:
+            row_secret = row["secret"]
+            row_codes = row["backup_codes"].split(",")
+        return {
+            "success": True, 
+            "secret": row_secret, 
+            "backup_codes": row_codes
+        }
+    finally:
+        conn.close()
 
 @app.post("/api/security/2fa/verify")
 def verify_2fa(req: Verify2FARequest):
-    token = req.token
-    if token not in USER_2FA:
+    user = get_user_by_token(req.token)
+    if not user:
         raise HTTPException(status_code=404, detail="Session not found")
         
     if req.code == "123456" or (len(req.code) == 6 and req.code.isdigit()):
-        USER_2FA[token]["enabled"] = True
-        
-        import datetime
-        now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-        import uuid
-        NOTIFICATIONS[token].insert(0, {
-            "id": f"notif-{uuid.uuid4().hex[:6]}",
-            "type": "security",
-            "title": "Two-Factor Authentication Enabled",
-            "message": "Your account settings are now protected with TOTP Multi-factor Authentication.",
-            "timestamp": now_str,
-            "read": False,
-            "link": "settings"
-        })
-        return {"success": True, "message": "2FA successfully enabled."}
+        conn = db.get_db_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute("UPDATE user_2fa SET enabled = 1 WHERE user_email = ?", (user["email"],))
+            
+            import datetime
+            now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+            import uuid
+            cursor.execute(
+                "INSERT INTO notifications (id, user_email, type, title, message, timestamp, read, link) VALUES (?, ?, 'security', 'Two-Factor Authentication Enabled', 'Your account settings are now protected with TOTP Multi-factor Authentication.', ?, 0, 'settings')",
+                (f"notif-{uuid.uuid4().hex[:6]}", user["email"], now_str)
+            )
+            conn.commit()
+            return {"success": True, "message": "2FA successfully enabled."}
+        finally:
+            conn.close()
     else:
         raise HTTPException(status_code=400, detail="Invalid verification code. Please try 123456.")
 
 @app.post("/api/security/2fa/disable")
 def disable_2fa(req: Disable2FARequest):
-    token = req.token
-    if token not in USER_2FA:
+    user = get_user_by_token(req.token)
+    if not user:
         raise HTTPException(status_code=404, detail="Session not found")
         
-    USER_2FA[token]["enabled"] = False
-    
-    import datetime
-    now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-    import uuid
-    NOTIFICATIONS[token].insert(0, {
-        "id": f"notif-{uuid.uuid4().hex[:6]}",
-        "type": "security",
-        "title": "Two-Factor Authentication Disabled",
-        "message": "Warning: 2FA was disabled for your profile. Your account is less secure.",
-        "timestamp": now_str,
-        "read": False,
-        "link": "settings"
-    })
-    return {"success": True, "message": "2FA successfully disabled."}
+    conn = db.get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("UPDATE user_2fa SET enabled = 0 WHERE user_email = ?", (user["email"],))
+        
+        import datetime
+        now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+        import uuid
+        cursor.execute(
+            "INSERT INTO notifications (id, user_email, type, title, message, timestamp, read, link) VALUES (?, ?, 'security', 'Two-Factor Authentication Disabled', 'Warning: 2FA was disabled for your profile. Your account is less secure.', ?, 0, 'settings')",
+            (f"notif-{uuid.uuid4().hex[:6]}", user["email"], now_str)
+        )
+        conn.commit()
+        return {"success": True, "message": "2FA successfully disabled."}
+    finally:
+        conn.close()
 
 @app.get("/api/security/tokens")
 def get_developer_tokens(token: str = Query(...)):
-    if token in USER_API_KEYS:
-        return {"success": True, "tokens": USER_API_KEYS[token]}
-    return {"success": True, "tokens": []}
+    user = get_user_by_token(token)
+    if not user:
+        return {"success": True, "tokens": []}
+        
+    conn = db.get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, name, key_prefix, scopes, created_at FROM user_api_keys WHERE user_email = ? ORDER BY created_at DESC", (user["email"],))
+        rows = cursor.fetchall()
+        tokens = []
+        for r in rows:
+            tk = dict(r)
+            tk["scopes"] = tk["scopes"].split(",")
+            tokens.append(tk)
+        return {"success": True, "tokens": tokens}
+    finally:
+        conn.close()
 
 @app.post("/api/security/tokens/generate")
 def generate_developer_token(req: GenerateTokenRequest):
-    token = req.token
-    if token not in USER_API_KEYS:
+    user = get_user_by_token(req.token)
+    if not user:
         raise HTTPException(status_code=404, detail="Session not found")
         
     import uuid
@@ -433,59 +502,140 @@ def generate_developer_token(req: GenerateTokenRequest):
         "scopes": req.scopes,
         "created_at": now_str
     }
-    USER_API_KEYS[token].append(new_key_meta)
     
-    NOTIFICATIONS[token].insert(0, {
-        "id": f"notif-{uuid.uuid4().hex[:6]}",
-        "type": "security",
-        "title": "API Token Generated",
-        "message": f"Developer API Token '{req.name}' was created with scopes: {', '.join(req.scopes)}.",
-        "timestamp": now_str,
-        "read": False,
-        "link": "settings"
-    })
-    
-    return {"success": True, "token": full_key, "metadata": new_key_meta}
+    conn = db.get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO user_api_keys (id, user_email, name, key_prefix, scopes, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+            (key_id, user["email"], req.name, key_prefix, ",".join(req.scopes), now_str)
+        )
+        cursor.execute(
+            "INSERT INTO notifications (id, user_email, type, title, message, timestamp, read, link) VALUES (?, ?, 'security', 'API Token Generated', ?, ?, 0, 'settings')",
+            (f"notif-{uuid.uuid4().hex[:6]}", user["email"], f"Developer API Token '{req.name}' was created with scopes: {', '.join(req.scopes)}.", now_str)
+        )
+        conn.commit()
+        return {"success": True, "token": full_key, "metadata": new_key_meta}
+    finally:
+        conn.close()
 
 @app.post("/api/security/tokens/revoke")
 def revoke_developer_token(req: RevokeTokenRequest):
-    token = req.token
-    if token not in USER_API_KEYS:
+    user = get_user_by_token(req.token)
+    if not user:
         raise HTTPException(status_code=404, detail="Session not found")
         
-    USER_API_KEYS[token] = [k for k in USER_API_KEYS[token] if k["id"] != req.key_id]
-    return {"success": True}
+    conn = db.get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM user_api_keys WHERE id = ? AND user_email = ?", (req.key_id, user["email"]))
+        conn.commit()
+        return {"success": True}
+    finally:
+        conn.close()
 
 @app.post("/api/security/data/export")
 def export_user_data(req: ExportDataRequest):
-    token = req.token
-    if token not in USER_SESSIONS:
+    user = get_user_by_token(req.token)
+    if not user:
         raise HTTPException(status_code=404, detail="Session not found")
         
-    profile = USER_SESSIONS[token]
-    mfa = USER_2FA.get(token, {"enabled": False})
-    sessions_count = len(USER_SESSIONS_LOG.get(token, []))
-    tokens_count = len(USER_API_KEYS.get(token, []))
-    notifications_count = len(NOTIFICATIONS.get(token, []))
-    
-    return {
-        "success": True,
-        "export_data": {
-            "profile": {
-                "name": profile.get("name"),
-                "email": profile.get("email"),
-                "tier": profile.get("tier")
-            },
-            "security": {
-                "two_factor_enabled": mfa.get("enabled"),
-                "active_sessions_count": sessions_count,
-                "developer_keys_count": tokens_count
-            },
-            "activity": {
-                "notifications_count": notifications_count
+    conn = db.get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM sessions WHERE user_email = ?", (user["email"],))
+        sessions_count = cursor.fetchone()[0]
+        
+        cursor.execute("SELECT COUNT(*) FROM user_api_keys WHERE user_email = ?", (user["email"],))
+        tokens_count = cursor.fetchone()[0]
+        
+        cursor.execute("SELECT COUNT(*) FROM notifications WHERE user_email = ?", (user["email"],))
+        notifications_count = cursor.fetchone()[0]
+        
+        cursor.execute("SELECT enabled FROM user_2fa WHERE user_email = ?", (user["email"],))
+        mfa_row = cursor.fetchone()
+        mfa_enabled = bool(mfa_row[0]) if mfa_row else False
+        
+        return {
+            "success": True,
+            "export_data": {
+                "profile": {
+                    "name": user["name"],
+                    "email": user["email"],
+                    "tier": user["tier"]
+                },
+                "security": {
+                    "two_factor_enabled": mfa_enabled,
+                    "active_sessions_count": sessions_count,
+                    "developer_keys_count": tokens_count
+                },
+                "activity": {
+                    "notifications_count": notifications_count
+                }
             }
         }
-    }
+    finally:
+        conn.close()
+
+# Referral API Models & endpoints
+class InviteFriendRequest(BaseModel):
+    token: str
+    email: str
+
+@app.get("/api/referrals")
+def get_referrals(token: str = Query(...)):
+    user = get_user_by_token(token)
+    if not user:
+        return {"success": True, "referral_code": "", "referrals": []}
+        
+    conn = db.get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT referee_email, code, status, timestamp FROM referrals WHERE referrer_email = ? ORDER BY timestamp DESC", (user["email"],))
+        rows = cursor.fetchall()
+        referrals_list = []
+        for r in rows:
+            referrals_list.append(dict(r))
+        return {
+            "success": True, 
+            "referral_code": user["referral_code"] or f"FINFIT-{user['name'].upper()}-1234", 
+            "referrals": referrals_list
+        }
+    finally:
+        conn.close()
+
+@app.post("/api/referrals/invite")
+def invite_friend(req: InviteFriendRequest):
+    user = get_user_by_token(req.token)
+    if not user:
+        raise HTTPException(status_code=404, detail="Session not found")
+        
+    import datetime
+    now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    import uuid
+    ref_id = f"ref-{uuid.uuid4().hex[:6]}"
+    ref_code = user["referral_code"] or f"FINFIT-{user['name'].upper()}-1234"
+    
+    conn = db.get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM referrals WHERE referrer_email = ? AND referee_email = ?", (user["email"], req.email.lower()))
+        if cursor.fetchone()[0] > 0:
+            return {"success": True, "message": "Invitation already sent to this friend."}
+            
+        cursor.execute(
+            "INSERT INTO referrals (id, referrer_email, referee_email, code, status, timestamp) VALUES (?, ?, ?, ?, 'Pending', ?)",
+            (ref_id, user["email"], req.email.lower(), ref_code, now_str)
+        )
+        
+        cursor.execute(
+            "INSERT INTO notifications (id, user_email, type, title, message, timestamp, read, link) VALUES (?, ?, 'system', 'Referral Invitation Dispatched', ?, ?, 0, 'settings')",
+            (f"notif-{uuid.uuid4().hex[:6]}", user["email"], f"An invitation email with referral code {ref_code} has been sent to {req.email}.", now_str)
+        )
+        conn.commit()
+        return {"success": True, "message": f"Invitation successfully sent to {req.email}."}
+    finally:
+        conn.close()
 
 @app.get("/api/filters")
 def get_filters():
@@ -817,6 +967,20 @@ def get_login():
     if os.path.exists(login_file):
         return FileResponse(login_file)
     return HTMLResponse("Frontend login file not created yet. Please create static/login.html first.")
+
+@app.get("/privacy", response_class=HTMLResponse)
+def get_privacy():
+    privacy_file = os.path.join(STATIC_DIR, "privacy.html")
+    if os.path.exists(privacy_file):
+        return FileResponse(privacy_file)
+    return HTMLResponse("Frontend privacy file not created yet. Please create static/privacy.html first.")
+
+@app.get("/terms", response_class=HTMLResponse)
+def get_terms():
+    terms_file = os.path.join(STATIC_DIR, "terms.html")
+    if os.path.exists(terms_file):
+        return FileResponse(terms_file)
+    return HTMLResponse("Frontend terms file not created yet. Please create static/terms.html first.")
 
 if __name__ == "__main__":
     import uvicorn
